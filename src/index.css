@@ -2971,6 +2971,26 @@ section {
   background-color: rgba(99, 102, 241, 0.05);
 }
 
+/* PWA Installation Button pulsing effect */
+@keyframes installPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.install-app-btn {
+  border: 1px solid rgba(99, 102, 241, 0.25) !important;
+  background: rgba(99, 102, 241, 0.1) !important;
+  border-radius: 50% !important;
+}
+
 /* ==========================================================================
    Mobile Horizontal Floating Bottom Dock
    ========================================================================== */

@@ -11,7 +11,8 @@ import {
   FiMail, 
   FiCpu,
   FiAward,
-  FiBookOpen
+  FiBookOpen,
+  FiSmartphone
 } from 'react-icons/fi';
 
 const NAV_ITEMS = [
@@ -28,6 +29,40 @@ const NAV_ITEMS = [
 export default function Navbar({ theme, toggleTheme }) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+
+  // Listen for PWA installation capability prompt
+  useEffect(() => {
+    const handleBeforeInstall = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+
+    const handleAppInstalled = () => {
+      setDeferredPrompt(null);
+      setShowInstallBtn(false);
+      console.log('App was successfully installed!');
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User installation decision: ${outcome}`);
+    setDeferredPrompt(null);
+    setShowInstallBtn(false);
+  };
 
   const mobileLinksRef = useRef(null);
   const observerActive = useRef(true);
@@ -262,6 +297,16 @@ export default function Navbar({ theme, toggleTheme }) {
           ARUN M<span className="logo-dot">.</span>
         </a>
         <div className="mobile-header-actions">
+          {showInstallBtn && (
+            <button 
+              onClick={handleInstallApp} 
+              className="mobile-header-btn install-app-btn"
+              aria-label="Install App"
+              style={{ color: 'var(--accent)' }}
+            >
+              <FiSmartphone size={16} style={{ animation: 'installPulse 2s infinite' }} />
+            </button>
+          )}
           <a 
             href="/ARUN_M_Resume.pdf" 
             target="_blank" 
