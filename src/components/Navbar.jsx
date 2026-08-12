@@ -29,23 +29,27 @@ export default function Navbar({ theme, toggleTheme }) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
 
-  const sidebarLinksRef = useRef(null);
+  const mobileLinksRef = useRef(null);
   const observerActive = useRef(true);
   const [btnPositions, setBtnPositions] = useState([]);
+  
+  const sectionCount = NAV_ITEMS.length;
+  const progressBreaks = NAV_ITEMS.map((_, i) => i / (sectionCount - 1)); // [0, 0.143, 0.286, ...]
+  const [scrollBreakpoints, setScrollBreakpoints] = useState(progressBreaks);
 
   // Global window scroll progress (0 at top, 1 at bottom)
   const { scrollYProgress } = useScroll();
 
-  // Measure sidebar button Y-center positions on mount and resize
+  // 1. Measure mobile bottom nav button X-center positions on mount and resize
   useEffect(() => {
     const measure = () => {
-      if (!sidebarLinksRef.current) return;
-      const container = sidebarLinksRef.current;
+      if (!mobileLinksRef.current) return;
+      const container = mobileLinksRef.current;
       const containerRect = container.getBoundingClientRect();
-      const buttons = container.querySelectorAll('.sidebar-nav-btn');
+      const buttons = container.querySelectorAll('.mobile-nav-btn');
       const positions = Array.from(buttons).map(btn => {
         const r = btn.getBoundingClientRect();
-        return (r.top - containerRect.top) + (r.height / 2);
+        return (r.left - containerRect.left) + (r.width / 2);
       });
       setBtnPositions(positions);
     };
@@ -55,39 +59,58 @@ export default function Navbar({ theme, toggleTheme }) {
     return () => { clearTimeout(timer); window.removeEventListener('resize', measure); };
   }, []);
 
-  // Build scroll-progress breakpoints: evenly space sections across 0-1 range
-  const sectionCount = NAV_ITEMS.length;
-  const progressBreaks = NAV_ITEMS.map((_, i) => i / (sectionCount - 1)); // [0, 0.143, 0.286, ...]
+  // 2. Measure actual section heights dynamically to build physical scroll progress breakpoints
+  useEffect(() => {
+    const computeBreakpoints = () => {
+      const docHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+      const viewHeight = window.innerHeight;
+      const totalScrollable = Math.max(1, docHeight - viewHeight);
+      
+      let cumulative = 0;
+      const breakpoints = NAV_ITEMS.map((item, idx) => {
+        if (idx === 0) return 0;
+        const prevEl = document.getElementById(NAV_ITEMS[idx - 1].id);
+        if (prevEl) {
+          cumulative += prevEl.offsetHeight;
+        }
+        return Math.min(1, cumulative / totalScrollable);
+      });
+      // Force last breakpoint to be exactly 1
+      breakpoints[breakpoints.length - 1] = 1;
+      setScrollBreakpoints(breakpoints);
+    };
 
-  // Map scroll progress to continuous Y pixel positions between buttons
-  const robotTargetY = useTransform(
+    const timer = setTimeout(computeBreakpoints, 400);
+    window.addEventListener('resize', computeBreakpoints);
+    return () => { clearTimeout(timer); window.removeEventListener('resize', computeBreakpoints); };
+  }, []);
+
+  // Map scroll progress to continuous X pixel positions between buttons for mobile
+  const robotTargetX = useTransform(
     scrollYProgress,
-    progressBreaks,
-    btnPositions.length === sectionCount ? btnPositions : progressBreaks.map(p => p * 426)
+    scrollBreakpoints,
+    btnPositions.length === sectionCount ? btnPositions : progressBreaks.map(p => p * 320)
   );
 
   // Smooth spring for continuous mobile robot movement
-  const smoothRobotY = useSpring(robotTargetY, {
+  const smoothRobotX = useSpring(robotTargetX, {
     stiffness: 85,
     damping: 24,
     restDelta: 0.001
   });
 
-  // Mobile sidebar: derive trail fill FROM the robot's actual Y position
-  // This ensures the glowing trail always ends exactly where the robot is
-  const lastBtnY = btnPositions.length > 0 ? btnPositions[btnPositions.length - 1] : 426;
-  const firstBtnY = btnPositions.length > 0 ? btnPositions[0] : 6;
-  const sidebarTrailFill = useTransform(smoothRobotY, [firstBtnY, lastBtnY], [0, 1]);
+  // Mobile bottom dock: derive trail fill FROM the robot's actual X position
+  const lastBtnX = btnPositions.length > 0 ? btnPositions[btnPositions.length - 1] : 320;
+  const firstBtnX = btnPositions.length > 0 ? btnPositions[0] : 6;
+  const mobileTrailFill = useTransform(smoothRobotX, [firstBtnX, lastBtnX], [0, 1]);
 
   // Desktop horizontal robot: uses its own independent smooth scroll progress
-  // (Desktop doesn't have sidebar buttons rendered, so it tracks raw scroll progress directly)
   const desktopScrollSpring = useSpring(scrollYProgress, {
     stiffness: 85,
     damping: 24,
     restDelta: 0.001
   });
   const desktopRobotLeft = useTransform(desktopScrollSpring, [0, 1], ['0%', '100%']);
-  // Desktop trail fills to exactly where the desktop robot is (same spring source)
   const desktopTrailFill = desktopScrollSpring;
 
   // Active section scroll tracking & navbar background scrolled state
@@ -103,10 +126,9 @@ export default function Navbar({ theme, toggleTheme }) {
     window.addEventListener('scroll', handleScroll);
     handleScroll();
 
-    // High performance Intersection Observer replaces offset calculations to prevent layout thrashing
     const observerOptions = {
       root: null,
-      rootMargin: '-25% 0px -35% 0px', // triggers active section transitions as they enter center-viewport focus
+      rootMargin: '-25% 0px -35% 0px',
       threshold: 0.15
     };
 
@@ -121,7 +143,6 @@ export default function Navbar({ theme, toggleTheme }) {
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
     
-    // Observe all 8 main page sections
     NAV_ITEMS.forEach(item => {
       const el = document.getElementById(item.id);
       if (el) observer.observe(el);
@@ -134,7 +155,6 @@ export default function Navbar({ theme, toggleTheme }) {
   }, []);
 
   const handleScrollTo = (id) => {
-    // Temporarily bypass scroll tracker to prevent jumping during anchor click scrolls
     observerActive.current = false;
     setActiveSection(id);
     
@@ -158,7 +178,7 @@ export default function Navbar({ theme, toggleTheme }) {
     }
   };
 
-  const getSidebarIcon = (id) => {
+  const getNavbarIcon = (id) => {
     switch (id) {
       case 'hero':
         return <FiHome size={18} />;
@@ -183,7 +203,7 @@ export default function Navbar({ theme, toggleTheme }) {
 
   return (
     <>
-      {/* Desktop Top Header Navbar (Visible only on screens > 768px) */}
+      {/* Desktop Top Header Navbar (Visible only on screens > 1024px) */}
       <header className={`navbar-container desktop-header-nav ${scrolled ? 'scrolled' : ''}`}>
         <div className="navbar-wrapper">
           <a href="#hero" onClick={(e) => { e.preventDefault(); handleScrollTo('hero'); }} className="navbar-logo">
@@ -218,7 +238,7 @@ export default function Navbar({ theme, toggleTheme }) {
           </nav>
         </div>
 
-        {/* Horizontal AI Robot track & traveler for Desktop! */}
+        {/* Horizontal AI Robot track & traveler for Desktop */}
         <div className="desktop-robot-track">
           <motion.div 
             className="desktop-robot-track-active"
@@ -236,27 +256,46 @@ export default function Navbar({ theme, toggleTheme }) {
         </div>
       </header>
 
-      {/* Mobile Left Sidebar Navbar (Visible only on screens <= 768px) */}
-      <nav className="mobile-left-sidebar">
-        {/* Small Logo / Top Indicator */}
-        <div className="sidebar-logo">
-          <span>A</span>
+      {/* Mobile Top Header (Visible only on screens <= 1024px) */}
+      <header className="mobile-top-header">
+        <a href="#hero" onClick={(e) => { e.preventDefault(); handleScrollTo('hero'); }} className="navbar-logo">
+          ARUN M<span className="logo-dot">.</span>
+        </a>
+        <div className="mobile-header-actions">
+          <a 
+            href="/ARUN_M_Resume.pdf" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="mobile-header-btn"
+            aria-label="Resume"
+          >
+            <FiFileText size={16} />
+          </a>
+          <button 
+            onClick={toggleTheme} 
+            className="mobile-header-btn" 
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <FiSun size={16} /> : <FiMoon size={16} />}
+          </button>
         </div>
+      </header>
 
-        {/* Vertical Links Wrapper */}
-        <div className="sidebar-links-container" ref={sidebarLinksRef}>
-          {/* AI Robot traveling path track */}
-          <div className="sidebar-robot-track">
+      {/* Floating Spaceful Bottom Navigation Dock (Visible only on screens <= 1024px) */}
+      <nav className="mobile-bottom-dock">
+        <div className="mobile-dock-links-container" ref={mobileLinksRef}>
+          {/* AI Robot traveling path track (Horizontal on mobile bottom dock!) */}
+          <div className="mobile-robot-track-horizontal">
             {/* Traveled path in glow */}
             <motion.div 
-              className="sidebar-robot-track-active"
-              style={{ scaleY: sidebarTrailFill }}
+              className="mobile-robot-track-active-horizontal"
+              style={{ scaleX: mobileTrailFill }}
             />
-            {/* The traveling AI Robot (Smooth continuous scroll-linked position) */}
+            {/* The traveling AI Robot (Smooth continuous horizontal scroll-linked position) */}
             <motion.div 
-              className="ai-robot-traveler"
+              className="mobile-ai-robot-traveler"
               style={{ 
-                y: smoothRobotY
+                left: smoothRobotX
               }}
             >
               <div className="robot-scanner-eye" />
@@ -271,34 +310,14 @@ export default function Navbar({ theme, toggleTheme }) {
               <button
                 key={item.id}
                 onClick={() => handleScrollTo(item.id)}
-                className={`sidebar-nav-btn ${isActive ? 'active' : ''}`}
+                className={`mobile-nav-btn ${isActive ? 'active' : ''}`}
                 aria-label={`Scroll to ${item.label}`}
               >
-                {getSidebarIcon(item.id)}
-                <span className="sidebar-btn-label">{item.label}</span>
+                {getNavbarIcon(item.id)}
+                <span className="mobile-btn-tooltip">{item.label}</span>
               </button>
             );
           })}
-        </div>
-
-        {/* Bottom Actions (Theme Toggle & Resume) */}
-        <div className="sidebar-bottom-actions">
-          <a 
-            href="/ARUN_M_Resume.pdf" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="sidebar-action-btn"
-            aria-label="Resume"
-          >
-            <FiFileText size={16} />
-          </a>
-          <button 
-            onClick={toggleTheme} 
-            className="sidebar-action-btn" 
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <FiSun size={16} /> : <FiMoon size={16} />}
-          </button>
         </div>
       </nav>
     </>
