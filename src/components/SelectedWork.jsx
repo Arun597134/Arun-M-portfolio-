@@ -35,6 +35,17 @@ const PROJECTS = [
     tech: ['MERN Stack', 'TensorFlow.js', 'AI Generated Questions', 'AI Proctoring', 'Role Based Auth'],
     impact: 'Deployed TensorFlow.js face absence detector to certify college students',
     github: 'https://github.com/Arun597134/AI-Exam-portal'
+  },
+  {
+    id: 4,
+    title: 'IngestaX Framework',
+    subtitle: 'Enterprise SQL-Pushdown Ingestion Engine',
+    desc: 'Architected an enterprise data quality gateway and resilient ingestion pipeline built on PostgreSQL 16. Compiles YAML validation rules dynamically into native relational set operations, flattening memory consumption to a flat 12.4 MB (36.4× reduction vs legacy 452 MB Python loops). Features an active timeout watchdog circuit breaker (TTL = 3.0s) that isolates lagging batches into overflow staging without pipeline starvation, alongside zero-duplicate idempotent upserts.',
+    image: '/ingestax_mockup.png',
+    video: '/ingestax_video.mp4',
+    tech: ['PostgreSQL 16', 'Python', 'Apache Airflow', 'Docker', 'YAML', 'FastAPI'],
+    impact: '36.4× memory reduction (flat 12.4 MB) & zero-duplicate idempotent upserts',
+    github: 'https://github.com/Arun597134/IngestaX-Framework'
   }
 ];
 
@@ -88,6 +99,14 @@ export default function SelectedWork({ activeTech }) {
                       muted 
                       playsInline 
                       className="project-video"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        if (e.target.parentElement) {
+                          e.target.parentElement.style.backgroundImage = `url(${proj.image})`;
+                          e.target.parentElement.style.backgroundSize = 'cover';
+                          e.target.parentElement.style.backgroundPosition = 'center';
+                        }
+                      }}
                     />
                     <div className="visual-glow-overlay" />
                   </div>

@@ -5,12 +5,12 @@ const LANGUAGES = ['Python', 'Java', 'SQL', 'JavaScript'];
 const DATABASES = ['MongoDB', 'SQLite', 'PostgreSQL'];
 
 const WEB_TAPE_1 = ['React.js', 'Redux Toolkit', 'Node.js', 'Express.js', 'HTML5', 'CSS3'];
-const WEB_TAPE_2 = ['Flask', 'REST APIs', 'JWT Auth', 'JavaScript', 'Tailwind CSS'];
+const WEB_TAPE_2 = ['Flask', 'FastAPI', 'REST APIs', 'JWT Auth', 'JavaScript', 'Tailwind CSS'];
 
 const AI_TAPE_1 = ['TensorFlow', 'scikit-learn', 'Random Forest', 'Deep Learning'];
 const AI_TAPE_2 = ['Machine Learning', 'NLP', 'Computer Vision', 'Neural Networks'];
 
-const INFRA_TAPE = ['Git', 'GitHub', 'CI/CD', 'Docker', 'Oracle Cloud Infrastructure (OCI)', 'Vercel', 'Render'];
+const INFRA_TAPE = ['Git', 'GitHub', 'CI/CD', 'Docker', 'Apache Airflow', 'Oracle Cloud Infrastructure (OCI)', 'Vercel', 'Render'];
 
 export default function Technologies({ activeTech, setActiveTech }) {
   const containerVariants = {
