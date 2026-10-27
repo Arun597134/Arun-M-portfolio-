@@ -109,7 +109,7 @@ function SelectedWork({ activeTech }) {
       <div className="container">
         <div className="work-header">
           <span className="section-label">02 / PRODUCTS</span>
-          <h2 className="section-title">Selected Work</h2>
+          <h2 className="section-title">Selected Works</h2>
           <p className="work-header-p">
             A showcase of production-ready systems and applications built with a focus on machine learning intelligence and user-centered frontend development.
           </p>
