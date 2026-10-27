@@ -12,7 +12,7 @@ const AI_TAPE_2 = ['Machine Learning', 'NLP', 'Computer Vision', 'Neural Network
 
 const INFRA_TAPE = ['Git', 'GitHub', 'CI/CD', 'Docker', 'Apache Airflow', 'Oracle Cloud Infrastructure (OCI)', 'Vercel', 'Render'];
 
-export default function Technologies({ activeTech, setActiveTech }) {
+function Technologies({ activeTech, setActiveTech }) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -203,3 +203,5 @@ export default function Technologies({ activeTech, setActiveTech }) {
     </section>
   );
 }
+
+export default React.memo(Technologies);

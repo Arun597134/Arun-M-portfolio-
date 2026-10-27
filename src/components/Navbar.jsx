@@ -158,7 +158,7 @@ export default function Navbar({ theme, toggleTheme }) {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
 
     const observerOptions = {

@@ -251,7 +251,7 @@ const STATS = [
   }
 ];
 
-export default function Achievements() {
+function Achievements() {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -341,3 +341,5 @@ export default function Achievements() {
     </section>
   );
 }
+
+export default React.memo(Achievements);

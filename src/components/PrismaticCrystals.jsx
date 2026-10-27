@@ -14,7 +14,7 @@ import React from 'react';
  * All elements dynamically track the cursor with depth-scaled 3D parallax.
  */
 
-export default function PrismaticCrystals({ theme }) {
+function PrismaticCrystals({ theme }) {
   const isDark = theme === 'dark';
 
   return (
@@ -130,3 +130,5 @@ export default function PrismaticCrystals({ theme }) {
     </div>
   );
 }
+
+export default React.memo(PrismaticCrystals);

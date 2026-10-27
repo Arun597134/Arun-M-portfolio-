@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import PrismaticCrystals from './PrismaticCrystals';
 
-export default function CyberGridBackground({ theme }) {
+function CyberGridBackground({ theme }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
-  const isDark = theme === 'dark';
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -65,13 +64,21 @@ export default function CyberGridBackground({ theme }) {
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Minimal, refined perspective grid geometry (Pakka rich grid on mobile at 120 FPS)
-    const cols = isMobileDevice ? 14 : 22;
-    const rows = isMobileDevice ? 10 : 16;
+    // Minimal, refined perspective grid geometry (Pakka rich grid at 120 FPS)
+    const cols = isMobileDevice ? 14 : 20;
+    const rows = isMobileDevice ? 10 : 15;
+    const colsPlus1 = cols + 1;
+    const totalPoints = (cols + 1) * (rows + 1);
+
+    // Flat pre-allocated TypedArrays: ZERO memory heap allocations in RAF render loop
+    const ptX = new Float32Array(totalPoints);
+    const ptY = new Float32Array(totalPoints);
+    const ptScale = new Float32Array(totalPoints);
+
     let time = 0;
 
-    // Glowing energy nodes (6 on mobile, 12 on desktop)
-    const sparkCount = isMobileDevice ? 6 : 12;
+    // Glowing energy nodes (6 on mobile, 10 on desktop)
+    const sparkCount = isMobileDevice ? 6 : 10;
     const sparks = [];
     for (let i = 0; i < sparkCount; i++) {
       sparks.push({
@@ -84,8 +91,8 @@ export default function CyberGridBackground({ theme }) {
       });
     }
 
-    // Drifting ambient crystal dust (8 on mobile, 16 on desktop)
-    const dustCount = isMobileDevice ? 8 : 16;
+    // Drifting ambient crystal dust (8 on mobile, 14 on desktop)
+    const dustCount = isMobileDevice ? 8 : 14;
     const dustParticles = [];
     for (let i = 0; i < dustCount; i++) {
       dustParticles.push({
@@ -99,12 +106,6 @@ export default function CyberGridBackground({ theme }) {
         pulse: Math.random() * Math.PI * 2,
       });
     }
-
-    // Subtle ambient aurora glow pools
-    const orbs = [
-      { x: width * 0.25, y: height * 0.3, vx: 0.18, vy: 0.12, r: 420, color: 'indigo' },
-      { x: width * 0.78, y: height * 0.45, vx: -0.16, vy: 0.14, r: 450, color: 'cyan' },
-    ];
 
     const render = () => {
       time += 0.012;
@@ -134,134 +135,81 @@ export default function CyberGridBackground({ theme }) {
       ctx.clearRect(0, 0, width, height);
 
       // -----------------------------------------------------------------------
-      // 1. Soft Ambient Aurora Glow
-      // -----------------------------------------------------------------------
-      for (const orb of orbs) {
-        orb.x += orb.vx;
-        orb.y += orb.vy;
-
-        if (orb.x < -100 || orb.x > width + 100) orb.vx *= -1;
-        if (orb.y < -100 || orb.y > height + 100) orb.vy *= -1;
-
-        const g = ctx.createRadialGradient(orb.x, orb.y, 10, orb.x, orb.y, orb.r);
-
-        if (isDark) {
-          if (orb.color === 'indigo') {
-            g.addColorStop(0, 'rgba(79, 70, 229, 0.12)');
-            g.addColorStop(0.5, 'rgba(79, 70, 229, 0.04)');
-            g.addColorStop(1, 'transparent');
-          } else {
-            g.addColorStop(0, 'rgba(6, 182, 212, 0.10)');
-            g.addColorStop(0.5, 'rgba(6, 182, 212, 0.03)');
-            g.addColorStop(1, 'transparent');
-          }
-        } else {
-          if (orb.color === 'indigo') {
-            g.addColorStop(0, 'rgba(99, 102, 241, 0.10)');
-            g.addColorStop(0.5, 'rgba(99, 102, 241, 0.03)');
-            g.addColorStop(1, 'transparent');
-          } else {
-            g.addColorStop(0, 'rgba(14, 165, 233, 0.09)');
-            g.addColorStop(0.5, 'rgba(14, 165, 233, 0.03)');
-            g.addColorStop(1, 'transparent');
-          }
-        }
-
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(orb.x, orb.y, orb.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // -----------------------------------------------------------------------
-      // 2. Clean, Quiet Perspective Grid Wave
+      // 1. Perspective Grid Wave (Zero Heap Allocations)
       // -----------------------------------------------------------------------
       const horizonY = height * 0.28;
       const fov = 440;
       const cameraY = -95;
       const cameraZ = -140;
+      const halfWidth = width * 0.5;
 
-      const gridPoints = [];
-
+      let idx = 0;
       for (let r = 0; r <= rows; r++) {
-        const rowArr = [];
         const z = r * 65 + 70;
         const scale = fov / (fov + z - cameraZ);
+        const rCos = Math.cos(r * 0.35 - time) * 12;
 
         for (let c = 0; c <= cols; c++) {
-          const worldX = (c - cols / 2) * 135;
-
-          const ptScreenX = width / 2 + worldX * scale;
+          const worldX = (c - cols * 0.5) * 135;
+          const ptScreenX = halfWidth + worldX * scale;
           const distMouse = Math.hypot(ptScreenX - mouse.x, (horizonY + z * 0.5) - mouse.y);
           const mouseLift = Math.sin(distMouse * 0.01 - time * 2.2) * Math.max(0, 28 - distMouse * 0.06);
 
-          const wave =
-            Math.sin(c * 0.32 + time * 1.2) * 14 +
-            Math.cos(r * 0.35 - time * 1.0) * 12 +
-            mouseLift;
+          const wave = Math.sin(c * 0.32 + time * 1.2) * 14 + rCos + mouseLift;
 
-          const screenX = width / 2 + worldX * scale;
-          const screenY = horizonY + (wave - cameraY) * scale * 2.4 + z * 0.45;
-
-          rowArr.push({
-            x: screenX,
-            y: screenY,
-            z: z,
-            scale: scale,
-          });
+          ptX[idx] = ptScreenX;
+          ptY[idx] = horizonY + (wave - cameraY) * scale * 2.4 + z * 0.45;
+          ptScale[idx] = scale;
+          idx++;
         }
-        gridPoints.push(rowArr);
       }
 
-      // Render Horizontal Waves (Subtle, Clean)
+      // Render Horizontal Waves
       for (let r = 0; r <= rows; r++) {
         const depthFactor = (r / rows);
         const curveFade = Math.sin(depthFactor * Math.PI);
-
         const alpha = isDark
           ? 0.03 + curveFade * 0.15
           : 0.04 + curveFade * 0.16;
 
         ctx.strokeStyle = isDark
-          ? `rgba(99, 102, 241, ${alpha})`
-          : `rgba(79, 70, 229, ${alpha})`;
+          ? `rgba(99, 102, 241, ${alpha.toFixed(3)})`
+          : `rgba(79, 70, 229, ${alpha.toFixed(3)})`;
         ctx.lineWidth = Math.max(0.8, 1.4 * depthFactor);
 
         ctx.beginPath();
-        for (let c = 0; c <= cols; c++) {
-          const pt = gridPoints[r][c];
-          if (c === 0) ctx.moveTo(pt.x, pt.y);
-          else ctx.lineTo(pt.x, pt.y);
+        const rowOffset = r * colsPlus1;
+        ctx.moveTo(ptX[rowOffset], ptY[rowOffset]);
+        for (let c = 1; c <= cols; c++) {
+          const pIdx = rowOffset + c;
+          ctx.lineTo(ptX[pIdx], ptY[pIdx]);
         }
         ctx.stroke();
       }
 
       // Render Perspective Longitudinal Lines
       for (let c = 0; c <= cols; c++) {
-        const centerDist = 1 - Math.abs(c - cols / 2) / (cols / 1.6);
+        const centerDist = 1 - Math.abs(c - cols * 0.5) / (cols / 1.6);
         if (centerDist <= 0) continue;
 
         ctx.beginPath();
         for (let r = 0; r <= rows; r++) {
-          const pt = gridPoints[r][c];
-          const depthFactor = r / rows;
-          const alpha = isDark
-            ? (0.02 + depthFactor * 0.12) * centerDist
-            : (0.03 + depthFactor * 0.14) * centerDist;
-
-          ctx.strokeStyle = isDark
-            ? `rgba(6, 182, 212, ${alpha})`
-            : `rgba(14, 165, 233, ${alpha})`;
-          ctx.lineWidth = Math.max(0.6, 1.2 * depthFactor);
-
-          if (r === 0) ctx.moveTo(pt.x, pt.y);
-          else ctx.lineTo(pt.x, pt.y);
+          const pIdx = r * colsPlus1 + c;
+          if (r === 0) ctx.moveTo(ptX[pIdx], ptY[pIdx]);
+          else ctx.lineTo(ptX[pIdx], ptY[pIdx]);
         }
+        const alpha = isDark
+          ? (0.02 + 0.10 * centerDist)
+          : (0.03 + 0.12 * centerDist);
+        ctx.strokeStyle = isDark
+          ? `rgba(6, 182, 212, ${alpha.toFixed(3)})`
+          : `rgba(14, 165, 233, ${alpha.toFixed(3)})`;
+        ctx.lineWidth = 0.9;
         ctx.stroke();
       }
 
       // -----------------------------------------------------------------------
-      // 3. Calm Energy Sparks
+      // 2. Calm Energy Sparks
       // -----------------------------------------------------------------------
       for (let i = 0; i < sparks.length; i++) {
         const spark = sparks[i];
@@ -277,19 +225,14 @@ export default function CyberGridBackground({ theme }) {
         const rInt = Math.floor(spark.row);
         const rFrac = spark.row - rInt;
 
-        if (
-          gridPoints[rInt] &&
-          gridPoints[rInt + 1] &&
-          gridPoints[rInt][spark.col] &&
-          gridPoints[rInt + 1][spark.col]
-        ) {
-          const p1 = gridPoints[rInt][spark.col];
-          const p2 = gridPoints[rInt + 1][spark.col];
+        if (rInt < rows) {
+          const p1Idx = rInt * colsPlus1 + spark.col;
+          const p2Idx = (rInt + 1) * colsPlus1 + spark.col;
 
-          const curX = p1.x + (p2.x - p1.x) * rFrac;
-          const curY = p1.y + (p2.y - p1.y) * rFrac;
+          const curX = ptX[p1Idx] + (ptX[p2Idx] - ptX[p1Idx]) * rFrac;
+          const curY = ptY[p1Idx] + (ptY[p2Idx] - ptY[p1Idx]) * rFrac;
 
-          const baseSize = spark.size * p1.scale * 1.5;
+          const baseSize = spark.size * ptScale[p1Idx] * 1.5;
           const pulseEffect = Math.sin(spark.pulse) * 0.25 + 1;
           const finalSize = Math.max(1.8, baseSize * pulseEffect);
 
@@ -316,10 +259,13 @@ export default function CyberGridBackground({ theme }) {
         }
       }
 
+      ctx.globalAlpha = 1;
+
       // -----------------------------------------------------------------------
-      // 4. Subtle Micro-Stardust
+      // 3. Drifting Crystal Stardust
       // -----------------------------------------------------------------------
-      for (const p of dustParticles) {
+      for (let i = 0; i < dustParticles.length; i++) {
+        const p = dustParticles[i];
         p.x += p.vx;
         p.y += p.vy;
         p.pulse += 0.02;
@@ -369,3 +315,5 @@ export default function CyberGridBackground({ theme }) {
     </div>
   );
 }
+
+export default React.memo(CyberGridBackground);

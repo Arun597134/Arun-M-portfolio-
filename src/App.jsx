@@ -18,13 +18,13 @@ export default function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'dark';
   });
-  const [cursorType, setCursorType] = useState('default'); // 'default' | 'hover' | 'project'
   const [activeTech, setActiveTech] = useState(null); // Lifted state for project highlights
   const [isMobile, setIsMobile] = useState(false);
 
   const cursorRef = useRef(null);
   const followerRef = useRef(null);
   const appRef = useRef(null);
+  const cursorTypeRef = useRef('default');
   const followerPos = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
 
   // Handle Theme Toggle
@@ -127,20 +127,27 @@ export default function App() {
 
     render();
 
-    // Event delegation for hover states (Highly performant, covers dynamic elements)
+    // Event delegation for hover states (Direct DOM update - 0 React re-renders)
     const handleMouseOver = (e) => {
       const target = e.target;
       if (!target) return;
 
+      let newType = 'default';
       const hoverable = target.closest('a, button, input, textarea, select, .magnetic-btn, .hover-card, [data-hover]');
       if (hoverable) {
-        setCursorType('hover');
+        newType = 'hover';
       } else {
         const projectCard = target.closest('.project-case-study');
         if (projectCard) {
-          setCursorType('project');
-        } else {
-          setCursorType('default');
+          newType = 'project';
+        }
+      }
+
+      if (cursorTypeRef.current !== newType) {
+        cursorTypeRef.current = newType;
+        if (appRef.current) {
+          appRef.current.classList.remove('cursor-default', 'cursor-hover', 'cursor-project');
+          appRef.current.classList.add(`cursor-${newType}`);
         }
       }
     };
@@ -159,7 +166,7 @@ export default function App() {
   }
 
   return (
-    <div ref={appRef} className={`app-container cursor-${cursorType}`}>
+    <div ref={appRef} className="app-container cursor-default">
       {/* Dynamic Cyber Grid Wave Background with Neon Sparks */}
       <CyberGridBackground theme={theme} />
       <div className="noise-overlay" />

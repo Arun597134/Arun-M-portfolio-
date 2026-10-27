@@ -24,7 +24,7 @@ const EXPERIENCES = [
   }
 ];
 
-export default function Experience() {
+function Experience() {
   const [coords, setCoords] = useState({});
   const [hoveredId, setHoveredId] = useState(null);
   const containerRef = useRef(null);
@@ -167,3 +167,5 @@ export default function Experience() {
     </section>
   );
 }
+
+export default React.memo(Experience);

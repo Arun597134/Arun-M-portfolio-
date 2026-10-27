@@ -142,7 +142,7 @@ const pathYClamp = (dy, dx) => {
   return dy * 0.15;
 };
 
-export default function About() {
+function About() {
   const [activeCardId, setActiveCardId] = useState(null);
   const [scale, setScale] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
@@ -338,3 +338,5 @@ export default function About() {
     </section>
   );
 }
+
+export default React.memo(About);

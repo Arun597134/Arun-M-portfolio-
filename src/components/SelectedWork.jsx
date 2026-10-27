@@ -49,7 +49,7 @@ const PROJECTS = [
   }
 ];
 
-export default function SelectedWork({ activeTech }) {
+function SelectedWork({ activeTech }) {
   const matchTech = (techList, hoveredTech) => {
     if (!hoveredTech) return false;
     const cleanHovered = hoveredTech.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -152,3 +152,5 @@ export default function SelectedWork({ activeTech }) {
     </section>
   );
 }
+
+export default React.memo(SelectedWork);

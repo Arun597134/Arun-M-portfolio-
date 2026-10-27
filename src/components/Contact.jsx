@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMail, FiPhone, FiGithub, FiLinkedin, FiFileText, FiSend, FiCheckCircle, FiAlertCircle, FiCpu } from 'react-icons/fi';
 
-export default function Contact() {
+function Contact() {
   const formRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null); // 'success' | 'error' | null
@@ -306,3 +306,5 @@ export default function Contact() {
     </section>
   );
 }
+
+export default React.memo(Contact);

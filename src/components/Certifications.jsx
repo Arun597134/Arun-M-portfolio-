@@ -256,7 +256,7 @@ function HolographicCredentialCard({ cert }) {
   );
 }
 
-export default function Certifications() {
+function Certifications() {
   const [activeCategory, setActiveCategory] = useState('all');
 
   const filteredCerts = activeCategory === 'all'
@@ -346,3 +346,5 @@ export default function Certifications() {
     </section>
   );
 }
+
+export default React.memo(Certifications);

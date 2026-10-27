@@ -1,16 +1,17 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiGithub, FiLinkedin, FiMail, FiArrowRight, FiFileText, FiCode, FiCpu } from 'react-icons/fi';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { MeshDistortMaterial, Sphere } from '@react-three/drei';
 
-function Interactive3DScene() {
+function Interactive3DScene({ isInView = true }) {
   const outerWireRef = useRef();
   const innerBlobRef = useRef();
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const segments = isMobile ? 32 : 64;
 
   useFrame((state) => {
+    if (!isInView) return; // Complete skip when off-screen to save 100% GPU
     const mouseX = state.pointer.x;
     const mouseY = state.pointer.y;
 
@@ -70,7 +71,23 @@ function Interactive3DScene() {
   );
 }
 
-export default function Hero() {
+function Hero() {
+  const heroRef = useRef(null);
+  const [isInView, setIsInView] = useState(true);
+
+  // Pause WebGL rendering entirely when Hero is scrolled out of view
+  useEffect(() => {
+    if (!heroRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(heroRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const handleScrollToWork = (e) => {
     e.preventDefault();
     const workSection = document.getElementById('work');
@@ -84,7 +101,7 @@ export default function Hero() {
   };
 
   return (
-    <section id="hero" className="hero-section">
+    <section id="hero" ref={heroRef} className="hero-section">
       {/* Dynamic Background Particles (Aesthetic Floating Quantum sparks) */}
       <div className="hero-bg-particles">
         {[...Array(18)].map((_, i) => {
@@ -197,11 +214,12 @@ export default function Hero() {
           <div className="hero-right">
             <div className="canvas-wrapper">
               <Canvas 
+                frameloop={isInView ? 'always' : 'never'}
                 camera={{ position: [0, 0, 5], fov: 45 }}
                 dpr={[1, 1.5]}
                 gl={{ powerPreference: 'high-performance', antialias: true, alpha: true }}
               >
-                <Interactive3DScene />
+                <Interactive3DScene isInView={isInView} />
               </Canvas>
             </div>
 
@@ -268,3 +286,5 @@ export default function Hero() {
     </section>
   );
 }
+
+export default React.memo(Hero);
