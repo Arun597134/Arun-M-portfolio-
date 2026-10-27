@@ -1074,8 +1074,14 @@ section {
     pointer-events: none;
   }
 
-  /* All 6 3D polyhedra are fully visible & active on mobile */
+  /* Streamlined to top 3 iconic 3D crystals on mobile for clean aesthetics & 120 FPS speed */
   .crystal-3d-anchor {
+    display: none !important;
+  }
+
+  .crystal-pos-hero-right,
+  .crystal-pos-top-left,
+  .crystal-pos-center-bottom {
     display: block !important;
     opacity: 1 !important;
     transition: none !important;
@@ -1108,52 +1114,28 @@ section {
   /* Scale polyhedra comfortably on mobile screens so facets remain big and clear */
   .polyhedron-octahedron,
   .polyhedron-pyramid,
-  .polyhedron-cuboid,
-  .polyhedron-shard,
-  .polyhedron-micro-octa,
-  .polyhedron-platform {
+  .polyhedron-shard {
     transform: scale(0.72);
     transform-origin: center center;
   }
 
   /* 1. Master Diamond (Axial Spin) - Upper-Right Hero Margin */
   .crystal-pos-hero-right {
-    top: 8% !important;
+    top: 9% !important;
     left: auto !important;
     right: 4% !important;
   }
 
-  /* 2. 3D Crystal Pyramid (Conical Tumble) - Upper-Left Margin */
+  /* 2. 3D Crystal Pyramid (Conical Tumble) - Mid-Left Margin */
   .crystal-pos-top-left {
-    top: 17% !important;
+    top: 38% !important;
     left: 4% !important;
     right: auto !important;
   }
 
-  /* 3. 3D Micro-Octahedron (Gyro Pulse) - Upper-Center/Right */
-  .crystal-pos-center-top {
-    top: 3% !important;
-    left: 60% !important;
-    right: auto !important;
-  }
-
-  /* 4. 3D Frosted Glass Block (Orbital Roll) - Mid-Right Margin */
-  .crystal-pos-mid-right {
-    top: 44% !important;
-    left: auto !important;
-    right: 3% !important;
-  }
-
-  /* 5. 3D Jewel Shard (Jewel Twirl) - Mid-Left Margin */
+  /* 3. 3D Jewel Shard (Jewel Twirl) - Lower-Right Margin */
   .crystal-pos-center-bottom {
-    top: 62% !important;
-    left: 4% !important;
-    right: auto !important;
-  }
-
-  /* 6. 3D Architectural Glass Platform (Pendulum Glide) - Lower-Right Margin */
-  .crystal-pos-bottom-left {
-    top: 82% !important;
+    top: 72% !important;
     left: auto !important;
     right: 4% !important;
   }

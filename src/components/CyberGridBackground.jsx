@@ -64,9 +64,9 @@ function CyberGridBackground({ theme }) {
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Minimal, refined perspective grid geometry (Pakka rich grid at 120 FPS)
-    const cols = isMobileDevice ? 14 : 20;
-    const rows = isMobileDevice ? 10 : 15;
+    // Minimal, refined perspective grid geometry (Subtle, sleek & 120 FPS lightweight)
+    const cols = isMobileDevice ? 10 : 16;
+    const rows = isMobileDevice ? 8 : 12;
     const colsPlus1 = cols + 1;
     const totalPoints = (cols + 1) * (rows + 1);
 
@@ -79,31 +79,31 @@ function CyberGridBackground({ theme }) {
     let lastAppliedX = -999;
     let lastAppliedY = -999;
 
-    // Glowing energy nodes (6 on mobile, 10 on desktop)
-    const sparkCount = isMobileDevice ? 6 : 10;
+    // Glowing energy nodes (3 on mobile, 6 on desktop for ultra-calm elegance)
+    const sparkCount = isMobileDevice ? 3 : 6;
     const sparks = [];
     for (let i = 0; i < sparkCount; i++) {
       sparks.push({
         col: Math.floor(Math.random() * cols),
         row: Math.random() * rows,
-        speed: 0.02 + Math.random() * 0.04,
-        size: 2.0 + Math.random() * 2.2,
+        speed: 0.02 + Math.random() * 0.03,
+        size: 2.0 + Math.random() * 2.0,
         colorType: Math.random() > 0.5 ? 'cyan' : 'purple',
         pulse: Math.random() * Math.PI * 2,
       });
     }
 
-    // Drifting ambient crystal dust (8 on mobile, 14 on desktop)
-    const dustCount = isMobileDevice ? 8 : 14;
+    // Drifting ambient crystal dust (5 on mobile, 8 on desktop)
+    const dustCount = isMobileDevice ? 5 : 8;
     const dustParticles = [];
     for (let i = 0; i < dustCount; i++) {
       dustParticles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.18,
-        vy: -0.12 - Math.random() * 0.22,
-        r: 0.9 + Math.random() * 1.5,
-        alpha: 0.15 + Math.random() * 0.35,
+        vx: (Math.random() - 0.5) * 0.16,
+        vy: -0.10 - Math.random() * 0.20,
+        r: 0.9 + Math.random() * 1.4,
+        alpha: 0.12 + Math.random() * 0.30,
         color: Math.random() > 0.5 ? 'cyan' : 'violet',
         pulse: Math.random() * Math.PI * 2,
       });
