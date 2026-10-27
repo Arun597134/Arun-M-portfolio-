@@ -76,8 +76,6 @@ function CyberGridBackground({ theme }) {
     const ptScale = new Float32Array(totalPoints);
 
     let time = 0;
-    let lastAppliedX = -999;
-    let lastAppliedY = -999;
 
     // Glowing energy nodes (3 on mobile, 6 on desktop for ultra-calm elegance)
     const sparkCount = isMobileDevice ? 3 : 6;
@@ -112,27 +110,23 @@ function CyberGridBackground({ theme }) {
     const render = () => {
       time += 0.012;
 
-      // Mouse smoothing
-      mouse.x += (mouse.targetX - mouse.x) * 0.05;
-      mouse.y += (mouse.targetY - mouse.y) * 0.05;
+      // Silky-smooth spring inertia (responsive yet buttery)
+      mouse.x += (mouse.targetX - mouse.x) * 0.08;
+      mouse.y += (mouse.targetY - mouse.y) * 0.08;
 
-      // Inertial damping of scroll delta
-      scrollDelta *= 0.90;
+      // Gentle ambient floating oscillation
+      const autoTiltX = Math.sin(time * 0.8) * 0.14;
+      const autoTiltY = Math.cos(time * 0.6) * 0.10;
 
-      // Gentle ambient oscillation so crystals always have a subtle live 3D shimmer
-      const autoTiltX = Math.sin(time * 0.9) * 0.22;
-      const autoTiltY = Math.cos(time * 0.7) * 0.18;
-
-      // Sync CSS tilt variables once per animation frame (Throttled style dirtying - saves 80% style invalidations)
+      // High-precision continuous cursor travel (Zero deadzone, zero stepped stutter)
       if (containerRef.current) {
-        const normX = Math.max(-1, Math.min(1, ((mouse.x / width) - 0.5) * 1.8 + autoTiltX));
-        const normY = Math.max(-1, Math.min(1, ((mouse.y / height) - 0.5) * 1.8 + autoTiltY - scrollDelta));
-        if (Math.abs(normX - lastAppliedX) > 0.012 || Math.abs(normY - lastAppliedY) > 0.012) {
-          containerRef.current.style.setProperty('--tilt-x', normX.toFixed(3));
-          containerRef.current.style.setProperty('--tilt-y', normY.toFixed(3));
-          lastAppliedX = normX;
-          lastAppliedY = normY;
-        }
+        const normX = ((mouse.x / width) - 0.5) * 1.8;
+        const normY = ((mouse.y / height) - 0.5) * 1.8;
+        const finalTiltX = Math.max(-1.5, Math.min(1.5, normX + autoTiltX));
+        const finalTiltY = Math.max(-1.5, Math.min(1.5, normY + autoTiltY));
+
+        containerRef.current.style.setProperty('--tilt-x', finalTiltX.toFixed(4));
+        containerRef.current.style.setProperty('--tilt-y', finalTiltY.toFixed(4));
       }
 
       const isDark = theme === 'dark';

@@ -36,8 +36,9 @@ function PrismaticCrystals({ theme }) {
             <div className="face face-octa-bot face-right" />
             <div className="face face-octa-bot face-back" />
             <div className="face face-octa-bot face-left" />
-            {/* Internal Optical Glow */}
+            {/* Internal Optical Glow & Diamond Sparkle */}
             <div className="crystal-3d-core" />
+            <div className="crystal-sparkle" />
           </div>
         </div>
       </div>
@@ -55,6 +56,7 @@ function PrismaticCrystals({ theme }) {
             <div className="face face-pyr face-left" />
             <div className="face face-pyr-base" />
             <div className="crystal-3d-core" />
+            <div className="crystal-sparkle" />
           </div>
         </div>
       </div>
