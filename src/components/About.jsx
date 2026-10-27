@@ -273,8 +273,8 @@ function About() {
               animate={getPortraitAnimation()}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              viewport={{ once: true, margin: '150px 0px' }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="portrait-spotlight" />
               <div className="portrait-image-container">
@@ -297,10 +297,10 @@ function About() {
                   transform: `rotate(${card.rot}deg)`,
                   ...card.style
                 }}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: 0.05 * idx + 0.1 }}
+                viewport={{ once: true, margin: '150px 0px' }}
+                transition={{ duration: 0.35, delay: 0.03 * idx + 0.05 }}
                 onMouseEnter={() => handleMouseEnter(card.id)}
                 onMouseLeave={handleMouseLeave}
                 onClick={(e) => handleCardClick(card.id, e)}

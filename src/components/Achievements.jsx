@@ -256,16 +256,16 @@ function Achievements() {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.15 }
+      transition: { staggerChildren: 0.06 }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 40 },
+    hidden: { opacity: 0, y: 16 },
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
+      transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
     }
   };
 
@@ -282,7 +282,7 @@ function Achievements() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
+          viewport={{ once: true, margin: '180px 0px 50px 0px' }}
         >
           {STATS.map((stat) => (
             <motion.div 

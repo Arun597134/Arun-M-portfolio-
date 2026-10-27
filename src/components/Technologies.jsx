@@ -17,16 +17,16 @@ function Technologies({ activeTech, setActiveTech }) {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.15 }
+      transition: { staggerChildren: 0.06 }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 15 },
     visible: { 
       opacity: 1, 
       y: 0, 
-      transition: { duration: 0.6, ease: 'easeOut' }
+      transition: { duration: 0.35, ease: 'easeOut' }
     }
   };
 
@@ -46,7 +46,7 @@ function Technologies({ activeTech, setActiveTech }) {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
+          viewport={{ once: true, margin: '180px 0px 50px 0px' }}
         >
           {/* Bento Card 1: Core Languages (Static Interactive Chips) */}
           <motion.div className="bento-tech-card col-span-1" variants={itemVariants}>

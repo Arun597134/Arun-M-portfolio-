@@ -6,8 +6,8 @@ export default function Loader({ onComplete }) {
   const [isFinished, setIsFinished] = useState(false);
 
   useEffect(() => {
-    const duration = 2000; // 2 seconds loader
-    const intervalTime = 20;
+    const duration = 650; // Snappy 650ms initial loader
+    const intervalTime = 15;
     const steps = duration / intervalTime;
     let stepCount = 0;
 
@@ -21,7 +21,7 @@ export default function Loader({ onComplete }) {
         setIsFinished(true);
         setTimeout(() => {
           onComplete();
-        }, 600); // Wait for fade out animation
+        }, 220); // Fast, smooth fade out
       }
     }, intervalTime);
 

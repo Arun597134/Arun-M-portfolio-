@@ -1,15 +1,16 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiGithub, FiArrowUpRight } from 'react-icons/fi';
 
 function ProjectVideo({ src, poster }) {
   const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Only play video when actively in viewport, pause when scrolled away
+    // Buffer and prepare video 350px before entering viewport for instant playback
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -18,7 +19,7 @@ function ProjectVideo({ src, poster }) {
           video.pause();
         }
       },
-      { threshold: 0.15 }
+      { rootMargin: '350px 0px 350px 0px', threshold: 0.01 }
     );
 
     observer.observe(video);
@@ -26,24 +27,29 @@ function ProjectVideo({ src, poster }) {
   }, []);
 
   return (
-    <video 
-      ref={videoRef}
-      src={src} 
-      poster={poster} 
-      loop 
-      muted 
-      playsInline 
-      preload="none"
-      className="project-video"
-      onError={(e) => {
-        e.target.style.display = 'none';
-        if (e.target.parentElement) {
-          e.target.parentElement.style.backgroundImage = `url(${poster})`;
-          e.target.parentElement.style.backgroundSize = 'cover';
-          e.target.parentElement.style.backgroundPosition = 'center';
-        }
-      }}
-    />
+    <div className="project-video-container">
+      {/* High-definition mockup screenshot loads immediately so mobile users never wait on black screen */}
+      <img
+        src={poster}
+        alt="Project Preview"
+        className={`project-poster-img ${isPlaying ? 'fade-out' : ''}`}
+        loading="eager"
+      />
+      <video 
+        ref={videoRef}
+        src={src} 
+        poster={poster} 
+        loop 
+        muted 
+        playsInline 
+        preload="metadata"
+        className="project-video"
+        onPlaying={() => setIsPlaying(true)}
+        onError={(e) => {
+          e.target.style.display = 'none';
+        }}
+      />
+    </div>
   );
 }
 
@@ -128,10 +134,10 @@ function SelectedWork({ activeTech }) {
                   className={`project-case-study ${isEven ? 'row-normal' : 'row-reverse'} ${
                     isAnyHovered ? (isMatched ? 'highlighted' : 'dimmed') : ''
                   }`}
-                  initial={{ opacity: 0, y: 50 }}
+                  initial={{ opacity: 0, y: 18 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-100px' }}
-                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                  viewport={{ once: true, margin: '180px 0px 50px 0px' }}
+                  transition={{ duration: 0.35, ease: 'easeOut' }}
                 >
                 {/* Project Visual Mockup */}
                 <div className="project-visual">

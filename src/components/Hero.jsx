@@ -135,9 +135,9 @@ function Hero() {
           {/* Left Column: Product-Launch Copy */}
           <div className="hero-left">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+              transition={{ duration: 0.4, delay: 0.05, ease: 'easeOut' }}
             >
               <h1 className="hero-title">
                 Building software<br />
@@ -149,9 +149,9 @@ function Hero() {
             {/* Alternating Subtitle Tags */}
             <motion.div
               className="hero-subtitle-container"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+              transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
             >
               <span className="hero-role-tag">Full Stack Developer</span>
               <span className="hero-role-divider">•</span>
@@ -162,9 +162,9 @@ function Hero() {
 
             <motion.p
               className="hero-paragraph"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5, ease: 'easeOut' }}
+              transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' }}
             >
               I build intelligent web applications, scalable backend systems, and AI-powered products focused on solving meaningful real-world challenges. Currently final-year AI & Data Science student at St. Joseph's Institute of Technology.
             </motion.p>
@@ -172,9 +172,9 @@ function Hero() {
             {/* CTA Actions */}
             <motion.div
               className="hero-actions"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
+              transition={{ duration: 0.4, delay: 0.2, ease: 'easeOut' }}
             >
               <a href="#work" onClick={handleScrollToWork} className="btn-primary magnetic-btn">
                 View Selected Work
