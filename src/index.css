@@ -2687,14 +2687,31 @@ section {
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
-  opacity: 0.95;
+  opacity: 1;
   transition: opacity 0.5s ease;
 }
 
 [data-theme="light"] .cyber-grid-canvas {
-  opacity: 0.85;
+  opacity: 1;
+}
+
+/* Ensure all main page sections are transparent so the animated cyber wave shines through */
+main {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-section,
+.about-section,
+.work-section,
+.experience-section,
+.tech-section,
+.achievements-section,
+.certs-section,
+.contact-section {
+  background-color: transparent !important;
 }
 
 /* ==========================================================================
