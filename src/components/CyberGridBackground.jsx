@@ -1,7 +1,10 @@
 import React, { useEffect, useRef } from 'react';
+import PrismaticCrystals from './PrismaticCrystals';
 
 export default function CyberGridBackground({ theme }) {
+  const containerRef = useRef(null);
   const canvasRef = useRef(null);
+  const isDark = theme === 'dark';
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -21,6 +24,11 @@ export default function CyberGridBackground({ theme }) {
       targetY: height * 0.5,
     };
 
+    const isMobileDevice = window.innerWidth < 768;
+
+    let lastScrollY = window.scrollY;
+    let scrollDelta = 0;
+
     const handleResize = () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
@@ -31,41 +39,94 @@ export default function CyberGridBackground({ theme }) {
       mouse.targetY = e.clientY;
     };
 
+    const handleTouchStart = (e) => {
+      if (e.touches && e.touches[0]) {
+        mouse.targetX = e.touches[0].clientX;
+        mouse.targetY = e.touches[0].clientY;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (e.touches && e.touches[0]) {
+        mouse.targetX = e.touches[0].clientX;
+        mouse.targetY = e.touches[0].clientY;
+      }
+    };
+
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      scrollDelta = Math.max(-12, Math.min(12, (currentY - lastScrollY) * 0.06));
+      lastScrollY = currentY;
+    };
+
     window.addEventListener('resize', handleResize);
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Grid geometry
-    const cols = 32;
-    const rows = 24;
+    // Minimal, refined perspective grid geometry (Pakka rich grid on mobile at 120 FPS)
+    const cols = isMobileDevice ? 14 : 22;
+    const rows = isMobileDevice ? 10 : 16;
     let time = 0;
 
-    // Glowing spark particles traveling along lines
-    const sparkCount = 42;
+    // Glowing energy nodes (6 on mobile, 12 on desktop)
+    const sparkCount = isMobileDevice ? 6 : 12;
     const sparks = [];
     for (let i = 0; i < sparkCount; i++) {
       sparks.push({
         col: Math.floor(Math.random() * cols),
         row: Math.random() * rows,
-        speed: 0.035 + Math.random() * 0.065,
-        size: 2.2 + Math.random() * 2.8,
-        colorType: Math.random() > 0.45 ? 'cyan' : 'purple',
+        speed: 0.02 + Math.random() * 0.04,
+        size: 2.0 + Math.random() * 2.2,
+        colorType: Math.random() > 0.5 ? 'cyan' : 'purple',
         pulse: Math.random() * Math.PI * 2,
       });
     }
 
-    // Drifting ambient aurora orbs
+    // Drifting ambient crystal dust (8 on mobile, 16 on desktop)
+    const dustCount = isMobileDevice ? 8 : 16;
+    const dustParticles = [];
+    for (let i = 0; i < dustCount; i++) {
+      dustParticles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: -0.12 - Math.random() * 0.22,
+        r: 0.9 + Math.random() * 1.5,
+        alpha: 0.15 + Math.random() * 0.35,
+        color: Math.random() > 0.5 ? 'cyan' : 'violet',
+        pulse: Math.random() * Math.PI * 2,
+      });
+    }
+
+    // Subtle ambient aurora glow pools
     const orbs = [
-      { x: width * 0.25, y: height * 0.3, vx: 0.25, vy: 0.18, r: 380, color: 'indigo' },
-      { x: width * 0.75, y: height * 0.45, vx: -0.22, vy: 0.2, r: 420, color: 'cyan' },
-      { x: width * 0.5, y: height * 0.75, vx: 0.15, vy: -0.16, r: 400, color: 'violet' },
+      { x: width * 0.25, y: height * 0.3, vx: 0.18, vy: 0.12, r: 420, color: 'indigo' },
+      { x: width * 0.78, y: height * 0.45, vx: -0.16, vy: 0.14, r: 450, color: 'cyan' },
     ];
 
     const render = () => {
-      time += 0.018;
+      time += 0.012;
 
       // Mouse smoothing
-      mouse.x += (mouse.targetX - mouse.x) * 0.06;
-      mouse.y += (mouse.targetY - mouse.y) * 0.06;
+      mouse.x += (mouse.targetX - mouse.x) * 0.05;
+      mouse.y += (mouse.targetY - mouse.y) * 0.05;
+
+      // Inertial damping of scroll delta
+      scrollDelta *= 0.90;
+
+      // Gentle ambient oscillation so crystals always have a subtle live 3D shimmer
+      const autoTiltX = Math.sin(time * 0.9) * 0.22;
+      const autoTiltY = Math.cos(time * 0.7) * 0.18;
+
+      // Sync CSS tilt variables once per animation frame (100% hardware composite, zero transition churn)
+      if (containerRef.current) {
+        const normX = Math.max(-1, Math.min(1, ((mouse.x / width) - 0.5) * 1.8 + autoTiltX));
+        const normY = Math.max(-1, Math.min(1, ((mouse.y / height) - 0.5) * 1.8 + autoTiltY - scrollDelta));
+        containerRef.current.style.setProperty('--tilt-x', normX.toFixed(3));
+        containerRef.current.style.setProperty('--tilt-y', normY.toFixed(3));
+      }
 
       const isDark = theme === 'dark';
 
@@ -73,7 +134,7 @@ export default function CyberGridBackground({ theme }) {
       ctx.clearRect(0, 0, width, height);
 
       // -----------------------------------------------------------------------
-      // 1. Drifting Ambient Aurora Glow Clouds
+      // 1. Soft Ambient Aurora Glow
       // -----------------------------------------------------------------------
       for (const orb of orbs) {
         orb.x += orb.vx;
@@ -86,31 +147,22 @@ export default function CyberGridBackground({ theme }) {
 
         if (isDark) {
           if (orb.color === 'indigo') {
-            g.addColorStop(0, 'rgba(79, 70, 229, 0.18)');
-            g.addColorStop(0.5, 'rgba(79, 70, 229, 0.07)');
-            g.addColorStop(1, 'transparent');
-          } else if (orb.color === 'cyan') {
-            g.addColorStop(0, 'rgba(6, 182, 212, 0.14)');
-            g.addColorStop(0.5, 'rgba(6, 182, 212, 0.05)');
+            g.addColorStop(0, 'rgba(79, 70, 229, 0.12)');
+            g.addColorStop(0.5, 'rgba(79, 70, 229, 0.04)');
             g.addColorStop(1, 'transparent');
           } else {
-            g.addColorStop(0, 'rgba(139, 92, 246, 0.15)');
-            g.addColorStop(0.5, 'rgba(139, 92, 246, 0.05)');
+            g.addColorStop(0, 'rgba(6, 182, 212, 0.10)');
+            g.addColorStop(0.5, 'rgba(6, 182, 212, 0.03)');
             g.addColorStop(1, 'transparent');
           }
         } else {
-          // Vibrant modern light theme aurora clouds
           if (orb.color === 'indigo') {
-            g.addColorStop(0, 'rgba(99, 102, 241, 0.16)');
-            g.addColorStop(0.5, 'rgba(99, 102, 241, 0.06)');
-            g.addColorStop(1, 'transparent');
-          } else if (orb.color === 'cyan') {
-            g.addColorStop(0, 'rgba(14, 165, 233, 0.15)');
-            g.addColorStop(0.5, 'rgba(14, 165, 233, 0.05)');
+            g.addColorStop(0, 'rgba(99, 102, 241, 0.10)');
+            g.addColorStop(0.5, 'rgba(99, 102, 241, 0.03)');
             g.addColorStop(1, 'transparent');
           } else {
-            g.addColorStop(0, 'rgba(168, 85, 247, 0.12)');
-            g.addColorStop(0.5, 'rgba(168, 85, 247, 0.04)');
+            g.addColorStop(0, 'rgba(14, 165, 233, 0.09)');
+            g.addColorStop(0.5, 'rgba(14, 165, 233, 0.03)');
             g.addColorStop(1, 'transparent');
           }
         }
@@ -122,82 +174,58 @@ export default function CyberGridBackground({ theme }) {
       }
 
       // -----------------------------------------------------------------------
-      // 2. Interactive Cursor Energy Halo
+      // 2. Clean, Quiet Perspective Grid Wave
       // -----------------------------------------------------------------------
-      const mouseGlow = ctx.createRadialGradient(
-        mouse.x, mouse.y, 0,
-        mouse.x, mouse.y, isDark ? 320 : 260
-      );
-      if (isDark) {
-        mouseGlow.addColorStop(0, 'rgba(99, 102, 241, 0.22)');
-        mouseGlow.addColorStop(0.4, 'rgba(6, 182, 212, 0.08)');
-        mouseGlow.addColorStop(1, 'transparent');
-      } else {
-        mouseGlow.addColorStop(0, 'rgba(79, 70, 229, 0.16)');
-        mouseGlow.addColorStop(0.4, 'rgba(14, 165, 233, 0.07)');
-        mouseGlow.addColorStop(1, 'transparent');
-      }
-      ctx.fillStyle = mouseGlow;
-      ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, isDark ? 320 : 260, 0, Math.PI * 2);
-      ctx.fill();
-
-      // -----------------------------------------------------------------------
-      // 3. Perspective 3D Undulating Cyber Grid Wave
-      // -----------------------------------------------------------------------
-      const horizonY = height * 0.25;
-      const fov = 420;
-      const cameraY = -110;
-      const cameraZ = -160;
+      const horizonY = height * 0.28;
+      const fov = 440;
+      const cameraY = -95;
+      const cameraZ = -140;
 
       const gridPoints = [];
 
       for (let r = 0; r <= rows; r++) {
         const rowArr = [];
-        const z = r * 50 + 60;
+        const z = r * 65 + 70;
         const scale = fov / (fov + z - cameraZ);
 
         for (let c = 0; c <= cols; c++) {
-          const worldX = (c - cols / 2) * 110;
+          const worldX = (c - cols / 2) * 135;
 
-          // Interactive ripples when mouse hovers nearby
           const ptScreenX = width / 2 + worldX * scale;
           const distMouse = Math.hypot(ptScreenX - mouse.x, (horizonY + z * 0.5) - mouse.y);
-          const mouseLift = Math.sin(distMouse * 0.012 - time * 2.8) * Math.max(0, 40 - distMouse * 0.08);
+          const mouseLift = Math.sin(distMouse * 0.01 - time * 2.2) * Math.max(0, 28 - distMouse * 0.06);
 
-          // Natural undulating ocean-like cyber wave
           const wave =
-            Math.sin(c * 0.38 + time * 1.6) * 22 +
-            Math.cos(r * 0.42 - time * 1.3) * 20 +
+            Math.sin(c * 0.32 + time * 1.2) * 14 +
+            Math.cos(r * 0.35 - time * 1.0) * 12 +
             mouseLift;
 
           const screenX = width / 2 + worldX * scale;
-          const screenY = horizonY + (wave - cameraY) * scale * 2.6 + z * 0.48;
+          const screenY = horizonY + (wave - cameraY) * scale * 2.4 + z * 0.45;
 
           rowArr.push({
             x: screenX,
             y: screenY,
             z: z,
             scale: scale,
-            waveHeight: wave,
           });
         }
         gridPoints.push(rowArr);
       }
 
-      // Render Horizontal Waves
+      // Render Horizontal Waves (Subtle, Clean)
       for (let r = 0; r <= rows; r++) {
         const depthFactor = (r / rows);
         const curveFade = Math.sin(depthFactor * Math.PI);
 
         const alpha = isDark
-          ? 0.05 + curveFade * 0.22
-          : 0.06 + curveFade * 0.25;
+          ? 0.03 + curveFade * 0.15
+          : 0.04 + curveFade * 0.16;
 
         ctx.strokeStyle = isDark
           ? `rgba(99, 102, 241, ${alpha})`
           : `rgba(79, 70, 229, ${alpha})`;
-        ctx.lineWidth = Math.max(1, 1.8 * depthFactor);
+        ctx.lineWidth = Math.max(0.8, 1.4 * depthFactor);
 
         ctx.beginPath();
         for (let c = 0; c <= cols; c++) {
@@ -208,7 +236,7 @@ export default function CyberGridBackground({ theme }) {
         ctx.stroke();
       }
 
-      // Render Perspective Longitudinal Grid Lines
+      // Render Perspective Longitudinal Lines
       for (let c = 0; c <= cols; c++) {
         const centerDist = 1 - Math.abs(c - cols / 2) / (cols / 1.6);
         if (centerDist <= 0) continue;
@@ -218,13 +246,13 @@ export default function CyberGridBackground({ theme }) {
           const pt = gridPoints[r][c];
           const depthFactor = r / rows;
           const alpha = isDark
-            ? (0.04 + depthFactor * 0.18) * centerDist
-            : (0.05 + depthFactor * 0.22) * centerDist;
+            ? (0.02 + depthFactor * 0.12) * centerDist
+            : (0.03 + depthFactor * 0.14) * centerDist;
 
           ctx.strokeStyle = isDark
             ? `rgba(6, 182, 212, ${alpha})`
             : `rgba(14, 165, 233, ${alpha})`;
-          ctx.lineWidth = Math.max(0.8, 1.6 * depthFactor);
+          ctx.lineWidth = Math.max(0.6, 1.2 * depthFactor);
 
           if (r === 0) ctx.moveTo(pt.x, pt.y);
           else ctx.lineTo(pt.x, pt.y);
@@ -233,17 +261,17 @@ export default function CyberGridBackground({ theme }) {
       }
 
       // -----------------------------------------------------------------------
-      // 4. Glowing Neon Sparks & Intersection Energy Nodes
+      // 3. Calm Energy Sparks
       // -----------------------------------------------------------------------
       for (let i = 0; i < sparks.length; i++) {
         const spark = sparks[i];
         spark.row += spark.speed;
-        spark.pulse += 0.05;
+        spark.pulse += 0.04;
 
         if (spark.row >= rows - 1) {
           spark.row = 1;
           spark.col = Math.floor(Math.random() * cols);
-          spark.speed = 0.035 + Math.random() * 0.065;
+          spark.speed = 0.02 + Math.random() * 0.04;
         }
 
         const rInt = Math.floor(spark.row);
@@ -261,35 +289,56 @@ export default function CyberGridBackground({ theme }) {
           const curX = p1.x + (p2.x - p1.x) * rFrac;
           const curY = p1.y + (p2.y - p1.y) * rFrac;
 
-          const baseSize = spark.size * p1.scale * 1.8;
-          const pulseEffect = Math.sin(spark.pulse) * 0.3 + 1;
-          const finalSize = Math.max(2, baseSize * pulseEffect);
+          const baseSize = spark.size * p1.scale * 1.5;
+          const pulseEffect = Math.sin(spark.pulse) * 0.25 + 1;
+          const finalSize = Math.max(1.8, baseSize * pulseEffect);
 
           const glowColor =
             spark.colorType === 'cyan'
               ? isDark ? '#22d3ee' : '#0284c7'
               : isDark ? '#a78bfa' : '#6366f1';
 
-          const sparkAlpha = Math.sin((spark.row / rows) * Math.PI) * (isDark ? 0.95 : 0.85);
+          const sparkAlpha = Math.sin((spark.row / rows) * Math.PI) * (isDark ? 0.75 : 0.65);
 
-          ctx.save();
-          // Outer Glow
-          ctx.shadowBlur = isDark ? 14 : 9;
-          ctx.shadowColor = glowColor;
+          // Fast 2-pass glow (Zero shadowBlur overhead)
           ctx.fillStyle = glowColor;
-          ctx.globalAlpha = sparkAlpha;
+          ctx.globalAlpha = sparkAlpha * 0.35;
           ctx.beginPath();
-          ctx.arc(curX, curY, finalSize * 1.5, 0, Math.PI * 2);
+          ctx.arc(curX, curY, finalSize * 2.2, 0, Math.PI * 2);
           ctx.fill();
 
           // Intense Core
           ctx.fillStyle = isDark ? '#ffffff' : '#f8fafc';
-          ctx.globalAlpha = Math.min(1, sparkAlpha * 1.4);
+          ctx.globalAlpha = Math.min(1, sparkAlpha * 1.2);
           ctx.beginPath();
-          ctx.arc(curX, curY, finalSize * 0.55, 0, Math.PI * 2);
+          ctx.arc(curX, curY, finalSize * 0.6, 0, Math.PI * 2);
           ctx.fill();
-          ctx.restore();
         }
+      }
+
+      // -----------------------------------------------------------------------
+      // 4. Subtle Micro-Stardust
+      // -----------------------------------------------------------------------
+      for (const p of dustParticles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.pulse += 0.02;
+
+        if (p.y < -15) {
+          p.y = height + 15;
+          p.x = Math.random() * width;
+        }
+        if (p.x < -15) p.x = width + 15;
+        if (p.x > width + 15) p.x = -15;
+
+        const pAlpha = p.alpha * (0.6 + Math.sin(p.pulse) * 0.4);
+        ctx.fillStyle = isDark
+          ? (p.color === 'cyan' ? `rgba(34, 211, 238, ${pAlpha * 0.75})` : `rgba(168, 85, 247, ${pAlpha * 0.75})`)
+          : (p.color === 'cyan' ? `rgba(14, 165, 233, ${pAlpha * 0.6})` : `rgba(99, 102, 241, ${pAlpha * 0.6})`);
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -300,15 +349,23 @@ export default function CyberGridBackground({ theme }) {
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('scroll', handleScroll);
       cancelAnimationFrame(animationFrameId);
     };
   }, [theme]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="cyber-grid-canvas"
-      aria-hidden="true"
-    />
+    <div ref={containerRef} className="cyber-grid-container" aria-hidden="true">
+      {/* 1. Individual Code-Generated 3D Prismatic Crystal Elements */}
+      <PrismaticCrystals theme={theme} />
+
+      {/* 2. Minimal Clean Perspective Grid Canvas */}
+      <canvas
+        ref={canvasRef}
+        className="cyber-grid-canvas"
+      />
+    </div>
   );
 }

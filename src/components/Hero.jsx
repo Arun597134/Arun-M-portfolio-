@@ -7,6 +7,8 @@ import { MeshDistortMaterial, Sphere } from '@react-three/drei';
 function Interactive3DScene() {
   const outerWireRef = useRef();
   const innerBlobRef = useRef();
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const segments = isMobile ? 32 : 64;
 
   useFrame((state) => {
     const mouseX = state.pointer.x;
@@ -29,25 +31,25 @@ function Interactive3DScene() {
       <mesh ref={outerWireRef}>
         <icosahedronGeometry args={[2.2, 1]} />
         <meshBasicMaterial 
-          color="var(--accent)" 
+          color="#6366f1" 
           wireframe 
           transparent 
-          opacity={0.12} 
+          opacity={0.14} 
         />
       </mesh>
 
-      {/* Another secondary outer ring */}
+      {/* Secondary outer orbit ring */}
       <mesh ref={outerWireRef}>
         <torusGeometry args={[2.5, 0.02, 8, 100]} />
         <meshBasicMaterial
-          color="var(--accent)"
+          color="#818cf8"
           transparent
-          opacity={0.08}
+          opacity={0.1}
         />
       </mesh>
 
       {/* Central Organic Blob representing AI & Code */}
-      <Sphere ref={innerBlobRef} args={[1.2, 64, 64]} scale={1.1}>
+      <Sphere ref={innerBlobRef} args={[1.2, segments, segments]} scale={1.1}>
         <MeshDistortMaterial
           color="#4F46E5"
           attach="material"
@@ -194,7 +196,11 @@ export default function Hero() {
           {/* Right Column: 3D Visualization & Floating UI Cards */}
           <div className="hero-right">
             <div className="canvas-wrapper">
-              <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+              <Canvas 
+                camera={{ position: [0, 0, 5], fov: 45 }}
+                dpr={[1, 1.5]}
+                gl={{ powerPreference: 'high-performance', antialias: true, alpha: true }}
+              >
                 <Interactive3DScene />
               </Canvas>
             </div>

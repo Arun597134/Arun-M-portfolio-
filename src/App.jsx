@@ -175,7 +175,7 @@ export default function App() {
       {/* Main site pages */}
       <Navbar theme={theme} toggleTheme={toggleTheme} />
       <main>
-        <Hero />
+        <Hero theme={theme} />
         <About />
         <SelectedWork activeTech={activeTech} />
         <Experience />
