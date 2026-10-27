@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Loader from './components/Loader';
+import CyberGridBackground from './components/CyberGridBackground';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -159,9 +160,9 @@ export default function App() {
 
   return (
     <div ref={appRef} className={`app-container cursor-${cursorType}`}>
-      {/* Visual background layers */}
+      {/* Dynamic Cyber Grid Wave Background with Neon Sparks */}
+      <CyberGridBackground theme={theme} />
       <div className="noise-overlay" />
-      <div className="grid-background" />
       
       {/* Custom Cursor elements (Desktop only) */}
       {!isMobile && (

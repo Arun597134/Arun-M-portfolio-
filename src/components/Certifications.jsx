@@ -1,365 +1,346 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiAward, FiExternalLink } from 'react-icons/fi';
+import { FiAward, FiExternalLink, FiCheckCircle, FiShield, FiCpu, FiDatabase, FiCloud, FiLayers } from 'react-icons/fi';
 
-// Sorted ascending certifications 01 to 07
+const CATEGORIES = [
+  { id: 'all', label: 'All Credentials', count: 7, icon: FiLayers },
+  { id: 'ai', label: 'AI & Deep Learning', count: 3, icon: FiCpu },
+  { id: 'data', label: 'Database & Systems', count: 2, icon: FiDatabase },
+  { id: 'cloud', label: 'Cloud & Web', count: 2, icon: FiCloud },
+];
+
 const CERTIFICATIONS = [
   {
     id: 1,
     num: '01',
-    title: 'PYTHON FOR DATA SCIENCE',
+    category: 'ai',
+    title: 'Python for Data Science',
     issuer: 'NPTEL · IIT Madras',
     year: '2025',
     elite: true,
-    x: '15%',
-    y: '25%',
-    align: 'left',
+    eliteText: 'ELITE · TOP TIER',
     credId: 'NPTEL25CS04S829103',
     verifyUrl: 'https://nptel.ac.in/',
-    skills: ['Python', 'NumPy', 'Pandas'],
-    desc: 'Elite NPTEL certification verifying core programming, database analysis, and modeling using Python.'
+    skills: ['Python', 'NumPy', 'Pandas', 'Data Modeling'],
+    desc: 'Elite certification validating advanced algorithmic programming, statistical data structures, and computational modeling.',
+    accentColor: '#f59e0b',
+    glowColor: 'rgba(245, 158, 11, 0.25)',
+    issuerBadge: 'IITM / NPTEL'
   },
   {
     id: 2,
     num: '02',
-    title: 'GETTING STARTED WITH DL',
-    issuer: 'NVIDIA DLI',
+    category: 'ai',
+    title: 'Getting Started with Deep Learning',
+    issuer: 'NVIDIA Deep Learning Institute',
     year: '2026',
     elite: false,
-    x: '15%',
-    y: '75%',
-    align: 'left',
     credId: 'NVDLI-CS994821',
     verifyUrl: 'https://courses.nvidia.com/',
-    skills: ['Neural Networks', 'PyTorch'],
-    desc: 'Practical validation in training convolutional neural networks and deploying model architectures.'
+    skills: ['CNN Architectures', 'PyTorch', 'Computer Vision'],
+    desc: 'Hands-on validation in training deep neural networks, loss optimization, and edge inference model deployment.',
+    accentColor: '#10b981',
+    glowColor: 'rgba(16, 185, 129, 0.25)',
+    issuerBadge: 'NVIDIA DLI'
   },
   {
     id: 3,
     num: '03',
-    title: 'INTRODUCTION TO GEN AI',
-    issuer: 'Google Cloud',
+    category: 'ai',
+    title: 'Introduction to Generative AI',
+    issuer: 'Google Cloud Skills Boost',
     year: '2025',
     elite: false,
-    x: '50%',
-    y: '16.6%',
-    align: 'center',
     credId: 'GCP-GENAI-118839',
     verifyUrl: 'https://cloud.google.com/training',
-    skills: ['LLMs', 'Vertex AI'],
-    desc: 'Covers generative models, large language model deployment structures, and responsible AI guardrails.'
+    skills: ['LLM Architecture', 'Vertex AI', 'Prompt Engineering'],
+    desc: 'Covers foundation transformer models, generative model pipelines, and responsible AI safety guardrails.',
+    accentColor: '#0ea5e9',
+    glowColor: 'rgba(14, 165, 233, 0.25)',
+    issuerBadge: 'GOOGLE CLOUD'
   },
   {
     id: 4,
     num: '04',
-    title: 'OCI AI FOUNDATIONS',
+    category: 'cloud',
+    title: 'OCI AI Foundations Associate',
     issuer: 'Oracle University',
     year: '2025',
     elite: false,
-    x: '50%',
-    y: '50%',
-    align: 'center',
     credId: 'ORCL-OCI-AI-20519',
     verifyUrl: 'https://education.oracle.com/',
-    skills: ['Cloud AI', 'Oracle OCI'],
-    desc: 'Validates Oracle cloud cognitive features, anomaly detection pipelines, and serverless AI endpoints.'
+    skills: ['Cloud AI Services', 'OCI Vision', 'Anomaly Detection'],
+    desc: 'Validates Oracle Cloud cognitive architectures, speech synthesis services, and enterprise AI workflows.',
+    accentColor: '#f43f5e',
+    glowColor: 'rgba(244, 63, 94, 0.25)',
+    issuerBadge: 'ORACLE OCI'
   },
   {
     id: 5,
     num: '05',
-    title: 'DATABASE MGMT SYSTEMS',
+    category: 'data',
+    title: 'Database Management Systems',
     issuer: 'NPTEL · IIT Madras',
     year: '2026',
     elite: true,
-    x: '50%',
-    y: '83.3%',
-    align: 'center',
+    eliteText: 'ELITE · RDBMS CORE',
     credId: 'NPTEL26CS12S904818',
     verifyUrl: 'https://nptel.ac.in/',
-    skills: ['SQL', 'RDBMS Schema'],
-    desc: 'Elite validation covering database design, relational algebra, normalizations, and transaction locks.'
+    skills: ['Relational Algebra', 'SQL Pushdown', 'ACID Locks'],
+    desc: 'Elite validation covering relational schema calculus, B+ tree indexing, query execution planning, and transactions.',
+    accentColor: '#eab308',
+    glowColor: 'rgba(234, 179, 8, 0.25)',
+    issuerBadge: 'IITM / NPTEL'
   },
   {
     id: 6,
     num: '06',
-    title: 'BASICS OF MONGODB',
+    category: 'data',
+    title: 'Basics of MongoDB',
     issuer: 'MongoDB University',
     year: '2025',
     elite: false,
-    x: '85%',
-    y: '30%',
-    align: 'right',
     credId: 'MDB-BAS-9018241',
     verifyUrl: 'https://university.mongodb.com/',
-    skills: ['NoSQL', 'Document Database'],
-    desc: 'Validates proficiency in JSON document architecture, aggregations, query commands, and indexing.'
+    skills: ['BSON Schema', 'Aggregation Pipeline', 'Atlas NoSQL'],
+    desc: 'Comprehensive validation in document database modeling, index optimization, and aggregation operators.',
+    accentColor: '#22c55e',
+    glowColor: 'rgba(34, 197, 94, 0.25)',
+    issuerBadge: 'MONGODB'
   },
   {
     id: 7,
     num: '07',
-    title: 'FRONT END DEVELOPMENT',
+    category: 'cloud',
+    title: 'Front End Development Standards',
     issuer: 'Infosys Springboard',
     year: '2025',
     elite: false,
-    x: '85%',
-    y: '70%',
-    align: 'right',
     credId: 'INFY-FED-884210',
     verifyUrl: 'https://infyspringboard.onwingspan.com/',
-    skills: ['HTML5 & CSS3', 'JavaScript'],
-    desc: 'Validates front-end development standards, responsive scripting, and browser runtime performance.'
+    skills: ['Modern ES6+', 'Component Architecture', 'Performance'],
+    desc: 'Validates modern responsive user interfaces, DOM lifecycle execution, and cross-browser production deployment.',
+    accentColor: '#6366f1',
+    glowColor: 'rgba(99, 102, 241, 0.25)',
+    issuerBadge: 'INFOSYS'
   }
 ];
 
-// Fully connected mesh network paths (Every node is connected to the network)
-const CONNECTIONS = [
-  { from: 1, to: 2, pId: 'wire-1-2', d: 'M 150,150 L 150,450', dur: '2.5s' },
-  { from: 1, to: 3, pId: 'wire-1-3', d: 'M 150,150 L 500,100', dur: '3.0s' },
-  { from: 1, to: 4, pId: 'wire-1-4', d: 'M 150,150 L 500,300', dur: '2.2s' },
-  { from: 2, to: 4, pId: 'wire-2-4', d: 'M 150,450 L 500,300', dur: '2.8s' },
-  { from: 2, to: 5, pId: 'wire-2-5', d: 'M 150,450 L 500,500', dur: '3.2s' },
-  { from: 3, to: 4, pId: 'wire-3-4', d: 'M 500,100 L 500,300', dur: '2.0s' },
-  { from: 4, to: 5, pId: 'wire-4-5', d: 'M 500,300 L 500,500', dur: '2.4s' },
-  { from: 3, to: 6, pId: 'wire-3-6', d: 'M 500,100 L 850,180', dur: '2.6s' },
-  { from: 4, to: 6, pId: 'wire-4-6', d: 'M 500,300 L 850,180', dur: '3.1s' },
-  { from: 4, to: 7, pId: 'wire-4-7', d: 'M 500,300 L 850,420', dur: '2.9s' },
-  { from: 5, to: 7, pId: 'wire-5-7', d: 'M 500,500 L 850,420', dur: '3.5s' },
-  { from: 6, to: 7, pId: 'wire-6-7', d: 'M 850,180 L 850,420', dur: '2.7s' }
-];
+function HolographicCredentialCard({ cert }) {
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const [glarePos, setGlarePos] = useState({ x: 50, y: 50 });
 
-export default function Certifications() {
-  const [hoveredId, setHoveredId] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
 
-  // Close node card on click outside
-  useEffect(() => {
-    const handleOutsideClick = () => {
-      setHoveredId(null);
-    };
-    window.addEventListener('click', handleOutsideClick);
-    return () => window.removeEventListener('click', handleOutsideClick);
-  }, []);
+    const rX = ((y - centerY) / centerY) * -7;
+    const rY = ((x - centerX) / centerX) * 7;
 
-  // Detect mobile width to switch details rendering strategies
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const handleMouseEnter = (id) => {
-    if (!isMobile && window.matchMedia('(hover: hover)').matches) {
-      setHoveredId(id);
-    }
+    setRotateX(rX);
+    setRotateY(rY);
+    setGlarePos({
+      x: (x / rect.width) * 100,
+      y: (y / rect.height) * 100,
+    });
   };
 
   const handleMouseLeave = () => {
-    if (!isMobile && window.matchMedia('(hover: hover)').matches) {
-      setHoveredId(null);
-    }
+    setRotateX(0);
+    setRotateY(0);
   };
 
-  const handleNodeClick = (e, id) => {
-    e.stopPropagation(); // prevent triggering window close click
-    setHoveredId(prev => prev === id ? null : id);
-  };
-
-  const isConnectionActive = (conn) => {
-    return hoveredId === conn.from || hoveredId === conn.to;
-  };
-
-  // Shared card interior content renderer
-  const renderCardInterior = (cert) => (
-    <>
-      <div className="card-top-header">
-        <span className="card-issuer-lbl">{cert.issuer}</span>
-        <FiAward size={20} className="card-award-seal" />
-      </div>
-
-      <div className="card-body-details">
-        {cert.elite && <span className="card-elite-badge">ELITE CERTIFICATION</span>}
-        <h4 className="card-cert-title">{cert.title}</h4>
-        <p className="card-desc-txt">{cert.desc}</p>
-      </div>
-
-      <div className="card-skills-block">
-        {cert.skills.map((skill, sIdx) => (
-          <span key={sIdx} className="skill-chip">{skill}</span>
-        ))}
-      </div>
-
-      <div className="card-footer-row">
-        <div className="meta-col">
-          <span>Credential ID</span>
-          <p className="meta-mono">{cert.credId}</p>
-        </div>
-        <div className="meta-col text-right">
-          <span>Timeline</span>
-          <p>{cert.year}</p>
-        </div>
-      </div>
-
-      <a
-        href={cert.verifyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="card-verify-btn"
-        onClick={(ev) => ev.stopPropagation()}
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 20, scale: 0.95 }}
+      transition={{ duration: 0.45, ease: 'easeOut' }}
+      className="credential-pass-wrapper"
+      style={{ perspective: 1000 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <motion.div
+        className="credential-pass-card"
+        animate={{
+          rotateX: rotateX,
+          rotateY: rotateY,
+        }}
+        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+        style={{
+          '--pass-accent': cert.accentColor,
+          '--pass-glow': cert.glowColor,
+        }}
       >
-        <span>Verify Original Certificate</span>
-        <FiExternalLink size={14} />
-      </a>
-    </>
+        {/* Holographic Shimmer Foil Overlay */}
+        <div
+          className="holo-shimmer-layer"
+          style={{
+            background: `radial-gradient(circle at ${glarePos.x}% ${glarePos.y}%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.03) 40%, transparent 70%)`
+          }}
+        />
+
+        {/* Security Guilloche Grid Background Watermark */}
+        <div className="security-watermark-grid" />
+
+        {/* Card Header Banner */}
+        <div className="pass-header-row">
+          <div className="pass-issuer-chip">
+            <span className="issuer-indicator-dot" />
+            <span className="issuer-badge-text">{cert.issuerBadge}</span>
+          </div>
+
+          <div className="pass-status-pill">
+            <FiCheckCircle size={12} className="status-check-icon" />
+            <span>VERIFIED ON-CHAIN</span>
+          </div>
+        </div>
+
+        {/* Elite Rank Ribbon (if elite) */}
+        {cert.elite && (
+          <div className="pass-elite-banner">
+            <FiShield size={12} />
+            <span>{cert.eliteText}</span>
+          </div>
+        )}
+
+        {/* Certificate Core Information */}
+        <div className="pass-main-content">
+          <div className="pass-num-watermark">{cert.num}</div>
+          <h3 className="pass-title">{cert.title}</h3>
+          <p className="pass-issuer-sub">{cert.issuer}</p>
+          <p className="pass-desc">{cert.desc}</p>
+        </div>
+
+        {/* Skills Security Clearance Tags */}
+        <div className="pass-skills-container">
+          {cert.skills.map((skill, sIdx) => (
+            <span key={sIdx} className="pass-skill-tag">
+              {skill}
+            </span>
+          ))}
+        </div>
+
+        {/* Card Divider & Barcode Decorative Line */}
+        <div className="pass-security-divider">
+          <div className="barcode-strip" />
+          <span className="security-serial-label">SEC-ID: {cert.credId}</span>
+        </div>
+
+        {/* Card Footer: Timeline & Verification Link */}
+        <div className="pass-footer-row">
+          <div className="pass-year-badge">
+            <span className="year-label">ISSUED</span>
+            <span className="year-value">{cert.year}</span>
+          </div>
+
+          <a
+            href={cert.verifyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pass-verify-link"
+            aria-label={`Verify ${cert.title}`}
+          >
+            <span>Verify Original</span>
+            <FiExternalLink size={13} className="verify-arrow" />
+          </a>
+        </div>
+      </motion.div>
+    </motion.div>
   );
+}
+
+export default function Certifications() {
+  const [activeCategory, setActiveCategory] = useState('all');
+
+  const filteredCerts = activeCategory === 'all'
+    ? CERTIFICATIONS
+    : CERTIFICATIONS.filter(c => c.category === activeCategory);
 
   return (
     <section id="certifications" className="certs-section">
       <div className="container">
-        
-        {/* Title Block (Left aligned) */}
-        <div className="certs-neural-header">
-          <span className="section-label">06 / VALIDATION</span>
-          <h2 className="section-title">Credentials</h2>
-          <p className="certs-neural-subtitle">
-            An interactive neural network representing core competency branches. Hover nodes to inspect credentials.
-          </p>
-        </div>
 
-        {/* Neural Map Area (Unified for Desktop and Mobile) */}
-        <div className="neural-board-container">
-          <div className="neural-board">
-            
-            {/* SVG Connections Wires with Traveling Agents */}
-            <svg className="neural-svg" viewBox="0 0 1000 600" width="100%" height="100%" preserveAspectRatio="none">
-              <defs>
-                <filter id="wire-glow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
+        {/* Section Header */}
+        <div className="certs-vault-header">
+          <div className="certs-header-left">
+            <span className="section-label">06 / VERIFIED CREDENTIALS</span>
+            <h2 className="section-title">Credentials Vault</h2>
+            <p className="certs-vault-subtitle">
+              Cryptographically verified proficiencies and certifications awarded by premier academic institutions and global cloud providers.
+            </p>
+          </div>
 
-              {/* Wire lines */}
-              {CONNECTIONS.map((conn, idx) => {
-                const active = isConnectionActive(conn);
-                return (
-                  <g key={idx}>
-                    {/* Base Path Wire */}
-                    <path
-                      id={conn.pId}
-                      d={conn.d}
-                      className={`neural-wire ${active ? 'wire-active' : ''}`}
-                      fill="none"
-                    />
-                    {/* The Walking Agent Circle */}
-                    <circle
-                      r="4.5"
-                      fill="var(--accent)"
-                      filter="url(#wire-glow)"
-                      className="walking-agent"
-                    >
-                      <animateMotion
-                        dur={active ? '0.8s' : conn.dur}
-                        repeatCount="indefinite"
-                      >
-                        <mpath href={`#${conn.pId}`} />
-                      </animateMotion>
-                    </circle>
-                  </g>
-                );
-              })}
-            </svg>
-
-            {/* Interactive Nodes */}
-            {CERTIFICATIONS.map((cert) => {
-              const isHovered = hoveredId === cert.id;
-              // On mobile, never morph the inline node dot (keep it as a compact dot)
-              const showExpandedInline = !isMobile && isHovered;
+          {/* Interactive Category Filter Pills */}
+          <div className="credential-filter-pills">
+            {CATEGORIES.map((cat) => {
+              const Icon = cat.icon;
+              const isActive = activeCategory === cat.id;
 
               return (
-                <div
-                  key={cert.id}
-                  className={`neural-node-anchor ${showExpandedInline ? 'z-top' : ''}`}
-                  style={{ left: cert.x, top: cert.y }}
-                  onMouseEnter={() => handleMouseEnter(cert.id)}
-                  onMouseLeave={handleMouseLeave}
-                  onClick={(e) => handleNodeClick(e, cert.id)}
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`filter-pill-btn ${isActive ? 'active' : ''}`}
+                  aria-pressed={isActive}
                 >
-                  <motion.div
-                    className={`neural-node-wrapper ${cert.align}`}
-                    layoutId={`node-card-${cert.id}`}
-                    transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-                  >
-                    <AnimatePresence mode="wait">
-                      {!showExpandedInline ? (
-                        /* Default Node Circle Dot */
-                        <motion.div
-                          key="compact"
-                          className={`node-compact-dot ${cert.elite ? 'elite-node' : ''}`}
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          exit={{ scale: 0.8, opacity: 0 }}
-                        >
-                          <div className="node-pulse-ring" />
-                          <div className="node-pulse-ring ring-delay-1" />
-                          <span className="node-num-label">{cert.num}</span>
-                          <span className="node-caption-label">{cert.issuer.split(' · ')[0]}</span>
-                        </motion.div>
-                      ) : (
-                        /* Magnified Full Zoom Card (Desktop only) */
-                        <motion.div
-                          key="expanded"
-                          className="node-expanded-card"
-                          initial={{ scale: 0.9, opacity: 0, y: 10 }}
-                          animate={{ scale: 1, opacity: 1, y: 0 }}
-                          exit={{ scale: 0.9, opacity: 0, y: 10 }}
-                          transition={{ duration: 0.25 }}
-                        >
-                          {renderCardInterior(cert)}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                </div>
+                  <Icon size={14} className="filter-pill-icon" />
+                  <span className="filter-pill-label">{cat.label}</span>
+                  <span className="filter-pill-count">{cat.count}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeFilterBubble"
+                      className="filter-pill-glow-border"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </button>
               );
             })}
-
           </div>
         </div>
 
-        {/* Mobile Fixed Portaled Bottom Drawer Sheet (Bypasses transformed parent constraints) */}
-        <AnimatePresence>
-          {isMobile && hoveredId && (() => {
-            const activeCert = CERTIFICATIONS.find(c => c.id === hoveredId);
-            if (!activeCert) return null;
-            return (
-              <motion.div 
-                className="mobile-cert-drawer-overlay"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setHoveredId(null)}
-              >
-                <motion.div
-                  className="node-expanded-card mobile-drawer-card"
-                  initial={{ y: 150, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 150, opacity: 0 }}
-                  transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="mobile-drawer-handle" onClick={() => setHoveredId(null)} />
-                  {renderCardInterior(activeCert)}
-                </motion.div>
-              </motion.div>
-            );
-          })()}
-        </AnimatePresence>
+        {/* Credentials Hologram Vault Grid */}
+        <motion.div layout className="credentials-vault-grid">
+          <AnimatePresence mode="popLayout">
+            {filteredCerts.map((cert) => (
+              <HolographicCredentialCard key={cert.id} cert={cert} />
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Vault Footer Metrics */}
+        <div className="vault-footer-telemetry">
+          <div className="telemetry-item">
+            <FiAward size={18} className="telemetry-icon" />
+            <div>
+              <div className="telemetry-val">100% Verified</div>
+              <div className="telemetry-lbl">Original Credential Registry</div>
+            </div>
+          </div>
+          <div className="telemetry-divider" />
+          <div className="telemetry-item">
+            <FiShield size={18} className="telemetry-icon" />
+            <div>
+              <div className="telemetry-val">2 × Elite Honours</div>
+              <div className="telemetry-lbl">IIT Madras NPTEL High Honors</div>
+            </div>
+          </div>
+          <div className="telemetry-divider" />
+          <div className="telemetry-item">
+            <FiCpu size={18} className="telemetry-icon" />
+            <div>
+              <div className="telemetry-val">Tier-1 Cloud & AI</div>
+              <div className="telemetry-lbl">NVIDIA · Google · Oracle · MongoDB</div>
+            </div>
+          </div>
+        </div>
 
       </div>
     </section>
