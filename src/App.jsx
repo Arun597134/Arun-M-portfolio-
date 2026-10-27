@@ -19,7 +19,10 @@ export default function App() {
     return localStorage.getItem('theme') || 'dark';
   });
   const [activeTech, setActiveTech] = useState(null); // Lifted state for project highlights
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
+  });
 
   const cursorRef = useRef(null);
   const followerRef = useRef(null);
@@ -57,7 +60,14 @@ export default function App() {
 
   // Smooth Scroll - Lenis (Tuned to macOS native desktop inertial wheel curves - Desktop only)
   useEffect(() => {
-    if (loading || isMobile) return;
+    if (loading || isMobile) {
+      document.documentElement.classList.remove('lenis', 'lenis-smooth', 'lenis-stopped');
+      if (window.lenis) {
+        window.lenis.destroy();
+        window.lenis = null;
+      }
+      return;
+    }
 
     const lenis = new Lenis({
       duration: 1.1, // Snappier, faster scroll speed

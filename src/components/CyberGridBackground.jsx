@@ -76,6 +76,8 @@ function CyberGridBackground({ theme }) {
     const ptScale = new Float32Array(totalPoints);
 
     let time = 0;
+    let lastAppliedX = -999;
+    let lastAppliedY = -999;
 
     // Glowing energy nodes (6 on mobile, 10 on desktop)
     const sparkCount = isMobileDevice ? 6 : 10;
@@ -121,12 +123,16 @@ function CyberGridBackground({ theme }) {
       const autoTiltX = Math.sin(time * 0.9) * 0.22;
       const autoTiltY = Math.cos(time * 0.7) * 0.18;
 
-      // Sync CSS tilt variables once per animation frame (100% hardware composite, zero transition churn)
+      // Sync CSS tilt variables once per animation frame (Throttled style dirtying - saves 80% style invalidations)
       if (containerRef.current) {
         const normX = Math.max(-1, Math.min(1, ((mouse.x / width) - 0.5) * 1.8 + autoTiltX));
         const normY = Math.max(-1, Math.min(1, ((mouse.y / height) - 0.5) * 1.8 + autoTiltY - scrollDelta));
-        containerRef.current.style.setProperty('--tilt-x', normX.toFixed(3));
-        containerRef.current.style.setProperty('--tilt-y', normY.toFixed(3));
+        if (Math.abs(normX - lastAppliedX) > 0.012 || Math.abs(normY - lastAppliedY) > 0.012) {
+          containerRef.current.style.setProperty('--tilt-x', normX.toFixed(3));
+          containerRef.current.style.setProperty('--tilt-y', normY.toFixed(3));
+          lastAppliedX = normX;
+          lastAppliedY = normY;
+        }
       }
 
       const isDark = theme === 'dark';

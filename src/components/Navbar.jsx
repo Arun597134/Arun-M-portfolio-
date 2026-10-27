@@ -26,7 +26,7 @@ const NAV_ITEMS = [
   { id: 'contact', label: 'Contact' }
 ];
 
-export default function Navbar({ theme, toggleTheme }) {
+function Navbar({ theme, toggleTheme }) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -368,3 +368,5 @@ export default function Navbar({ theme, toggleTheme }) {
     </>
   );
 }
+
+export default React.memo(Navbar);

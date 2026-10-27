@@ -149,34 +149,25 @@ function About() {
   const boardRef = useRef(null);
   const wrapperRef = useRef(null);
 
-  // Center scroll position of scaled canvas board on mobile viewports on mount / orientation changes
-  useEffect(() => {
-    if (isMobile && wrapperRef.current) {
-      const clientWidth = wrapperRef.current.clientWidth;
-      wrapperRef.current.scrollLeft = (1000 - clientWidth) / 2;
-    }
-  }, [isMobile, scale]);
-
-  // Dynamic Scale calculation to fit the 1000px layout width responsive on mobile screen sizes
+  // Dynamic Scale calculation to fit the 1000px layout width perfectly on mobile screen sizes
   useEffect(() => {
     const handleScaleResize = () => {
       const width = window.innerWidth;
       const isMobileNav = width <= 768;
       setIsMobile(isMobileNav);
-      const sidebarWidth = isMobileNav ? 64 : 0;
-      const gutter = 32; // Total side gutters (16px left, 16px right)
+      const gutter = isMobileNav ? 16 : 32;
       
       if (width < 1080) {
-        const targetWidth = width - sidebarWidth - gutter;
+        const targetWidth = Math.min(width - gutter, 1000);
         const scaleFactor = targetWidth / 1000;
-        setScale(Math.max(0.55, Math.min(1, scaleFactor))); // Raised minimum scale limit to 0.55
+        setScale(Math.max(0.30, Math.min(1, scaleFactor)));
       } else {
         setScale(1);
       }
     };
     
     handleScaleResize();
-    window.addEventListener('resize', handleScaleResize);
+    window.addEventListener('resize', handleScaleResize, { passive: true });
     return () => window.removeEventListener('resize', handleScaleResize);
   }, []);
 
@@ -246,12 +237,12 @@ function About() {
           style={{
             height: `${800 * scale}px`,
             display: 'flex',
-            justifyContent: isMobile ? 'flex-start' : 'center',
+            justifyContent: 'center',
             alignItems: 'flex-start',
-            overflowX: isMobile ? 'auto' : 'hidden',
-            overflowY: 'hidden',
+            overflow: 'hidden',
             width: '100%',
-            position: 'relative'
+            position: 'relative',
+            touchAction: 'pan-y'
           }}
         >
           {/* Symmetrical Knowledge Network Board */}

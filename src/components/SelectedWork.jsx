@@ -1,6 +1,51 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiGithub, FiArrowUpRight } from 'react-icons/fi';
+
+function ProjectVideo({ src, poster }) {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Only play video when actively in viewport, pause when scrolled away
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <video 
+      ref={videoRef}
+      src={src} 
+      poster={poster} 
+      loop 
+      muted 
+      playsInline 
+      preload="none"
+      className="project-video"
+      onError={(e) => {
+        e.target.style.display = 'none';
+        if (e.target.parentElement) {
+          e.target.parentElement.style.backgroundImage = `url(${poster})`;
+          e.target.parentElement.style.backgroundSize = 'cover';
+          e.target.parentElement.style.backgroundPosition = 'center';
+        }
+      }}
+    />
+  );
+}
 
 const PROJECTS = [
   {
@@ -91,23 +136,7 @@ function SelectedWork({ activeTech }) {
                 {/* Project Visual Mockup */}
                 <div className="project-visual">
                   <div className="visual-wrapper">
-                    <video 
-                      src={proj.video} 
-                      poster={proj.image} 
-                      autoPlay 
-                      loop 
-                      muted 
-                      playsInline 
-                      className="project-video"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        if (e.target.parentElement) {
-                          e.target.parentElement.style.backgroundImage = `url(${proj.image})`;
-                          e.target.parentElement.style.backgroundSize = 'cover';
-                          e.target.parentElement.style.backgroundPosition = 'center';
-                        }
-                      }}
-                    />
+                    <ProjectVideo src={proj.video} poster={proj.image} />
                     <div className="visual-glow-overlay" />
                   </div>
                 </div>
