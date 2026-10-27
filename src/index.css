@@ -47,14 +47,13 @@
   cursor: none; /* Hide default cursor for custom cursor */
 }
 
-/* Mobile-optimized native momentum scroll & smooth typography */
+/* Native iOS-like momentum scroll & smooth typography */
 html {
   width: 100%;
   min-height: 100%;
   overflow-x: hidden;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
 }
 
 body {
@@ -64,12 +63,11 @@ body {
   background-color: var(--bg);
   color: var(--text-primary);
   font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  overflow-x: clip; /* Clean clipping without creating nested body scroll containers on mobile */
+  overflow-x: hidden;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.4s ease, color 0.4s ease;
-  touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -78,23 +76,7 @@ body {
   color: var(--selection-color);
 }
 
-/* Smooth Scrolling & Custom Scrollbar */
-html.lenis {
-  height: auto;
-}
-
-.lenis-smooth {
-  scroll-behavior: auto;
-}
-
-.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis-stopped {
-  overflow: hidden;
-}
-
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -698,16 +680,23 @@ section {
   overflow: hidden;
   will-change: transform;
   contain: strict;
+  background-size: 64px 64px;
 }
 
 [data-theme="dark"] .cyber-grid-container {
-  background: 
+  background-color: var(--bg);
+  background-image: 
+    linear-gradient(to right, rgba(99, 102, 241, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.055) 1px, transparent 1px),
     radial-gradient(circle at 24% 28%, rgba(79, 70, 229, 0.12) 0%, transparent 48%),
     radial-gradient(circle at 76% 44%, rgba(6, 182, 212, 0.10) 0%, transparent 48%);
 }
 
 [data-theme="light"] .cyber-grid-container {
-  background: 
+  background-color: var(--bg);
+  background-image: 
+    linear-gradient(to right, rgba(99, 102, 241, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.06) 1px, transparent 1px),
     radial-gradient(circle at 24% 28%, rgba(99, 102, 241, 0.10) 0%, transparent 48%),
     radial-gradient(circle at 76% 44%, rgba(14, 165, 233, 0.08) 0%, transparent 48%);
 }
@@ -875,54 +864,50 @@ section {
   border-radius: 2px;
 }
 
-/* Facet directional light variations for realistic spectral refraction */
-.face-front  { filter: brightness(1.25) contrast(1.08); }
-.face-right  { filter: hue-rotate(30deg) brightness(1.10); }
-.face-left   { filter: hue-rotate(-30deg) brightness(1.15); }
-.face-back   { filter: brightness(0.85) contrast(1.1); }
-.face-shard-fl { filter: brightness(1.22); }
-.face-shard-fr { filter: hue-rotate(25deg) brightness(1.10); }
-.face-shard-bl { filter: hue-rotate(-20deg) brightness(0.95); }
-.face-shard-br { filter: brightness(0.85); }
+/* Facet directional light variations for realistic spectral refraction (GPU-accelerated opacity) */
+.face-front  { opacity: 1; }
+.face-right  { opacity: 0.92; }
+.face-left   { opacity: 0.95; }
+.face-back   { opacity: 0.78; }
+.face-shard-fl { opacity: 0.98; }
+.face-shard-fr { opacity: 0.92; }
+.face-shard-bl { opacity: 0.84; }
+.face-shard-br { opacity: 0.80; }
 
 /* Dark Theme Facet Shading - Translucent Iridescent Crystal Glass */
 [data-theme="dark"] .face {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(56, 189, 248, 0.28) 20%,
-    rgba(168, 85, 247, 0.26) 50%,
-    rgba(244, 114, 182, 0.30) 75%,
-    rgba(251, 191, 36, 0.20) 100%
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(56, 189, 248, 0.32) 20%,
+    rgba(168, 85, 247, 0.28) 50%,
+    rgba(244, 114, 182, 0.32) 75%,
+    rgba(251, 191, 36, 0.22) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.65);
   box-shadow: 
-    inset 0 1px 2px rgba(255, 255, 255, 0.8),
-    inset 0 0 14px rgba(56, 189, 248, 0.25),
-    0 8px 30px rgba(34, 211, 238, 0.25),
-    0 0 18px rgba(168, 85, 247, 0.25);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.85),
+    inset 0 0 14px rgba(56, 189, 248, 0.30),
+    0 6px 22px rgba(34, 211, 238, 0.28),
+    0 0 18px rgba(168, 85, 247, 0.24);
 }
 
 /* Light Theme Facet Shading - Pristine Optical Ice Glass with Chromatic Dispersion */
 [data-theme="light"] .face {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.85) 0%,
-    rgba(224, 242, 254, 0.70) 25%,
-    rgba(243, 232, 255, 0.65) 52%,
-    rgba(254, 215, 226, 0.68) 78%,
-    rgba(254, 243, 199, 0.45) 100%
+    rgba(255, 255, 255, 0.90) 0%,
+    rgba(224, 242, 254, 0.75) 25%,
+    rgba(243, 232, 255, 0.70) 52%,
+    rgba(254, 215, 226, 0.72) 78%,
+    rgba(254, 243, 199, 0.50) 100%
   );
   border: 1px solid rgba(255, 255, 255, 0.95);
   box-shadow: 
     inset 0 1.5px 3px rgba(255, 255, 255, 1),
     inset 0 0 16px rgba(255, 255, 255, 0.6),
-    0 10px 32px rgba(99, 102, 241, 0.16),
-    0 0 22px rgba(56, 189, 248, 0.22);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+    0 8px 24px rgba(99, 102, 241, 0.16),
+    0 0 20px rgba(56, 189, 248, 0.20);
 }
 
 /* Polyhedron 1: Master Octahedron Diamond (100px x 140px) */
@@ -1902,7 +1887,7 @@ section {
 .visual-glow-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(79, 70, 229, 0.08) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 65%);
   pointer-events: none;
 }
 
@@ -3993,12 +3978,57 @@ main {
 }
 
 
-/* Global override to style all section titles in the portfolio's native indigo/blue */
+/* ==========================================================================
+   Prismatic Chromatic Gradient Section Titles & Hero Typography
+   Blends native portfolio electric blue with radiant iridescent prismatic colors
+   ========================================================================== */
 .section-title {
   font-size: 2.8rem !important;
   font-weight: 800 !important;
   letter-spacing: -0.03em !important;
-  color: var(--accent) !important;
+  margin-bottom: 8px;
+}
+
+.section-title,
+.hero-title .text-glow {
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #38bdf8 20%,
+    #6366f1 45%,
+    #a855f7 72%,
+    #f472b6 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  color: transparent !important;
+  filter: drop-shadow(0 0 16px rgba(99, 102, 241, 0.45)) drop-shadow(0 0 32px rgba(168, 85, 247, 0.28));
+  display: inline-block;
+}
+
+[data-theme="light"] .section-title,
+[data-theme="light"] .hero-title .text-glow {
+  background: linear-gradient(
+    135deg,
+    #1e1b4b 0%,
+    #4338ca 24%,
+    #0284c7 50%,
+    #7c3aed 76%,
+    #db2777 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  color: transparent !important;
+  filter: drop-shadow(0 2px 10px rgba(99, 102, 241, 0.24)) !important;
+  text-shadow: none !important;
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2.15rem !important;
+  }
 }
 
 /* ==========================================================================
@@ -4622,6 +4652,11 @@ main {
 }
 
 @media (max-width: 768px) {
+  /* Disable heavy SVG fractal noise filter overlay on mobile for 120 FPS iOS scrolling */
+  .noise-overlay {
+    display: none !important;
+  }
+
   /* Increase spacing gap between projects on mobile phone viewports */
   .projects-list {
     gap: 160px !important;
@@ -4653,7 +4688,6 @@ main {
 [data-theme="light"] .text-glow {
   animation: none !important;
   text-shadow: none !important;
-  color: var(--accent) !important;
 }
 
 [data-theme="light"] .active-line {

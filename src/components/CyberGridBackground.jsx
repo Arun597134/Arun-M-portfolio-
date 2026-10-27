@@ -109,11 +109,11 @@ function CyberGridBackground({ theme }) {
       );
 
       if (isDark) {
-        spotGrad.addColorStop(0, 'rgba(56, 189, 248, 0.10)');
+        spotGrad.addColorStop(0, 'rgba(56, 189, 248, 0.12)');
         spotGrad.addColorStop(0.45, 'rgba(168, 85, 247, 0.04)');
         spotGrad.addColorStop(1, 'transparent');
       } else {
-        spotGrad.addColorStop(0, 'rgba(99, 102, 241, 0.08)');
+        spotGrad.addColorStop(0, 'rgba(99, 102, 241, 0.09)');
         spotGrad.addColorStop(0.45, 'rgba(56, 189, 248, 0.03)');
         spotGrad.addColorStop(1, 'transparent');
       }
@@ -124,29 +124,7 @@ function CyberGridBackground({ theme }) {
       ctx.fill();
 
       // -----------------------------------------------------------------------
-      // 2. Clean Architectural Tech Grid (Batched in 1 Single Stroke Pass)
-      // -----------------------------------------------------------------------
-      const gridSize = isMobileDevice ? 52 : 64;
-      ctx.strokeStyle = isDark
-        ? 'rgba(99, 102, 241, 0.06)'
-        : 'rgba(99, 102, 241, 0.07)';
-      ctx.lineWidth = 1;
-
-      ctx.beginPath();
-      // Vertical grid lines
-      for (let x = 0; x <= width; x += gridSize) {
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-      }
-      // Horizontal grid lines
-      for (let y = 0; y <= height; y += gridSize) {
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-      }
-      ctx.stroke();
-
-      // -----------------------------------------------------------------------
-      // 3. Calm Drifting Celestial Stardust
+      // 2. Calm Drifting Celestial Stardust (Grid is rendered natively via GPU CSS)
       // -----------------------------------------------------------------------
       for (let i = 0; i < dustParticles.length; i++) {
         const p = dustParticles[i];

@@ -25,7 +25,6 @@ const EXPERIENCES = [
 ];
 
 function Experience() {
-  const [coords, setCoords] = useState({});
   const [hoveredId, setHoveredId] = useState(null);
   const containerRef = useRef(null);
 
@@ -41,15 +40,10 @@ function Experience() {
     restDelta: 0.001
   });
 
-  const handleMouseMove = (id, e) => {
+  const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    setCoords(prev => ({
-      ...prev,
-      [id]: {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-      }
-    }));
+    e.currentTarget.style.setProperty('--spot-x', `${e.clientX - rect.left}px`);
+    e.currentTarget.style.setProperty('--spot-y', `${e.clientY - rect.top}px`);
   };
 
   const bulletContainerVariants = {
@@ -125,7 +119,7 @@ function Experience() {
               {/* Card Container */}
               <motion.div 
                 className="timeline-content-card"
-                onMouseMove={(e) => handleMouseMove(exp.id, e)}
+                onMouseMove={handleMouseMove}
                 onMouseEnter={() => setHoveredId(exp.id)}
                 onMouseLeave={() => setHoveredId(null)}
                 whileHover={{ 
@@ -133,11 +127,11 @@ function Experience() {
                   transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } 
                 }}
               >
-                {/* Custom Spotlight Glow Layer */}
+                {/* Custom Spotlight Glow Layer (0-re-render direct CSS variable) */}
                 <div 
                   className="card-glow-spotlight"
                   style={{
-                    background: `radial-gradient(120px circle at ${coords[exp.id]?.x || 0}px ${coords[exp.id]?.y || 0}px, rgba(99, 102, 241, 0.08) 0%, transparent 80%)`
+                    background: 'radial-gradient(120px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(99, 102, 241, 0.08) 0%, transparent 80%)'
                   }}
                 />
                 

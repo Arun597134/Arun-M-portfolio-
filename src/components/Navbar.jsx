@@ -151,11 +151,8 @@ function Navbar({ theme, toggleTheme }) {
   // Active section scroll tracking & navbar background scrolled state
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      const isScrolled = window.scrollY > 50;
+      setScrolled(prev => (prev !== isScrolled ? isScrolled : prev));
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });

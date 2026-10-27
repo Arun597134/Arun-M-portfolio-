@@ -11,7 +11,6 @@ import Achievements from './components/Achievements';
 import Certifications from './components/Certifications';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import Lenis from 'lenis';
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -58,72 +57,25 @@ export default function App() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Smooth Scroll - Lenis (Tuned to macOS native desktop inertial wheel curves - Desktop only)
-  useEffect(() => {
-    if (loading || isMobile) {
-      document.documentElement.classList.remove('lenis', 'lenis-smooth', 'lenis-stopped');
-      if (window.lenis) {
-        window.lenis.destroy();
-        window.lenis = null;
-      }
-      return;
-    }
-
-    const lenis = new Lenis({
-      duration: 1.1, // Snappier, faster scroll speed
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
-      smoothWheel: true,
-      wheelMultiplier: 1.0,
-      autoRaf: true,
-    });
-
-    window.lenis = lenis;
-
-    const handleResize = () => {
-      lenis.resize();
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      lenis.destroy();
-      window.lenis = null;
-    };
-  }, [loading, isMobile]);
-
-  // Custom Cursor and Grid Background Movement (Desktop only)
+  // Custom Cursor (Desktop only - 0 DOM dirtying, pure GPU transform)
   useEffect(() => {
     if (loading || isMobile) return;
-
-    let activeFrame = false;
 
     const handleMouseMove = (e) => {
       followerPos.current.targetX = e.clientX;
       followerPos.current.targetY = e.clientY;
-
-      // Throttle CSS variable updates to mouse movements instead of every animation frame
-      if (!activeFrame) {
-        activeFrame = true;
-        requestAnimationFrame(() => {
-          if (appRef.current) {
-            appRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
-            appRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
-          }
-          activeFrame = false;
-        });
-      }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     let animationFrameId;
     const render = () => {
-      // Lerp logic for smooth follower lag (tuned to 0.09 for soft magnetic slide follow)
+      // Lerp logic for smooth follower lag (tuned to 0.10 for responsive, silky glide)
       const dx = followerPos.current.targetX - followerPos.current.x;
       const dy = followerPos.current.targetY - followerPos.current.y;
       
-      followerPos.current.x += dx * 0.09;
-      followerPos.current.y += dy * 0.09;
+      followerPos.current.x += dx * 0.10;
+      followerPos.current.y += dy * 0.10;
  
       if (followerRef.current) {
         followerRef.current.style.transform = `translate3d(calc(${followerPos.current.x}px - 50%), calc(${followerPos.current.y}px - 50%), 0)`;
@@ -162,7 +114,7 @@ export default function App() {
       }
     };
 
-    window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('mouseover', handleMouseOver, { passive: true });
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
