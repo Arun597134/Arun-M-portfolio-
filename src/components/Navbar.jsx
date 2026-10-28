@@ -115,7 +115,7 @@ function Navbar({ theme, toggleTheme }) {
           const targetScroll = Math.max(0, elementAbsTop - viewHeight * 0.35);
           return Math.min(1, targetScroll / totalScrollable);
         }
-        return idx / (sectionCount - 1);
+        return idx / (NAV_ITEMS.length - 1);
       });
       // Force last breakpoint to be exactly 1
       breakpoints[breakpoints.length - 1] = 1;
@@ -157,77 +157,72 @@ function Navbar({ theme, toggleTheme }) {
   const desktopRobotLeft = useTransform(desktopScrollSpring, [0, 1], ['0%', '100%']);
   const desktopTrailFill = desktopScrollSpring;
 
-  // Active section scroll tracking & navbar background scrolled state
+  const sectionTopsRef = useRef({});
+
+  // Active section scroll tracking & navbar background scrolled state (0 Layout Thrashing, Pure RAF)
   useEffect(() => {
-    const updateActiveSection = () => {
-      if (!observerActive.current) return;
-      const scrollY = window.scrollY;
-      const viewHeight = window.innerHeight;
-      const docHeight = Math.max(
-        document.body.scrollHeight,
-        document.documentElement.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.offsetHeight
-      );
-
-      // Bottom lock: if scrolled near bottom of page, activate 'contact'
-      if (scrollY + viewHeight >= docHeight - 70) {
-        setActiveSection('contact');
-        return;
-      }
-
-      // Check focal line at 38% from top of viewport
-      const focalLine = scrollY + viewHeight * 0.38;
-
-      for (let i = NAV_ITEMS.length - 1; i >= 0; i--) {
-        const item = NAV_ITEMS[i];
+    const measureSectionTops = () => {
+      const tops = {};
+      NAV_ITEMS.forEach(item => {
         const el = document.getElementById(item.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          const top = rect.top + scrollY;
-          if (focalLine >= top - 30) {
-            setActiveSection(item.id);
-            return;
-          }
+          tops[item.id] = rect.top + window.scrollY;
         }
-      }
-      setActiveSection('hero');
+      });
+      sectionTopsRef.current = tops;
     };
 
+    measureSectionTops();
+    const settleTimer = setTimeout(measureSectionTops, 600);
+
+    let ticking = false;
+
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 50;
-      setScrolled(prev => (prev !== isScrolled ? isScrolled : prev));
-      updateActiveSection();
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const isScrolled = scrollY > 50;
+          setScrolled(prev => (prev !== isScrolled ? isScrolled : prev));
+
+          if (observerActive.current) {
+            const viewHeight = window.innerHeight;
+            const docHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+
+            if (scrollY + viewHeight >= docHeight - 70) {
+              setActiveSection(prev => (prev !== 'contact' ? 'contact' : prev));
+              ticking = false;
+              return;
+            }
+
+            const focalLine = scrollY + viewHeight * 0.38;
+            let current = 'hero';
+
+            for (let i = NAV_ITEMS.length - 1; i >= 0; i--) {
+              const id = NAV_ITEMS[i].id;
+              const top = sectionTopsRef.current[id];
+              if (top !== undefined && focalLine >= top - 30) {
+                current = id;
+                break;
+              }
+            }
+
+            setActiveSection(prev => (prev !== current ? current : prev));
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-
-    const observerOptions = {
-      root: null,
-      rootMargin: '-20% 0px -40% 0px',
-      threshold: 0.1
-    };
-
-    const observerCallback = (entries) => {
-      if (!observerActive.current) return;
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-    
-    NAV_ITEMS.forEach(item => {
-      const el = document.getElementById(item.id);
-      if (el) observer.observe(el);
-    });
+    window.addEventListener('resize', measureSectionTops);
 
     return () => {
+      clearTimeout(settleTimer);
       window.removeEventListener('scroll', handleScroll);
-      observer.disconnect();
+      window.removeEventListener('resize', measureSectionTops);
     };
   }, []);
 

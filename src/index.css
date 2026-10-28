@@ -1297,22 +1297,50 @@ section {
   margin-left: -10px;
 }
 
-/* Responsive adjustments for Mobile & Tablets - 100% Smooth Real Glass (All 6 Crystals Visible) */
+/* Responsive adjustments for Mobile & Tablets - 100% Smooth Real Glass (Locked 120 FPS) */
 @media (max-width: 768px) {
   .prismatic-3d-scene {
     overflow: hidden;
     width: 100vw;
     max-width: 100%;
     pointer-events: none;
+    contain: strict !important;
   }
 
-  /* Display all optical glass elements on mobile, scaled non-intrusively to preserve readability & 120 FPS */
+  /* 1. Turn off expensive multi-pass backdrop-filter on mobile to eliminate GPU fill-rate bottleneck */
+  .face {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 2. Streamline multi-layer box shadows to lightweight mobile-optimized glow */
+  .face,
+  [data-theme="light"] .face,
+  [data-theme="dark"] .face {
+    box-shadow: 
+      inset 0 1px 2px rgba(255, 255, 255, 0.75),
+      0 4px 14px rgba(99, 102, 241, 0.18) !important;
+  }
+
+  .crystal-3d-core,
+  [data-theme="light"] .crystal-3d-core,
+  [data-theme="dark"] .crystal-3d-core {
+    filter: blur(2px) !important;
+    box-shadow: 0 0 14px rgba(99, 102, 241, 0.45) !important;
+  }
+
+  /* Hide micro-sparkles on mobile to avoid offscreen composite passes */
+  .crystal-sparkle {
+    display: none !important;
+  }
+
+  /* Display 4 most impactful crystals on mobile with zero lag & clean layout */
   .crystal-pos-master {
     display: block !important;
     top: 7% !important;
     left: auto !important;
     right: 3% !important;
-    transform: scale(0.68) !important;
+    transform: scale(0.66) !important;
   }
 
   .crystal-pos-cube {
@@ -1320,31 +1348,15 @@ section {
     top: 15% !important;
     left: 3% !important;
     right: auto !important;
-    transform: scale(0.62) !important;
-  }
-
-  .crystal-pos-gem {
-    display: block !important;
-    top: 36% !important;
-    left: 2% !important;
-    right: auto !important;
     transform: scale(0.60) !important;
   }
 
   .crystal-pos-rhombus {
     display: block !important;
-    top: 54% !important;
+    top: 52% !important;
     left: auto !important;
     right: 3% !important;
-    transform: scale(0.60) !important;
-  }
-
-  .crystal-pos-companion {
-    display: block !important;
-    top: 70% !important;
-    left: 3% !important;
-    right: auto !important;
-    transform: scale(0.60) !important;
+    transform: scale(0.58) !important;
   }
 
   .crystal-pos-needle {
@@ -1352,7 +1364,13 @@ section {
     top: 86% !important;
     left: auto !important;
     right: 4% !important;
-    transform: scale(0.65) !important;
+    transform: scale(0.62) !important;
+  }
+
+  /* Hide intermediate auxiliary ones on mobile to preserve 120 FPS */
+  .crystal-pos-gem,
+  .crystal-pos-companion {
+    display: none !important;
   }
 
   .polyhedron-octahedron {
