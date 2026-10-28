@@ -695,8 +695,10 @@ section {
 
 [data-theme="light"] .cyber-grid-container {
   background: 
-    radial-gradient(circle at 75% 20%, rgba(56, 189, 248, 0.07) 0%, transparent 55%),
-    radial-gradient(circle at 20% 70%, rgba(99, 102, 241, 0.06) 0%, transparent 55%),
+    radial-gradient(circle at 75% 18%, rgba(79, 70, 229, 0.10) 0%, transparent 55%),
+    radial-gradient(circle at 12% 35%, rgba(56, 189, 248, 0.09) 0%, transparent 50%),
+    radial-gradient(circle at 18% 68%, rgba(168, 85, 247, 0.08) 0%, transparent 55%),
+    radial-gradient(circle at 82% 80%, rgba(244, 114, 182, 0.07) 0%, transparent 50%),
     var(--bg);
 }
 
@@ -770,6 +772,44 @@ section {
   }
 }
 
+/* 3D Gyro Roll & Float (Prismatic Bipyramid Gem) */
+.crystal-action-roll {
+  transform-style: preserve-3d;
+  will-change: transform;
+  animation: crystalActionRoll 11s ease-in-out infinite;
+}
+
+@keyframes crystalActionRoll {
+  0% {
+    transform: rotateY(0deg) rotateX(-20deg) rotateZ(10deg) translateY(0);
+  }
+  50% {
+    transform: rotateY(180deg) rotateX(-10deg) rotateZ(-12deg) translateY(-16px);
+  }
+  100% {
+    transform: rotateY(360deg) rotateX(-20deg) rotateZ(10deg) translateY(0);
+  }
+}
+
+/* 3D Float & Yaw Oscillation (Prismatic Quartz Needle) */
+.crystal-action-float {
+  transform-style: preserve-3d;
+  will-change: transform;
+  animation: crystalActionFloat 9s ease-in-out infinite;
+}
+
+@keyframes crystalActionFloat {
+  0% {
+    transform: rotateY(0deg) rotateX(16deg) rotateZ(-16deg) translateY(0);
+  }
+  50% {
+    transform: rotateY(180deg) rotateX(24deg) rotateZ(12deg) translateY(-22px);
+  }
+  100% {
+    transform: rotateY(360deg) rotateX(16deg) rotateZ(-16deg) translateY(0);
+  }
+}
+
 /* --------------------------------------------------------------------------
    Authentic Optical Glass Facets (Real Diamond-Cut Glass with Chromatic Dispersion)
    -------------------------------------------------------------------------- */
@@ -788,10 +828,10 @@ section {
 .face-right  { opacity: 0.94; }
 .face-left   { opacity: 0.96; }
 .face-back   { opacity: 0.82; }
-.face-shard-fl { opacity: 0.98; }
-.face-shard-fr { opacity: 0.94; }
-.face-shard-bl { opacity: 0.86; }
-.face-shard-br { opacity: 0.82; }
+.face-shard-fl, .face-needle-fl { opacity: 0.98; }
+.face-shard-fr, .face-needle-fr { opacity: 0.94; }
+.face-shard-bl, .face-needle-bl { opacity: 0.86; }
+.face-shard-br, .face-needle-br { opacity: 0.82; }
 
 /* Dark Theme - Pure Transparent Optical Crystal Glass with Chromatic Edge Dispersions */
 [data-theme="dark"] .face {
@@ -812,22 +852,67 @@ section {
     0 0 30px rgba(168, 85, 247, 0.28);
 }
 
-/* Light Theme - Pristine Ice Glass with Sapphire/Indigo Refractions */
+/* Light Theme - Ultra-Vivid Optical Glass with Prismatic Chromatic Dispersion */
 [data-theme="light"] .face {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.80) 0%,
-    rgba(240, 249, 255, 0.45) 25%,
-    rgba(224, 231, 255, 0.35) 50%,
-    rgba(255, 255, 255, 0.65) 100%
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(224, 231, 255, 0.55) 25%,
+    rgba(186, 230, 253, 0.48) 50%,
+    rgba(244, 114, 182, 0.32) 75%,
+    rgba(224, 231, 255, 0.65) 100%
   );
-  border: 1.5px solid rgba(255, 255, 255, 0.98);
+  border: 1.5px solid rgba(79, 70, 229, 0.50);
+  box-shadow: 
+    inset 0 2px 4px rgba(255, 255, 255, 0.95),
+    inset -1px -1px 2px rgba(79, 70, 229, 0.30),
+    inset 0 0 16px rgba(56, 189, 248, 0.32),
+    0 10px 28px rgba(79, 70, 229, 0.22),
+    0 0 22px rgba(56, 189, 248, 0.38);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Light Theme - Specific Face Angles with Realistic Spectral Dispersion Rims */
+[data-theme="light"] .face-front {
+  border-color: rgba(79, 70, 229, 0.65);
   box-shadow: 
     inset 0 2px 4px rgba(255, 255, 255, 1),
-    inset -1px -1px 2px rgba(255, 255, 255, 0.6),
-    inset 0 0 16px rgba(56, 189, 248, 0.22),
-    0 8px 24px rgba(99, 102, 241, 0.16),
-    0 0 18px rgba(56, 189, 248, 0.22);
+    inset 0 0 18px rgba(56, 189, 248, 0.38),
+    0 12px 32px rgba(79, 70, 229, 0.25),
+    0 0 24px rgba(56, 189, 248, 0.40);
+}
+
+[data-theme="light"] .face-right {
+  border-color: rgba(56, 189, 248, 0.70);
+}
+
+[data-theme="light"] .face-left {
+  border-color: rgba(168, 85, 247, 0.65);
+}
+
+[data-theme="light"] .face-back {
+  border-color: rgba(244, 114, 182, 0.60);
+}
+
+[data-theme="light"] .face-shard-fl,
+[data-theme="light"] .face-needle-fl {
+  border-color: rgba(79, 70, 229, 0.60);
+}
+
+[data-theme="light"] .face-shard-fr,
+[data-theme="light"] .face-needle-fr {
+  border-color: rgba(56, 189, 248, 0.65);
+}
+
+[data-theme="light"] .face-shard-bl,
+[data-theme="light"] .face-needle-bl {
+  border-color: rgba(168, 85, 247, 0.60);
+}
+
+[data-theme="light"] .face-shard-br,
+[data-theme="light"] .face-needle-br {
+  border-color: rgba(244, 114, 182, 0.55);
 }
 
 /* --------------------------------------------------------------------------
@@ -884,6 +969,17 @@ section {
   pointer-events: none;
 }
 
+[data-theme="light"] .crystal-internal-plane {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(56, 189, 248, 0.38) 30%,
+    rgba(99, 102, 241, 0.35) 65%,
+    rgba(244, 114, 182, 0.28) 100%
+  );
+  border: 1.5px solid rgba(79, 70, 229, 0.45);
+}
+
 /* Internal Luminous Caustic Focal Core */
 .crystal-3d-core {
   position: absolute;
@@ -916,12 +1012,16 @@ section {
   background: radial-gradient(
     circle,
     #ffffff 0%,
-    rgba(99, 102, 241, 0.75) 30%,
-    rgba(56, 189, 248, 0.55) 65%,
-    transparent 80%
+    rgba(79, 70, 229, 0.95) 30%,
+    rgba(56, 189, 248, 0.85) 60%,
+    rgba(236, 72, 153, 0.50) 80%,
+    transparent 90%
   );
-  box-shadow: 0 0 22px rgba(99, 102, 241, 0.6), 0 0 35px rgba(56, 189, 248, 0.4);
-  filter: blur(4px);
+  box-shadow: 
+    0 0 28px rgba(79, 70, 229, 0.85),
+    0 0 48px rgba(56, 189, 248, 0.65),
+    0 0 70px rgba(236, 72, 153, 0.35);
+  filter: blur(3px);
   animation: causticCorePulse 4s ease-in-out infinite alternate;
 }
 
@@ -952,6 +1052,16 @@ section {
   animation: sparkleGlint 5s ease-in-out infinite;
 }
 
+[data-theme="light"] .crystal-sparkle {
+  background: radial-gradient(
+    circle,
+    #ffffff 20%,
+    rgba(79, 70, 229, 0.95) 55%,
+    transparent 75%
+  );
+  filter: drop-shadow(0 0 8px #ffffff) drop-shadow(0 0 16px rgba(79, 70, 229, 0.95));
+}
+
 @keyframes sparkleGlint {
   0%, 100% {
     transform: translateZ(20px) scale(0.8) rotate(0deg);
@@ -979,6 +1089,60 @@ section {
 .apex-glint-top { top: -4px; }
 .apex-glint-bottom { bottom: -4px; }
 
+[data-theme="light"] .apex-glint {
+  background: #ffffff;
+  box-shadow: 0 0 8px #ffffff, 0 0 16px rgba(79, 70, 229, 0.95), 0 0 24px rgba(56, 189, 248, 0.8);
+}
+
+/* --------------------------------------------------------------------------
+   Gem Polyhedron: Real Optical Glass Bipyramid Gem (80px x 110px)
+   -------------------------------------------------------------------------- */
+.polyhedron-gem {
+  position: relative;
+  width: 80px;
+  height: 110px;
+  transform-style: preserve-3d;
+}
+
+.face-gem-top {
+  width: 80px;
+  height: 55px;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  transform-origin: 50% 100%;
+}
+
+.face-gem-bot {
+  top: 55px;
+  width: 80px;
+  height: 55px;
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+  transform-origin: 50% 0%;
+}
+
+.face-gem-top.face-front { transform: rotateY(0deg) rotateX(34deg) translateZ(28px); }
+.face-gem-top.face-right { transform: rotateY(90deg) rotateX(34deg) translateZ(28px); }
+.face-gem-top.face-back  { transform: rotateY(180deg) rotateX(34deg) translateZ(28px); }
+.face-gem-top.face-left  { transform: rotateY(270deg) rotateX(34deg) translateZ(28px); }
+
+.face-gem-bot.face-front { transform: rotateY(0deg) rotateX(-34deg) translateZ(28px); }
+.face-gem-bot.face-right { transform: rotateY(90deg) rotateX(-34deg) translateZ(28px); }
+.face-gem-bot.face-back  { transform: rotateY(180deg) rotateX(-34deg) translateZ(28px); }
+.face-gem-bot.face-left  { transform: rotateY(270deg) rotateX(-34deg) translateZ(28px); }
+
+.gem-core {
+  width: 28px;
+  height: 28px;
+  margin-top: -14px;
+  margin-left: -14px;
+}
+
+.gem-sparkle {
+  width: 24px;
+  height: 24px;
+  margin-top: -12px;
+  margin-left: -12px;
+}
+
 /* --------------------------------------------------------------------------
    Companion Polyhedron: Real Optical Glass Shard (55px x 135px)
    -------------------------------------------------------------------------- */
@@ -1001,6 +1165,35 @@ section {
   margin-left: -11px;
 }
 
+/* --------------------------------------------------------------------------
+   Needle Polyhedron: Real Optical Quartz Spire / Needle (46px x 125px)
+   -------------------------------------------------------------------------- */
+.polyhedron-needle {
+  position: relative;
+  width: 46px;
+  height: 125px;
+  transform-style: preserve-3d;
+}
+
+.face-needle-fl { width: 46px; height: 125px; clip-path: polygon(50% 0%, 0% 50%, 50% 100%); transform: rotateY(-36deg) translateZ(16px); }
+.face-needle-fr { width: 46px; height: 125px; clip-path: polygon(50% 0%, 100% 50%, 50% 100%); transform: rotateY(36deg) translateZ(16px); }
+.face-needle-bl { width: 46px; height: 125px; clip-path: polygon(50% 0%, 0% 50%, 50% 100%); transform: rotateY(-144deg) translateZ(16px); }
+.face-needle-br { width: 46px; height: 125px; clip-path: polygon(50% 0%, 100% 50%, 50% 100%); transform: rotateY(144deg) translateZ(16px); }
+
+.needle-core {
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+}
+
+.needle-sparkle {
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+}
+
 /* Responsive adjustments for Mobile & Tablets - 100% Smooth Real Glass */
 @media (max-width: 768px) {
   .prismatic-3d-scene {
@@ -1010,8 +1203,9 @@ section {
     pointer-events: none;
   }
 
-  /* Mobile focuses solely on the Master Glass Crystal */
-  .crystal-pos-companion {
+  /* Keep mobile lightweight, clean and 120 FPS */
+  .crystal-pos-companion,
+  .crystal-pos-gem {
     display: none !important;
   }
 
@@ -1020,6 +1214,14 @@ section {
     top: 9% !important;
     left: auto !important;
     right: 4% !important;
+  }
+
+  .crystal-pos-needle {
+    display: block !important;
+    top: 86% !important;
+    left: auto !important;
+    right: 6% !important;
+    transform: scale(0.75) !important;
   }
 
   .polyhedron-octahedron {
