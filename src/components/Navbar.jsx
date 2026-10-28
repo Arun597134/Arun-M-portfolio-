@@ -94,21 +94,28 @@ function Navbar({ theme, toggleTheme }) {
     return () => { clearTimeout(timer); window.removeEventListener('resize', measure); };
   }, []);
 
-  // 2. Measure actual section heights dynamically to build physical scroll progress breakpoints
+  // 2. Measure actual section offset tops dynamically to build physical scroll progress breakpoints
   useEffect(() => {
     const computeBreakpoints = () => {
-      const docHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+      const docHeight = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight
+      );
       const viewHeight = window.innerHeight;
       const totalScrollable = Math.max(1, docHeight - viewHeight);
       
-      let cumulative = 0;
       const breakpoints = NAV_ITEMS.map((item, idx) => {
         if (idx === 0) return 0;
-        const prevEl = document.getElementById(NAV_ITEMS[idx - 1].id);
-        if (prevEl) {
-          cumulative += prevEl.offsetHeight;
+        const el = document.getElementById(item.id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const elementAbsTop = rect.top + window.scrollY;
+          const targetScroll = Math.max(0, elementAbsTop - viewHeight * 0.35);
+          return Math.min(1, targetScroll / totalScrollable);
         }
-        return Math.min(1, cumulative / totalScrollable);
+        return idx / (sectionCount - 1);
       });
       // Force last breakpoint to be exactly 1
       breakpoints[breakpoints.length - 1] = 1;
@@ -129,8 +136,9 @@ function Navbar({ theme, toggleTheme }) {
 
   // Smooth spring for continuous mobile robot movement
   const smoothRobotX = useSpring(robotTargetX, {
-    stiffness: 85,
+    stiffness: 110,
     damping: 24,
+    mass: 0.7,
     restDelta: 0.001
   });
 
@@ -141,8 +149,9 @@ function Navbar({ theme, toggleTheme }) {
 
   // Desktop horizontal robot: uses its own independent smooth scroll progress
   const desktopScrollSpring = useSpring(scrollYProgress, {
-    stiffness: 85,
+    stiffness: 110,
     damping: 24,
+    mass: 0.7,
     restDelta: 0.001
   });
   const desktopRobotLeft = useTransform(desktopScrollSpring, [0, 1], ['0%', '100%']);
@@ -150,9 +159,45 @@ function Navbar({ theme, toggleTheme }) {
 
   // Active section scroll tracking & navbar background scrolled state
   useEffect(() => {
+    const updateActiveSection = () => {
+      if (!observerActive.current) return;
+      const scrollY = window.scrollY;
+      const viewHeight = window.innerHeight;
+      const docHeight = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight
+      );
+
+      // Bottom lock: if scrolled near bottom of page, activate 'contact'
+      if (scrollY + viewHeight >= docHeight - 70) {
+        setActiveSection('contact');
+        return;
+      }
+
+      // Check focal line at 38% from top of viewport
+      const focalLine = scrollY + viewHeight * 0.38;
+
+      for (let i = NAV_ITEMS.length - 1; i >= 0; i--) {
+        const item = NAV_ITEMS[i];
+        const el = document.getElementById(item.id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const top = rect.top + scrollY;
+          if (focalLine >= top - 30) {
+            setActiveSection(item.id);
+            return;
+          }
+        }
+      }
+      setActiveSection('hero');
+    };
+
     const handleScroll = () => {
       const isScrolled = window.scrollY > 50;
       setScrolled(prev => (prev !== isScrolled ? isScrolled : prev));
+      updateActiveSection();
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -160,8 +205,8 @@ function Navbar({ theme, toggleTheme }) {
 
     const observerOptions = {
       root: null,
-      rootMargin: '-25% 0px -35% 0px',
-      threshold: 0.15
+      rootMargin: '-20% 0px -40% 0px',
+      threshold: 0.1
     };
 
     const observerCallback = (entries) => {
@@ -284,6 +329,12 @@ function Navbar({ theme, toggleTheme }) {
           >
             <div className="desktop-robot-scanner-eye" />
             <FiCpu size={12} className="desktop-robot-travel-icon" />
+            <div className="desktop-robot-hud-tag">
+              <span className="robot-hud-dot" />
+              <span className="robot-hud-text">
+                {NAV_ITEMS.find(i => i.id === activeSection)?.label || 'Home'}
+              </span>
+            </div>
           </motion.div>
         </div>
       </header>
@@ -342,6 +393,12 @@ function Navbar({ theme, toggleTheme }) {
             >
               <div className="robot-scanner-eye" />
               <FiCpu size={14} className="robot-travel-icon" />
+              <div className="robot-hud-tag">
+                <span className="robot-hud-dot" />
+                <span className="robot-hud-text">
+                  {NAV_ITEMS.find(i => i.id === activeSection)?.label || 'Home'}
+                </span>
+              </div>
             </motion.div>
           </div>
 

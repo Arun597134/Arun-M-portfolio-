@@ -791,6 +791,44 @@ section {
   }
 }
 
+/* 3D Tumble Across 3 Axes (Optical Glass Square Cube) */
+.crystal-action-tumble {
+  transform-style: preserve-3d;
+  will-change: transform;
+  animation: crystalActionTumble 13s ease-in-out infinite;
+}
+
+@keyframes crystalActionTumble {
+  0% {
+    transform: rotateX(15deg) rotateY(0deg) rotateZ(10deg) translateY(0);
+  }
+  50% {
+    transform: rotateX(195deg) rotateY(180deg) rotateZ(-10deg) translateY(-18px);
+  }
+  100% {
+    transform: rotateX(375deg) rotateY(360deg) rotateZ(10deg) translateY(0);
+  }
+}
+
+/* 3D Diagonal Gyro Sway (Optical Glass Square Rhombus Plate) */
+.crystal-action-sway {
+  transform-style: preserve-3d;
+  will-change: transform;
+  animation: crystalActionSway 10s ease-in-out infinite;
+}
+
+@keyframes crystalActionSway {
+  0% {
+    transform: rotateY(0deg) rotateX(25deg) rotateZ(-20deg) translateY(0);
+  }
+  50% {
+    transform: rotateY(180deg) rotateX(-15deg) rotateZ(20deg) translateY(-20px);
+  }
+  100% {
+    transform: rotateY(360deg) rotateX(25deg) rotateZ(-20deg) translateY(0);
+  }
+}
+
 /* 3D Float & Yaw Oscillation (Prismatic Quartz Needle) */
 .crystal-action-float {
   transform-style: preserve-3d;
@@ -1194,7 +1232,72 @@ section {
   margin-left: -10px;
 }
 
-/* Responsive adjustments for Mobile & Tablets - 100% Smooth Real Glass */
+/* --------------------------------------------------------------------------
+   Cube Polyhedron: Real Optical Glass Square Cube (64px x 64px x 64px)
+   -------------------------------------------------------------------------- */
+.polyhedron-cube {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  transform-style: preserve-3d;
+}
+
+.face-cube {
+  width: 64px;
+  height: 64px;
+}
+
+.face-cube-front  { transform: translateZ(32px); }
+.face-cube-back   { transform: rotateY(180deg) translateZ(32px); }
+.face-cube-right  { transform: rotateY(90deg) translateZ(32px); }
+.face-cube-left   { transform: rotateY(-90deg) translateZ(32px); }
+.face-cube-top    { transform: rotateX(90deg) translateZ(32px); }
+.face-cube-bot    { transform: rotateX(-90deg) translateZ(32px); }
+
+.cube-core {
+  width: 26px;
+  height: 26px;
+  margin-top: -13px;
+  margin-left: -13px;
+}
+
+.cube-sparkle {
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  margin-left: -11px;
+}
+
+/* --------------------------------------------------------------------------
+   Rhombus Polyhedron: Real Optical Glass Square Rhombus Plate (56px x 56px)
+   -------------------------------------------------------------------------- */
+.polyhedron-rhombus {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  transform-style: preserve-3d;
+}
+
+.face-rhombus-front   { width: 56px; height: 56px; transform: rotate(45deg) translateZ(8px); }
+.face-rhombus-back    { width: 56px; height: 56px; transform: rotate(45deg) translateZ(-8px); }
+.face-rhombus-bevel-t { width: 56px; height: 16px; clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%); transform: rotateX(60deg) translateZ(10px); }
+.face-rhombus-bevel-b { width: 56px; height: 16px; clip-path: polygon(0% 0%, 100% 0%, 75% 100%, 25% 100%); transform: rotateX(-60deg) translateZ(10px); }
+
+.rhombus-core {
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+}
+
+.rhombus-sparkle {
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+}
+
+/* Responsive adjustments for Mobile & Tablets - 100% Smooth Real Glass (All 6 Crystals Visible) */
 @media (max-width: 768px) {
   .prismatic-3d-scene {
     overflow: hidden;
@@ -1203,25 +1306,53 @@ section {
     pointer-events: none;
   }
 
-  /* Keep mobile lightweight, clean and 120 FPS */
-  .crystal-pos-companion,
-  .crystal-pos-gem {
-    display: none !important;
-  }
-
+  /* Display all optical glass elements on mobile, scaled non-intrusively to preserve readability & 120 FPS */
   .crystal-pos-master {
     display: block !important;
-    top: 9% !important;
+    top: 7% !important;
     left: auto !important;
-    right: 4% !important;
+    right: 3% !important;
+    transform: scale(0.68) !important;
+  }
+
+  .crystal-pos-cube {
+    display: block !important;
+    top: 15% !important;
+    left: 3% !important;
+    right: auto !important;
+    transform: scale(0.62) !important;
+  }
+
+  .crystal-pos-gem {
+    display: block !important;
+    top: 36% !important;
+    left: 2% !important;
+    right: auto !important;
+    transform: scale(0.60) !important;
+  }
+
+  .crystal-pos-rhombus {
+    display: block !important;
+    top: 54% !important;
+    left: auto !important;
+    right: 3% !important;
+    transform: scale(0.60) !important;
+  }
+
+  .crystal-pos-companion {
+    display: block !important;
+    top: 70% !important;
+    left: 3% !important;
+    right: auto !important;
+    transform: scale(0.60) !important;
   }
 
   .crystal-pos-needle {
     display: block !important;
     top: 86% !important;
     left: auto !important;
-    right: 6% !important;
-    transform: scale(0.75) !important;
+    right: 4% !important;
+    transform: scale(0.65) !important;
   }
 
   .polyhedron-octahedron {
@@ -2213,11 +2344,49 @@ section {
   left: 16px;
   top: 8px;
   bottom: 8px;
-  width: 2px;
-  background: linear-gradient(to bottom, var(--accent) 0%, #a5b4fc 100%);
-  transform-origin: top;
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+  width: 2.5px;
+  background: linear-gradient(to bottom, var(--accent) 0%, #38bdf8 65%, #a855f7 100%);
+  transform-origin: top center;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.65), 0 0 18px rgba(56, 189, 248, 0.45);
   z-index: 1;
+  will-change: transform;
+  border-radius: 2px;
+}
+
+.timeline-beacon {
+  position: absolute;
+  left: 17px;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;
+  will-change: top;
+}
+
+.beacon-ring {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #38bdf8;
+  animation: beaconPulse 1.8s ease-out infinite;
+}
+
+.beacon-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 8px #ffffff, 0 0 14px #38bdf8, 0 0 20px var(--accent);
+}
+
+@keyframes beaconPulse {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(2.4); opacity: 0; }
 }
 
 .timeline-item {
@@ -4280,6 +4449,77 @@ main {
   justify-content: center;
   z-index: 10;
   will-change: left;
+}
+
+/* Robot Live Section HUD Indicator Badge */
+.robot-hud-tag {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2.5px 7px;
+  border-radius: 9999px;
+  background: rgba(15, 15, 18, 0.94);
+  border: 1px solid rgba(99, 102, 241, 0.5);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 10px rgba(99, 102, 241, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 25;
+}
+
+[data-theme="light"] .robot-hud-tag {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(79, 70, 229, 0.45);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.2);
+}
+
+.robot-hud-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+  animation: pulseDot 1.4s ease-in-out infinite alternate;
+}
+
+.robot-hud-text {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+}
+
+.desktop-robot-hud-tag {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: rgba(15, 15, 18, 0.94);
+  border: 1px solid rgba(99, 102, 241, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 8px rgba(99, 102, 241, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 25;
+}
+
+[data-theme="light"] .desktop-robot-hud-tag {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(79, 70, 229, 0.45);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.18);
 }
 
 [data-theme="light"] .mobile-ai-robot-traveler {

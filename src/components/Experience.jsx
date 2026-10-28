@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { FiBriefcase } from 'react-icons/fi';
 
 const EXPERIENCES = [
@@ -31,14 +31,17 @@ function Experience() {
   // Scroll Progress Tracker for active timeline line drawing
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start center", "end center"]
+    offset: ["start 75%", "end 35%"]
   });
 
   const scaleY = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
+    stiffness: 140,
+    damping: 24,
+    mass: 0.6,
+    restDelta: 0.0005
   });
+
+  const beaconTop = useTransform(scaleY, [0, 1], ['8px', 'calc(100% - 8px)']);
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -81,6 +84,15 @@ function Experience() {
             className="timeline-line-active" 
             style={{ scaleY }} 
           />
+
+          {/* Traveling Glowing Cursor Beacon at tip of the line */}
+          <motion.div 
+            className="timeline-beacon"
+            style={{ top: beaconTop }}
+          >
+            <div className="beacon-ring" />
+            <div className="beacon-dot" />
+          </motion.div>
           
           {EXPERIENCES.map((exp) => (
             <motion.div 
