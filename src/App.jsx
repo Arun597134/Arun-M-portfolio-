@@ -47,6 +47,14 @@ export default function App() {
     }
   }, []);
 
+  // Failsafe: guarantee loader dismisses even if timers are throttled in inactive background tabs
+  useEffect(() => {
+    const failsafeTimer = setTimeout(() => {
+      setLoading(false);
+    }, 1200);
+    return () => clearTimeout(failsafeTimer);
+  }, []);
+
   // Detect mobile width and pointer properties
   useEffect(() => {
     const checkMobile = () => {

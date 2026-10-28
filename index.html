@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="background-color: #090909; color: #FFFFFF;">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -7,15 +7,47 @@
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#4f46e5" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
+    <style>
+      html, body {
+        background-color: #090909 !important;
+        color: #FFFFFF !important;
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+      }
+      #root {
+        min-height: 100vh;
+        background-color: #090909;
+      }
+    </style>
     <script>
+      // Avoid Service Worker hijacking Vite dev mode modules on localhost
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(reg => {
-              reg.update();
-            })
-            .catch(err => console.error('Service Worker registration failed', err));
-        });
+        var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isLocal) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for (var i = 0; i < registrations.length; i++) {
+              registrations[i].unregister();
+            }
+          });
+          if ('caches' in window) {
+            caches.keys().then(function(keys) {
+              for (var i = 0; i < keys.length; i++) {
+                caches.delete(keys[i]);
+              }
+            });
+          }
+        } else {
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js')
+              .then(function(reg) {
+                reg.update();
+              })
+              .catch(function(err) {
+                console.error('Service Worker registration failed', err);
+              });
+          });
+        }
       }
     </script>
     
@@ -40,7 +72,7 @@
     <meta property="twitter:description" content="Personal website of Arun M, a software developer and AI engineer building intelligent web applications, neural models, and scalable backend platforms." />
     <meta property="twitter:image" content="/civicflow_mockup.png" />
   </head>
-  <body>
+  <body style="background-color: #090909; color: #FFFFFF;">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

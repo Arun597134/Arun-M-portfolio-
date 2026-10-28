@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Loader({ onComplete }) {
   const [progress, setProgress] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
-    const duration = 650; // Snappy 650ms initial loader
-    const intervalTime = 15;
-    const steps = duration / intervalTime;
+    const duration = 500; // Ultra-snappy 500ms initial loader
+    const intervalTime = 16;
+    const steps = Math.ceil(duration / intervalTime);
     let stepCount = 0;
 
     const timer = setInterval(() => {
@@ -20,13 +22,15 @@ export default function Loader({ onComplete }) {
         clearInterval(timer);
         setIsFinished(true);
         setTimeout(() => {
-          onComplete();
-        }, 220); // Fast, smooth fade out
+          if (onCompleteRef.current) {
+            onCompleteRef.current();
+          }
+        }, 150);
       }
     }, intervalTime);
 
     return () => clearInterval(timer);
-  }, [onComplete]);
+  }, []);
 
   return (
     <AnimatePresence>

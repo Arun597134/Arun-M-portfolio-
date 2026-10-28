@@ -9,9 +9,7 @@ import React from 'react';
  * - Internal luminous caustic light core & diamond starflare glints
  * - 100% GPU-accelerated CSS 3D (preserve-3d) with locked 120 FPS performance
  */
-function PrismaticCrystals({ theme }) {
-  const isDark = theme === 'dark';
-
+function PrismaticCrystals() {
   return (
     <div className="prismatic-3d-scene" aria-hidden="true">
       {/* 1. Master Optical Glass Octahedron Diamond Crystal */}
