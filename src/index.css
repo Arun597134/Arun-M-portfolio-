@@ -3652,18 +3652,167 @@ main {
 .security-watermark-grid {
   position: absolute;
   inset: 0;
-  background-size: 24px 24px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  border-radius: 20px;
+  overflow: hidden;
   pointer-events: none;
-  opacity: 0.6;
+  z-index: 1;
 }
 
-[data-theme="light"] .security-watermark-grid {
+.grid-blueprint-lines {
+  position: absolute;
+  inset: 0;
+  background-size: 26px 26px;
   background-image: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  opacity: 0.65;
+  transition: opacity 0.4s ease;
+}
+
+[data-theme="light"] .grid-blueprint-lines {
+  background-image: 
+    linear-gradient(to right, rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
+  opacity: 0.75;
+}
+
+.credential-pass-card:hover .grid-blueprint-lines {
+  opacity: 0.95;
+}
+
+/* AI/ML Neural Synaptic Network & Circuit Vector */
+.neural-network-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.35;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+[data-theme="light"] .neural-network-canvas {
+  opacity: 0.45;
+}
+
+.credential-pass-card:hover .neural-network-canvas {
+  opacity: 0.85;
+}
+
+.synapse-path {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1.2px;
+  stroke-dasharray: 4 4;
+}
+
+[data-theme="light"] .synapse-path {
+  stroke: rgba(79, 70, 229, 0.14);
+}
+
+/* Forward and Backward Propagation Active Signal Pulses */
+.synapse-active-stream {
+  stroke: var(--pass-accent, var(--accent));
+  stroke-width: 2px;
+  stroke-dasharray: 18 90;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 5px var(--pass-accent, var(--accent)));
+  will-change: stroke-dashoffset;
+}
+
+.stream-1 {
+  animation: neuralSynapseFlow 3.8s linear infinite;
+}
+
+.stream-2 {
+  animation: neuralSynapseFlow 4.5s linear infinite 0.8s;
+}
+
+.stream-3 {
+  animation: neuralSynapseFlow 3.2s linear infinite 1.5s;
+}
+
+.stream-4 {
+  animation: neuralSynapseFlow 2.6s linear infinite 0.3s;
+}
+
+@keyframes neuralSynapseFlow {
+  0% {
+    stroke-dashoffset: 220;
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.25;
+  }
+}
+
+/* Neural Network Nodes / Neurons */
+.neuron-node {
+  fill: #0b0f19;
+  stroke: var(--pass-accent, var(--accent));
+  stroke-width: 1.8px;
+  filter: drop-shadow(0 0 4px var(--pass-glow, rgba(99, 102, 241, 0.4)));
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .neuron-node {
+  fill: #ffffff;
+}
+
+.neuron-hub {
+  animation: neuronHubPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes neuronHubPulse {
+  0% {
+    filter: drop-shadow(0 0 3px var(--pass-accent, var(--accent)));
+    transform-origin: center;
+  }
+  100% {
+    filter: drop-shadow(0 0 8px var(--pass-accent, var(--accent))) drop-shadow(0 0 14px var(--pass-glow, rgba(99, 102, 241, 0.6)));
+  }
+}
+
+/* AI/ML & Full Stack Live Telemetry Metadata */
+.telemetry-watermark-row {
+  position: absolute;
+  bottom: 8px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--pass-accent, var(--accent));
+  opacity: 0.45;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  user-select: none;
+}
+
+.credential-pass-card:hover .telemetry-watermark-row {
+  opacity: 0.9;
+}
+
+.telemetry-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1.5px 5.5px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .telemetry-badge {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(79, 70, 229, 0.1);
 }
 
 /* Card Header Banner */

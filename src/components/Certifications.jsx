@@ -176,6 +176,8 @@ function HolographicCredentialCard({ cert }) {
         style={{
           '--pass-accent': cert.accentColor,
           '--pass-glow': cert.glowColor,
+          '--mouse-x': `${glarePos.x}%`,
+          '--mouse-y': `${glarePos.y}%`,
         }}
       >
         {/* Holographic Shimmer Foil Overlay */}
@@ -186,8 +188,51 @@ function HolographicCredentialCard({ cert }) {
           }}
         />
 
-        {/* Security Guilloche Grid Background Watermark */}
-        <div className="security-watermark-grid" />
+        {/* AI/ML Neural Synaptic Architecture & Full-Stack Telemetry Watermark */}
+        <div className="security-watermark-grid">
+          {/* Background Blueprint Grid Lines */}
+          <div className="grid-blueprint-lines" />
+
+          {/* Neural Network Architecture Vector */}
+          <svg className="neural-network-canvas" viewBox="0 0 380 220" fill="none" preserveAspectRatio="none">
+            {/* Passive Synaptic Connection Paths */}
+            <path d="M 35 55 Q 90 25 150 75 T 325 55" className="synapse-path" />
+            <path d="M 35 55 Q 100 110 150 145 T 325 165" className="synapse-path" />
+            <path d="M 35 165 Q 90 120 150 75 T 325 55" className="synapse-path" />
+            <path d="M 35 165 Q 90 195 150 145 T 325 165" className="synapse-path" />
+            <path d="M 150 75 L 150 145" className="synapse-path" />
+            <path d="M 90 110 L 240 110" className="synapse-path" />
+
+            {/* Active Synaptic Forward & Back-Prop Pulses */}
+            <path d="M 35 55 Q 90 25 150 75 T 325 55" className="synapse-active-stream stream-1" />
+            <path d="M 35 165 Q 90 120 150 75 T 325 55" className="synapse-active-stream stream-2" />
+            <path d="M 35 55 Q 100 110 150 145 T 325 165" className="synapse-active-stream stream-3" />
+            <path d="M 150 75 L 150 145" className="synapse-active-stream stream-4" />
+
+            {/* Neural Network Nodes (Neurons) */}
+            <circle cx="35" cy="55" r="4.5" className="neuron-node" />
+            <circle cx="35" cy="165" r="4.5" className="neuron-node" />
+            <circle cx="95" cy="110" r="5" className="neuron-node neuron-hub" />
+            <circle cx="150" cy="75" r="5" className="neuron-node" />
+            <circle cx="150" cy="145" r="5" className="neuron-node" />
+            <circle cx="235" cy="110" r="5" className="neuron-node neuron-hub" />
+            <circle cx="325" cy="55" r="4.5" className="neuron-node" />
+            <circle cx="325" cy="165" r="4.5" className="neuron-node" />
+          </svg>
+
+          {/* AI/ML & Full Stack Live Telemetry Metadata */}
+          <div className="telemetry-watermark-row">
+            <span className="telemetry-badge">
+              {cert.category === 'ai' ? '⚡ NEURAL LOSS: 0.0014' : '⚡ REST API: 200 OK'}
+            </span>
+            <span className="telemetry-badge">
+              {cert.category === 'ai' ? 'VAL_ACC: 99.8%' : 'LATENCY: 12ms'}
+            </span>
+            <span className="telemetry-badge">
+              {cert.category === 'ai' ? 'TENSOR[512]' : 'SHA-256 VERIFIED'}
+            </span>
+          </div>
+        </div>
 
         {/* Card Header Banner */}
         <div className="pass-header-row">
