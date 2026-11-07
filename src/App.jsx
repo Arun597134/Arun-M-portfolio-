@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
 import Loader from './components/Loader';
 import CyberGridBackground from './components/CyberGridBackground';
 import Navbar from './components/Navbar';
@@ -65,6 +67,45 @@ export default function App() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Initialize Studio Freight Lenis for ultra-luxurious, butter-smooth 120 FPS momentum scrolling
+  useEffect(() => {
+    if (loading) return;
+
+    // Detect mobile touch devices (phones and tablets)
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
+
+    // On mobile touch screens, let the browser handle 100% native hardware compositor momentum
+    // (Bypassing JS touch virtual scroll eliminates 100% touch interception latency on iOS & Android)
+    if (isTouchDevice) {
+      return;
+    }
+
+    const lenis = new Lenis({
+      duration: 1.05,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Apple-grade exponential inertia
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      infinite: false,
+      wheelMultiplier: 1.0,
+    });
+
+    window.lenis = lenis;
+
+    let rafId;
+    function raf(time) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+      window.lenis = null;
+    };
+  }, [loading]);
+
   // Custom Cursor (Desktop only - 0 DOM dirtying, pure GPU transform)
   useEffect(() => {
     if (loading || isMobile) return;
@@ -78,18 +119,21 @@ export default function App() {
 
     let animationFrameId;
     const render = () => {
-      // Lerp logic for smooth follower lag (tuned to 0.10 for responsive, silky glide)
+      // Lerp logic for smooth follower lag (tuned to 0.16 for responsive, silky glide)
       const dx = followerPos.current.targetX - followerPos.current.x;
       const dy = followerPos.current.targetY - followerPos.current.y;
       
-      followerPos.current.x += dx * 0.10;
-      followerPos.current.y += dy * 0.10;
- 
-      if (followerRef.current) {
-        followerRef.current.style.transform = `translate3d(calc(${followerPos.current.x}px - 50%), calc(${followerPos.current.y}px - 50%), 0)`;
-      }
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate3d(calc(${followerPos.current.targetX}px - 50%), calc(${followerPos.current.targetY}px - 50%), 0)`;
+      // Only mutate styles when cursor is actively interpolating
+      if (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05) {
+        followerPos.current.x += dx * 0.16;
+        followerPos.current.y += dy * 0.16;
+   
+        if (followerRef.current) {
+          followerRef.current.style.transform = `translate3d(calc(${followerPos.current.x.toFixed(1)}px - 50%), calc(${followerPos.current.y.toFixed(1)}px - 50%), 0)`;
+        }
+        if (cursorRef.current) {
+          cursorRef.current.style.transform = `translate3d(calc(${followerPos.current.targetX}px - 50%), calc(${followerPos.current.targetY}px - 50%), 0)`;
+        }
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -139,7 +183,6 @@ export default function App() {
     <div ref={appRef} className="app-container cursor-default">
       {/* Dynamic Cyber Grid Wave Background with Neon Sparks */}
       <CyberGridBackground theme={theme} />
-      <div className="noise-overlay" />
       
       {/* Custom Cursor elements (Desktop only) */}
       {!isMobile && (
@@ -157,7 +200,7 @@ export default function App() {
         <SelectedWork activeTech={activeTech} />
         <Experience />
         <Technologies activeTech={activeTech} setActiveTech={setActiveTech} />
-        <Achievements />
+        <Achievements theme={theme} />
         <Certifications />
         <Contact />
       </main>

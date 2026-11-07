@@ -7,8 +7,8 @@ import { MeshDistortMaterial, Sphere } from '@react-three/drei';
 function Interactive3DScene({ isInView = true }) {
   const outerWireRef = useRef();
   const innerBlobRef = useRef();
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const segments = isMobile ? 32 : 64;
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
+  const segments = isMobile ? 24 : 64;
 
   useFrame((state) => {
     if (!isInView) return; // Complete skip when off-screen to save 100% GPU
@@ -28,26 +28,27 @@ function Interactive3DScene({ isInView = true }) {
 
   return (
     <group>
-      {/* Outer Wireframe Shell */}
-      <mesh ref={outerWireRef}>
-        <icosahedronGeometry args={[2.2, 1]} />
-        <meshBasicMaterial 
-          color="#6366f1" 
-          wireframe 
-          transparent 
-          opacity={0.14} 
-        />
-      </mesh>
+      {/* Outer Rotating Wireframe Shell & Orbit Ring (Combined group for 1 unified GPU matrix transform) */}
+      <group ref={outerWireRef}>
+        <mesh>
+          <icosahedronGeometry args={[2.2, 1]} />
+          <meshBasicMaterial 
+            color="#6366f1" 
+            wireframe 
+            transparent 
+            opacity={0.14} 
+          />
+        </mesh>
 
-      {/* Secondary outer orbit ring */}
-      <mesh ref={outerWireRef}>
-        <torusGeometry args={[2.5, 0.02, 8, 100]} />
-        <meshBasicMaterial
-          color="#818cf8"
-          transparent
-          opacity={0.1}
-        />
-      </mesh>
+        <mesh>
+          <torusGeometry args={isMobile ? [2.5, 0.02, 6, 40] : [2.5, 0.02, 8, 100]} />
+          <meshBasicMaterial
+            color="#818cf8"
+            transparent
+            opacity={0.1}
+          />
+        </mesh>
+      </group>
 
       {/* Central Organic Blob representing AI & Code */}
       <Sphere ref={innerBlobRef} args={[1.2, segments, segments]} scale={1.1}>
@@ -216,8 +217,8 @@ function Hero() {
               <Canvas 
                 frameloop={isInView ? 'always' : 'never'}
                 camera={{ position: [0, 0, 5], fov: 45 }}
-                dpr={[1, 1.5]}
-                gl={{ powerPreference: 'high-performance', antialias: true, alpha: true }}
+                dpr={typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches) ? 1 : [1, 1.5]}
+                gl={{ powerPreference: 'high-performance', antialias: typeof window !== 'undefined' && window.innerWidth >= 768, alpha: true }}
               >
                 <Interactive3DScene isInView={isInView} />
               </Canvas>

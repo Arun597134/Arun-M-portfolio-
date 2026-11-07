@@ -10,20 +10,46 @@ function ProjectVideo({ src, poster }) {
     const video = videoRef.current;
     if (!video) return;
 
-    // Buffer and prepare video 350px before entering viewport for instant playback
+    let isVisible = false;
+
+    // Play video strictly when visible in viewport, pause when off-screen to preserve GPU/decoder bandwidth
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
           video.play().catch(() => {});
         } else {
           video.pause();
         }
       },
-      { rootMargin: '350px 0px 350px 0px', threshold: 0.01 }
+      { rootMargin: '100px 0px 100px 0px', threshold: 0.1 }
     );
 
     observer.observe(video);
-    return () => observer.disconnect();
+
+    // On mobile touch devices, pause playback during active scrolling to free 100% GPU bandwidth for 120 FPS momentum
+    let scrollTimeout = null;
+    const handleScroll = () => {
+      if (window.innerWidth < 768) {
+        if (!video.paused) {
+          video.pause();
+        }
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          if (isVisible) {
+            video.play().catch(() => {});
+          }
+        }, 150);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+    };
   }, []);
 
   return (

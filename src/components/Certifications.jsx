@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiAward, FiExternalLink, FiCheckCircle, FiShield, FiCpu, FiDatabase, FiCloud, FiLayers } from 'react-icons/fi';
 
@@ -127,31 +127,42 @@ const CERTIFICATIONS = [
 ];
 
 function HolographicCredentialCard({ cert }) {
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-  const [glarePos, setGlarePos] = useState({ x: 50, y: 50 });
+  const cardRef = useRef(null);
+  const rafRef = useRef(null);
 
   const handleMouseMove = (e) => {
+    // Only apply 3D tilt on fine pointer (desktop mouse), completely skip on mobile/touch to guarantee 120 FPS scroll
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    if (!cardRef.current) return;
+
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const rX = ((y - centerY) / centerY) * -7;
-    const rY = ((x - centerX) / centerX) * 7;
+    const rX = ((y - centerY) / centerY) * -5;
+    const rY = ((x - centerX) / centerX) * 5;
+    const glareX = ((x / rect.width) * 100).toFixed(1);
+    const glareY = ((y / rect.height) * 100).toFixed(1);
 
-    setRotateX(rX);
-    setRotateY(rY);
-    setGlarePos({
-      x: (x / rect.width) * 100,
-      y: (y / rect.height) * 100,
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      if (cardRef.current) {
+        cardRef.current.style.transform = `perspective(1000px) rotateX(${rX.toFixed(2)}deg) rotateY(${rY.toFixed(2)}deg)`;
+        cardRef.current.style.setProperty('--mouse-x', `${glareX}%`);
+        cardRef.current.style.setProperty('--mouse-y', `${glareY}%`);
+      }
     });
   };
 
   const handleMouseLeave = () => {
-    setRotateX(0);
-    setRotateY(0);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (cardRef.current) {
+      cardRef.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+      cardRef.current.style.setProperty('--mouse-x', '50%');
+      cardRef.current.style.setProperty('--mouse-y', '50%');
+    }
   };
 
   return (
@@ -162,76 +173,26 @@ function HolographicCredentialCard({ cert }) {
       exit={{ opacity: 0, y: 20, scale: 0.95 }}
       transition={{ duration: 0.45, ease: 'easeOut' }}
       className="credential-pass-wrapper"
-      style={{ perspective: 1000 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <motion.div
+      <div
+        ref={cardRef}
         className="credential-pass-card"
-        animate={{
-          rotateX: rotateX,
-          rotateY: rotateY,
-        }}
-        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
         style={{
           '--pass-accent': cert.accentColor,
           '--pass-glow': cert.glowColor,
-          '--mouse-x': `${glarePos.x}%`,
-          '--mouse-y': `${glarePos.y}%`,
+          '--mouse-x': '50%',
+          '--mouse-y': '50%',
         }}
       >
-        {/* Holographic Shimmer Foil Overlay */}
-        <div
-          className="holo-shimmer-layer"
-          style={{
-            background: `radial-gradient(circle at ${glarePos.x}% ${glarePos.y}%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.03) 40%, transparent 70%)`
-          }}
-        />
+        {/* Holographic Shimmer Foil Overlay (Pure GPU opacity, 0 mix-blend-mode penalty) */}
+        <div className="holo-shimmer-layer" />
 
-        {/* AI/ML Neural Synaptic Architecture & Full-Stack Telemetry Watermark */}
+        {/* Simple & Minimal Security Blueprint & Ambient Glow */}
         <div className="security-watermark-grid">
-          {/* Background Blueprint Grid Lines */}
           <div className="grid-blueprint-lines" />
-
-          {/* Neural Network Architecture Vector */}
-          <svg className="neural-network-canvas" viewBox="0 0 380 220" fill="none" preserveAspectRatio="none">
-            {/* Passive Synaptic Connection Paths */}
-            <path d="M 35 55 Q 90 25 150 75 T 325 55" className="synapse-path" />
-            <path d="M 35 55 Q 100 110 150 145 T 325 165" className="synapse-path" />
-            <path d="M 35 165 Q 90 120 150 75 T 325 55" className="synapse-path" />
-            <path d="M 35 165 Q 90 195 150 145 T 325 165" className="synapse-path" />
-            <path d="M 150 75 L 150 145" className="synapse-path" />
-            <path d="M 90 110 L 240 110" className="synapse-path" />
-
-            {/* Active Synaptic Forward & Back-Prop Pulses */}
-            <path d="M 35 55 Q 90 25 150 75 T 325 55" className="synapse-active-stream stream-1" />
-            <path d="M 35 165 Q 90 120 150 75 T 325 55" className="synapse-active-stream stream-2" />
-            <path d="M 35 55 Q 100 110 150 145 T 325 165" className="synapse-active-stream stream-3" />
-            <path d="M 150 75 L 150 145" className="synapse-active-stream stream-4" />
-
-            {/* Neural Network Nodes (Neurons) */}
-            <circle cx="35" cy="55" r="4.5" className="neuron-node" />
-            <circle cx="35" cy="165" r="4.5" className="neuron-node" />
-            <circle cx="95" cy="110" r="5" className="neuron-node neuron-hub" />
-            <circle cx="150" cy="75" r="5" className="neuron-node" />
-            <circle cx="150" cy="145" r="5" className="neuron-node" />
-            <circle cx="235" cy="110" r="5" className="neuron-node neuron-hub" />
-            <circle cx="325" cy="55" r="4.5" className="neuron-node" />
-            <circle cx="325" cy="165" r="4.5" className="neuron-node" />
-          </svg>
-
-          {/* AI/ML & Full Stack Live Telemetry Metadata */}
-          <div className="telemetry-watermark-row">
-            <span className="telemetry-badge">
-              {cert.category === 'ai' ? '⚡ NEURAL LOSS: 0.0014' : '⚡ REST API: 200 OK'}
-            </span>
-            <span className="telemetry-badge">
-              {cert.category === 'ai' ? 'VAL_ACC: 99.8%' : 'LATENCY: 12ms'}
-            </span>
-            <span className="telemetry-badge">
-              {cert.category === 'ai' ? 'TENSOR[512]' : 'SHA-256 VERIFIED'}
-            </span>
-          </div>
+          <div className="cert-ambient-glow" />
         </div>
 
         {/* Card Header Banner */}
@@ -296,7 +257,7 @@ function HolographicCredentialCard({ cert }) {
             <FiExternalLink size={13} className="verify-arrow" />
           </a>
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }

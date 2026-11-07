@@ -35,10 +35,10 @@ function Experience() {
   });
 
   const scaleY = useSpring(scrollYProgress, {
-    stiffness: 140,
-    damping: 24,
-    mass: 0.6,
-    restDelta: 0.0005
+    stiffness: 110,
+    damping: 28,
+    mass: 0.5,
+    restDelta: 0.0002
   });
 
   const beaconTop = useTransform(scaleY, [0, 1], ['8px', 'calc(100% - 8px)']);

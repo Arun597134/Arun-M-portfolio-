@@ -136,9 +136,9 @@ function Navbar({ theme, toggleTheme }) {
 
   // Smooth spring for continuous mobile robot movement
   const smoothRobotX = useSpring(robotTargetX, {
-    stiffness: 110,
-    damping: 24,
-    mass: 0.7,
+    stiffness: 95,
+    damping: 26,
+    mass: 0.5,
     restDelta: 0.001
   });
 
@@ -149,15 +149,16 @@ function Navbar({ theme, toggleTheme }) {
 
   // Desktop horizontal robot: uses its own independent smooth scroll progress
   const desktopScrollSpring = useSpring(scrollYProgress, {
-    stiffness: 110,
-    damping: 24,
-    mass: 0.7,
+    stiffness: 95,
+    damping: 26,
+    mass: 0.5,
     restDelta: 0.001
   });
   const desktopRobotLeft = useTransform(desktopScrollSpring, [0, 1], ['0%', '100%']);
   const desktopTrailFill = desktopScrollSpring;
 
   const sectionTopsRef = useRef({});
+  const docHeightRef = useRef(0);
 
   // Active section scroll tracking & navbar background scrolled state (0 Layout Thrashing, Pure RAF)
   useEffect(() => {
@@ -171,6 +172,7 @@ function Navbar({ theme, toggleTheme }) {
         }
       });
       sectionTopsRef.current = tops;
+      docHeightRef.current = document.documentElement.scrollHeight || document.body.scrollHeight;
     };
 
     measureSectionTops();
@@ -187,7 +189,7 @@ function Navbar({ theme, toggleTheme }) {
 
           if (observerActive.current) {
             const viewHeight = window.innerHeight;
-            const docHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+            const docHeight = docHeightRef.current || 3000;
 
             if (scrollY + viewHeight >= docHeight - 70) {
               setActiveSection(prev => (prev !== 'contact' ? 'contact' : prev));

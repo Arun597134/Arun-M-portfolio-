@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { FiBookOpen, FiActivity, FiAward, FiCalendar, FiMapPin, FiCpu, FiUser } from 'react-icons/fi';
 
 const cardsData = [
@@ -219,9 +219,6 @@ function About() {
 
   return (
     <section id="about" className="about-section" onClick={handleBoardClick}>
-      {/* Background Film Grain Overlay */}
-      <div className="identity-grain-overlay" />
-
       <div className="container">
         <div className="identity-section-header">
           <span className="section-label">01 / STORY</span>

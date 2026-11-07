@@ -1,167 +1,285 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 
-// 3D Gradient Definitions Component to avoid duplicating in each SVG
-const SVG3DDefs = ({ id, color, darkerColor }) => (
-  <defs>
-    {/* 3D Metallic Cylinder Gradient for base & stems */}
-    <linearGradient id={`metal-cyl-${id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stopColor={darkerColor} />
-      <stop offset="25%" stopColor={color} />
-      <stop offset="50%" stopColor="#ffffff" stopOpacity="0.8" />
-      <stop offset="75%" stopColor={color} />
-      <stop offset="100%" stopColor={darkerColor} />
-    </linearGradient>
+// ============================================================================
+// Apple-Style Frosted Glass 3D Milestone Medallions
+// ============================================================================
 
-    {/* 3D Spherical Sphere Gradient for cup bowls */}
-    <radialGradient id={`metal-bowl-${id}`} cx="45%" cy="35%" r="60%" fx="35%" fy="25%">
-      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-      <stop offset="40%" stopColor={color} />
-      <stop offset="85%" stopColor={darkerColor} />
-      <stop offset="100%" stopColor="#080710" />
-    </radialGradient>
+// 1. Hexagon Algorithmic Core Medallion (LeetCode 320+)
+const HexAlgoMedallion = ({ color, theme }) => {
+  const isLight = theme === 'light';
+  const rimColor = isLight ? 'rgba(148, 163, 184, 0.65)' : 'rgba(255, 255, 255, 0.85)';
+  const innerGlass = isLight ? 'url(#glass-light-hex)' : 'url(#glass-dark-hex)';
 
-    {/* Inner shadow gradient for cup depth */}
-    <linearGradient id={`inner-depth-${id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stopColor="#050508" />
-      <stop offset="100%" stopColor={darkerColor} />
-    </linearGradient>
-  </defs>
-);
-
-// 1. Coding Cup SVG (3D Shaded)
-const CodeTrophySVG = ({ color }) => {
-  const darker = '#1e1b4b'; // Deep Indigo shadow
   return (
-    <svg viewBox="0 0 100 100" className="trophy-svg">
-      <SVG3DDefs id="code" color={color} darkerColor={darker} />
-      
-      {/* Back handle rings (for 3D layering) */}
-      <path d="M 28 26 C 18 26 18 42 28 44" fill="none" stroke={color} strokeWidth="5" strokeLinecap="round" opacity="0.6" />
-      <path d="M 72 26 C 82 26 82 42 72 44" fill="none" stroke={color} strokeWidth="5" strokeLinecap="round" opacity="0.6" />
+    <svg viewBox="0 0 100 100" className="medallion-svg">
+      <defs>
+        <radialGradient id="glass-dark-hex" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.35" />
+          <stop offset="40%" stopColor="rgba(99, 102, 241, 0.25)" />
+          <stop offset="85%" stopColor="rgba(30, 27, 75, 0.65)" />
+          <stop offset="100%" stopColor="rgba(15, 15, 24, 0.9)" />
+        </radialGradient>
+        <radialGradient id="glass-light-hex" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="50%" stopColor="rgba(241, 245, 249, 0.85)" />
+          <stop offset="85%" stopColor="rgba(226, 232, 240, 0.75)" />
+          <stop offset="100%" stopColor="rgba(203, 213, 225, 0.60)" />
+        </radialGradient>
+        <linearGradient id="hex-edge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
+          <stop offset="30%" stopColor={color} />
+          <stop offset="70%" stopColor="rgba(255, 255, 255, 0.4)" />
+          <stop offset="100%" stopColor={color} />
+        </linearGradient>
+      </defs>
 
-      {/* Front handles overlay */}
-      <path d="M 29 28 C 20 28 20 40 29 42" fill="none" stroke="url(#metal-cyl-code)" strokeWidth="4.5" strokeLinecap="round" />
-      <path d="M 71 28 C 80 28 80 40 71 42" fill="none" stroke="url(#metal-cyl-code)" strokeWidth="4.5" strokeLinecap="round" />
+      {/* Outer Hexagon Bevel */}
+      <polygon
+        points="50,6 88,28 88,72 50,94 12,72 12,28"
+        fill={innerGlass}
+        stroke="url(#hex-edge-grad)"
+        strokeWidth="1.5"
+      />
 
-      {/* Cup Bowl Interior Depth */}
-      <path d="M 32 20 C 32 20, 50 25, 68 20 L 68 22 C 68 22, 50 27, 32 22 Z" fill="url(#inner-depth-code)" />
+      {/* Inner Hexagon Frame */}
+      <polygon
+        points="50,14 80,31 80,69 50,86 20,69 20,31"
+        fill="none"
+        stroke={rimColor}
+        strokeWidth="1"
+        strokeDasharray="4 2"
+      />
 
-      {/* Cup Bowl (3D Radial Gradient) */}
-      <path d="M 32 21 L 68 21 L 66 43 C 66 54 58 61 50 61 C 42 61 34 54 34 43 Z" fill="url(#metal-bowl-code)" stroke={color} strokeWidth="1" />
+      {/* Diagonal Optical Facet Sheen */}
+      <path
+        d="M 12 28 L 88 28 L 50 6 Z"
+        fill="url(#hex-edge-grad)"
+        opacity={isLight ? 0.35 : 0.25}
+      />
 
-      {/* Stem (3D Cylinder Gradient) */}
-      <path d="M 47 60 L 53 60 L 53 74 L 47 74 Z" fill="url(#metal-cyl-code)" />
-      
-      {/* 3D Circular Base Plates */}
-      <ellipse cx="50" cy="74" rx="16" ry="4" fill="url(#metal-bowl-code)" stroke={color} strokeWidth="1" />
-      <ellipse cx="50" cy="79" rx="22" ry="5" fill="url(#metal-cyl-code)" stroke={color} strokeWidth="1" />
-
-      {/* Front Code Symbol Badge (Glint Overlay) */}
-      <path d="M 43 33 L 38 37 L 43 41" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M 57 33 L 62 37 L 57 41" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M 52 31 L 48 43" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
-  );
-};
-
-// 2. Academic Shield Plaque SVG (3D Shaded)
-const ShieldTrophySVG = ({ color }) => {
-  const darker = '#042f2e'; // Deep Teal shadow
-  return (
-    <svg viewBox="0 0 100 100" className="trophy-svg">
-      <SVG3DDefs id="shield" color={color} darkerColor={darker} />
-
-      {/* Shield 3D Outer Rim (Thick bevel) */}
-      <path d="M 30 16 L 70 16 L 68 44 C 68 56 50 64 50 64 C 50 64 32 56 32 44 Z" fill="url(#metal-cyl-shield)" stroke={color} strokeWidth="1.5" />
-      
-      {/* Shield Core Interior (3D Radial Gradient) */}
-      <path d="M 35 21 L 65 21 L 63 42 C 63 51 50 58 50 58 C 50 58 37 51 37 42 Z" fill="url(#metal-bowl-shield)" />
-
-      {/* Ribbon drape behind pedestal */}
-      <path d="M 42 60 L 36 78 L 44 75 L 48 78 Z" fill={darker} stroke={color} strokeWidth="1" />
-      <path d="M 58 60 L 64 78 L 56 75 L 52 78 Z" fill={darker} stroke={color} strokeWidth="1" />
-
-      {/* Stem & Base */}
-      <path d="M 47 58 L 53 58 L 53 72 L 47 72 Z" fill="url(#metal-cyl-shield)" />
-      <ellipse cx="50" cy="72" rx="16" ry="4" fill="url(#metal-bowl-shield)" />
-      <ellipse cx="50" cy="77" rx="22" ry="5" fill="url(#metal-cyl-shield)" />
-
-      {/* Central 3D Embossed Star */}
-      <polygon points="50,26 52.5,32 59,32 54,36 56.5,42 50,38 43.5,42 46,36 41,32 47.5,32" fill="#ffffff" stroke={color} strokeWidth="1" />
-    </svg>
-  );
-};
-
-// 3. Mentorship Laurel Cup SVG (3D Shaded)
-const LaurelTrophySVG = ({ color }) => {
-  const darker = '#0c1a30'; // Deep Sky Blue shadow
-  return (
-    <svg viewBox="0 0 100 100" className="trophy-svg">
-      <SVG3DDefs id="laurel" color={color} darkerColor={darker} />
-
-      {/* Back Leaves */}
-      <path d="M 24 22 C 20 30 24 44 34 52 M 76 22 C 80 30 76 44 66 52" fill="none" stroke={darker} strokeWidth="3" strokeLinecap="round" opacity="0.5" />
-
-      {/* Cup Bowl Interior Depth */}
-      <ellipse cx="50" cy="22" rx="15" ry="3.5" fill="url(#inner-depth-laurel)" />
-
-      {/* 3D Cup Bowl */}
-      <path d="M 35 22 L 65 22 L 63 44 C 63 52 57 58 50 58 C 43 58 37 52 37 44 Z" fill="url(#metal-bowl-laurel)" stroke={color} strokeWidth="1" />
-
-      {/* Stem & Base */}
-      <path d="M 48 57 L 52 57 L 52 72 L 48 72 Z" fill="url(#metal-cyl-laurel)" />
-      <ellipse cx="50" cy="72" rx="14" ry="3.5" fill="url(#metal-bowl-laurel)" />
-      <ellipse cx="50" cy="77" rx="20" ry="4.5" fill="url(#metal-cyl-laurel)" />
-
-      {/* Front Laurel Branches (Overlay) */}
-      <path d="M 25 24 C 21 32 25 44 35 50 M 75 24 C 79 32 75 44 65 50" fill="none" stroke="url(#metal-cyl-laurel)" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="23" cy="28" r="2.5" fill="#ffffff" />
-      <circle cx="26" cy="38" r="2.5" fill={color} />
-      <circle cx="31" cy="46" r="2.5" fill="#ffffff" />
-      <circle cx="77" cy="28" r="2.5" fill="#ffffff" />
-      <circle cx="74" cy="38" r="2.5" fill={color} />
-      <circle cx="69" cy="46" r="2.5" fill="#ffffff" />
-    </svg>
-  );
-};
-
-// 4. Ambassador Pillar Star SVG (3D Shaded)
-const StarTrophySVG = ({ color }) => {
-  const darker = '#2e1065'; // Deep Purple shadow
-  return (
-    <svg viewBox="0 0 100 100" className="trophy-svg">
-      <SVG3DDefs id="star" color={color} darkerColor={darker} />
-
-      {/* 3D Faceted Obelisk Pillar */}
-      {/* Left dark shadow facet */}
-      <path d="M 42 42 L 50 42 L 50 72 L 45 72 Z" fill={darker} stroke={color} strokeWidth="0.5" />
-      {/* Right metallic light reflection facet */}
-      <path d="M 50 42 L 58 42 L 55 72 L 50 72 Z" fill="url(#metal-cyl-star)" stroke={color} strokeWidth="0.5" />
-
-      {/* Base Pedestals */}
-      <ellipse cx="50" cy="72" rx="16" ry="4.5" fill="url(#metal-bowl-star)" stroke={color} strokeWidth="1" />
-      <ellipse cx="50" cy="77" rx="22" ry="5.5" fill="url(#metal-cyl-star)" stroke={color} strokeWidth="1" />
-
-      {/* 3D Faceted Star on Top */}
-      {/* We draw the star facets individually to create a true beveled 3D look */}
-      <g stroke={color} strokeWidth="0.75" strokeLinejoin="round">
-        {/* Top Point Facets */}
-        <polygon points="50,12 50,32 54,22" fill="#ffffff" />
-        <polygon points="50,12 50,32 46,22" fill={darker} />
-        {/* Right Point Facets */}
-        <polygon points="63,22 50,32 54,22" fill="url(#metal-cyl-star)" />
-        <polygon points="63,22 50,32 56,29" fill={darker} />
-        {/* Bottom Right Facets */}
-        <polygon points="59,37 50,32 56,29" fill="#ffffff" />
-        <polygon points="59,37 50,32 50,33" fill={darker} />
-        {/* Bottom Left Facets */}
-        <polygon points="41,37 50,32 50,33" fill="url(#metal-cyl-star)" />
-        <polygon points="41,37 50,32 44,29" fill={darker} />
-        {/* Left Point Facets */}
-        <polygon points="37,22 50,32 44,29" fill="#ffffff" />
-        <polygon points="37,22 50,32 46,22" fill={darker} />
+      {/* Central Algorithmic Code Core Symbol (< />) */}
+      <g stroke={isLight ? '#4f46e5' : '#ffffff'} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <path d="M 40 40 L 33 48 L 40 56" />
+        <path d="M 60 40 L 67 48 L 60 56" />
+        <path d="M 54 38 L 46 58" stroke={isLight ? '#6366f1' : '#38bdf8'} strokeWidth="2.5" />
       </g>
+
+      {/* Algorithmic Node Points */}
+      <circle cx="50" cy="24" r="2.5" fill={isLight ? '#4f46e5' : '#38bdf8'} />
+      <circle cx="72" cy="50" r="2" fill={isLight ? '#6366f1' : '#818cf8'} />
+      <circle cx="28" cy="50" r="2" fill={isLight ? '#6366f1' : '#818cf8'} />
+      <circle cx="50" cy="76" r="2.5" fill={isLight ? '#4f46e5' : '#38bdf8'} />
+    </svg>
+  );
+};
+
+// 2. Shield of Excellence Medallion (9+ Credentials)
+const ShieldExcellenceMedallion = ({ color, theme }) => {
+  const isLight = theme === 'light';
+  const rimColor = isLight ? 'rgba(148, 163, 184, 0.65)' : 'rgba(255, 255, 255, 0.85)';
+  const innerGlass = isLight ? 'url(#glass-light-shield)' : 'url(#glass-dark-shield)';
+
+  return (
+    <svg viewBox="0 0 100 100" className="medallion-svg">
+      <defs>
+        <radialGradient id="glass-dark-shield" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.35" />
+          <stop offset="40%" stopColor="rgba(13, 148, 136, 0.3)" />
+          <stop offset="85%" stopColor="rgba(4, 47, 46, 0.7)" />
+          <stop offset="100%" stopColor="rgba(15, 15, 24, 0.9)" />
+        </radialGradient>
+        <radialGradient id="glass-light-shield" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="50%" stopColor="rgba(240, 253, 250, 0.85)" />
+          <stop offset="85%" stopColor="rgba(204, 251, 241, 0.70)" />
+          <stop offset="100%" stopColor="rgba(153, 246, 228, 0.50)" />
+        </radialGradient>
+        <linearGradient id="shield-edge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="35%" stopColor={color} />
+          <stop offset="70%" stopColor="rgba(255, 255, 255, 0.4)" />
+          <stop offset="100%" stopColor={color} />
+        </linearGradient>
+      </defs>
+
+      {/* Shield Outer Bevel */}
+      <path
+        d="M 50 8 L 86 20 C 86 54 50 88 50 88 C 50 88 14 54 14 20 Z"
+        fill={innerGlass}
+        stroke="url(#shield-edge-grad)"
+        strokeWidth="1.5"
+      />
+
+      {/* Shield Inner Inset Frame */}
+      <path
+        d="M 50 16 L 78 26 C 78 50 50 78 50 78 C 50 78 22 50 22 26 Z"
+        fill="none"
+        stroke={rimColor}
+        strokeWidth="1"
+        strokeDasharray="4 2"
+      />
+
+      {/* Center 3D Faceted Star */}
+      <g stroke={color} strokeWidth="0.8" strokeLinejoin="round">
+        <polygon points="50,26 53,35 62,35 55,41 58,50 50,44 42,50 45,41 38,35 47,35" fill={isLight ? '#0d9488' : '#ffffff'} />
+      </g>
+
+      {/* Verified Credential Ribbon Drape at Bottom */}
+      <path
+        d="M 43 62 L 35 78 L 43 74 L 48 78 L 47 67 Z"
+        fill={isLight ? 'rgba(13, 148, 136, 0.25)' : 'rgba(13, 148, 136, 0.45)'}
+        stroke={color}
+        strokeWidth="1"
+      />
+      <path
+        d="M 57 62 L 65 78 L 57 74 L 52 78 L 53 67 Z"
+        fill={isLight ? 'rgba(13, 148, 136, 0.25)' : 'rgba(13, 148, 136, 0.45)'}
+        stroke={color}
+        strokeWidth="1"
+      />
+    </svg>
+  );
+};
+
+// 3. Laurel Crown Medallion (2+ Cohorts Mentored)
+const LaurelCrownMedallion = ({ color, theme }) => {
+  const isLight = theme === 'light';
+  const rimColor = isLight ? 'rgba(148, 163, 184, 0.65)' : 'rgba(255, 255, 255, 0.85)';
+  const innerGlass = isLight ? 'url(#glass-light-laurel)' : 'url(#glass-dark-laurel)';
+
+  return (
+    <svg viewBox="0 0 100 100" className="medallion-svg">
+      <defs>
+        <radialGradient id="glass-dark-laurel" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.35" />
+          <stop offset="40%" stopColor="rgba(14, 165, 233, 0.28)" />
+          <stop offset="85%" stopColor="rgba(12, 26, 48, 0.7)" />
+          <stop offset="100%" stopColor="rgba(15, 15, 24, 0.9)" />
+        </radialGradient>
+        <radialGradient id="glass-light-laurel" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="50%" stopColor="rgba(240, 249, 255, 0.85)" />
+          <stop offset="85%" stopColor="rgba(224, 242, 254, 0.70)" />
+          <stop offset="100%" stopColor="rgba(186, 230, 253, 0.50)" />
+        </radialGradient>
+        <linearGradient id="laurel-edge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="35%" stopColor={color} />
+          <stop offset="70%" stopColor="rgba(255, 255, 255, 0.4)" />
+          <stop offset="100%" stopColor={color} />
+        </linearGradient>
+      </defs>
+
+      {/* Circular Medallion Outer Bevel */}
+      <circle
+        cx="50"
+        cy="50"
+        r="42"
+        fill={innerGlass}
+        stroke="url(#laurel-edge-grad)"
+        strokeWidth="1.5"
+      />
+
+      {/* Concentric Calibration Ring */}
+      <circle
+        cx="50"
+        cy="50"
+        r="34"
+        fill="none"
+        stroke={rimColor}
+        strokeWidth="1"
+        strokeDasharray="3 3"
+      />
+
+      {/* Sculpted Laurel Wreath Branches */}
+      <path
+        d="M 28 32 C 22 42 24 58 36 68 M 72 32 C 78 42 76 58 64 68"
+        fill="none"
+        stroke={color}
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+
+      {/* Laurel Berries / Leaf Nodes */}
+      <circle cx="26" cy="38" r="2.2" fill={isLight ? '#0284c7' : '#ffffff'} />
+      <circle cx="27" cy="48" r="2.2" fill={isLight ? '#0ea5e9' : '#38bdf8'} />
+      <circle cx="32" cy="58" r="2.2" fill={isLight ? '#0284c7' : '#ffffff'} />
+
+      <circle cx="74" cy="38" r="2.2" fill={isLight ? '#0284c7' : '#ffffff'} />
+      <circle cx="73" cy="48" r="2.2" fill={isLight ? '#0ea5e9' : '#38bdf8'} />
+      <circle cx="68" cy="58" r="2.2" fill={isLight ? '#0284c7' : '#ffffff'} />
+
+      {/* Center Mentorship Flame / Torch */}
+      <path
+        d="M 50 30 C 54 36 58 42 54 50 C 51 54 49 56 50 62 C 45 58 42 52 46 44 C 48 40 47 36 50 30 Z"
+        fill={isLight ? '#0284c7' : '#ffffff'}
+        stroke={color}
+        strokeWidth="0.8"
+      />
+      <circle cx="50" cy="48" r="2" fill={isLight ? '#ffffff' : '#38bdf8'} />
+    </svg>
+  );
+};
+
+// 4. Ambassador Diplomatic Crest Medallion (1 Govt. Campus Ambassador)
+const AmbassadorCrestMedallion = ({ color, theme }) => {
+  const isLight = theme === 'light';
+  const rimColor = isLight ? 'rgba(148, 163, 184, 0.65)' : 'rgba(255, 255, 255, 0.85)';
+  const innerGlass = isLight ? 'url(#glass-light-crest)' : 'url(#glass-dark-crest)';
+
+  return (
+    <svg viewBox="0 0 100 100" className="medallion-svg">
+      <defs>
+        <radialGradient id="glass-dark-crest" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.35" />
+          <stop offset="40%" stopColor="rgba(139, 92, 246, 0.28)" />
+          <stop offset="85%" stopColor="rgba(46, 16, 101, 0.7)" />
+          <stop offset="100%" stopColor="rgba(15, 15, 24, 0.9)" />
+        </radialGradient>
+        <radialGradient id="glass-light-crest" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="50%" stopColor="rgba(245, 243, 255, 0.85)" />
+          <stop offset="85%" stopColor="rgba(237, 233, 254, 0.70)" />
+          <stop offset="100%" stopColor="rgba(221, 214, 254, 0.50)" />
+        </radialGradient>
+        <linearGradient id="crest-edge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="35%" stopColor={color} />
+          <stop offset="70%" stopColor="rgba(255, 255, 255, 0.4)" />
+          <stop offset="100%" stopColor={color} />
+        </linearGradient>
+      </defs>
+
+      {/* Pentagonal Crest Bevel */}
+      <polygon
+        points="50,8 90,37 75,86 25,86 10,37"
+        fill={innerGlass}
+        stroke="url(#crest-edge-grad)"
+        strokeWidth="1.5"
+      />
+
+      {/* Inner Inset Pentagonal Rim */}
+      <polygon
+        points="50,16 82,39 70,78 30,78 18,39"
+        fill="none"
+        stroke={rimColor}
+        strokeWidth="1"
+        strokeDasharray="4 2"
+      />
+
+      {/* 8-Point Ambassador Starburst Emblem */}
+      <g stroke={color} strokeWidth="0.8" strokeLinejoin="round">
+        <polygon points="50,24 53,36 65,36 55,44 59,56 50,48 41,56 45,44 35,36 47,36" fill={isLight ? '#7c3aed' : '#ffffff'} />
+      </g>
+
+      {/* Gateway / Pedestal Pillars of Governance */}
+      <path
+        d="M 38 64 L 62 64 M 43 64 L 43 72 M 50 64 L 50 72 M 57 64 L 57 72 M 36 72 L 64 72"
+        stroke={isLight ? '#6d28d9' : '#a78bfa'}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
     </svg>
   );
 };
@@ -174,7 +292,6 @@ function CountUp({ to, suffix = "", duration = 1.5 }) {
   useEffect(() => {
     if (!isInView) return;
     
-    let start = 0;
     const end = parseInt(to, 10);
     if (isNaN(end)) {
       setCount(to);
@@ -213,8 +330,8 @@ const STATS = [
     desc: 'Advanced problem-solving proficiency in core Data Structures and Algorithms, covering Arrays, Strings, Graphs, and DP.',
     category: 'ALGORITHMS',
     accent: 'var(--accent)',
-    pedestalHeight: '140px', // Stepped podium heights
-    renderTrophy: (color) => <CodeTrophySVG color={color} />
+    pedestalHeight: '140px',
+    renderMedallion: (color, theme) => <HexAlgoMedallion color={color} theme={theme} />
   },
   {
     id: 2,
@@ -225,7 +342,7 @@ const STATS = [
     category: 'CERTIFICATIONS',
     accent: '#0d9488', // Deep Teal
     pedestalHeight: '170px',
-    renderTrophy: (color) => <ShieldTrophySVG color={color} />
+    renderMedallion: (color, theme) => <ShieldExcellenceMedallion color={color} theme={theme} />
   },
   {
     id: 3,
@@ -236,7 +353,7 @@ const STATS = [
     category: 'LEADERSHIP',
     accent: '#0ea5e9', // Electric Cyan / Ice Blue
     pedestalHeight: '155px',
-    renderTrophy: (color) => <LaurelTrophySVG color={color} />
+    renderMedallion: (color, theme) => <LaurelCrownMedallion color={color} theme={theme} />
   },
   {
     id: 4,
@@ -247,11 +364,11 @@ const STATS = [
     category: 'REPRESENTATION',
     accent: '#8b5cf6', // Purple
     pedestalHeight: '185px',
-    renderTrophy: (color) => <StarTrophySVG color={color} />
+    renderMedallion: (color, theme) => <AmbassadorCrestMedallion color={color} theme={theme} />
   }
 ];
 
-function Achievements() {
+function Achievements({ theme = 'dark' }) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -290,22 +407,22 @@ function Achievements() {
               className="podium-item"
               variants={itemVariants}
             >
-              {/* Trophy Floating Showcase Area (Perspective-enabled) */}
+              {/* Medallion Floating Showcase Area (Perspective-enabled) */}
               <div className="trophy-showcase">
                 <motion.div 
                   className="trophy-float-wrapper"
                   animate={{ 
                     y: [0, -8, 0],
-                    rotateY: [0, 15, -15, 0] // 3D slow yaw rotation!
+                    rotateY: [0, 14, -14, 0]
                   }}
                   transition={{ 
                     duration: 5,
                     repeat: Infinity,
                     ease: "easeInOut",
-                    delay: stat.id * 0.4
+                    delay: stat.id * 0.35
                   }}
                 >
-                  {stat.renderTrophy(stat.accent)}
+                  {stat.renderMedallion(stat.accent, theme)}
                 </motion.div>
               </div>
 

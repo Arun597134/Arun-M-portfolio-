@@ -1,30 +1,17 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiMail, FiPhone, FiGithub, FiLinkedin, FiFileText, FiSend, FiCheckCircle, FiAlertCircle, FiCpu } from 'react-icons/fi';
+import { motion } from 'framer-motion';
+import { FiMail, FiPhone, FiGithub, FiLinkedin, FiFileText, FiSend, FiCpu } from 'react-icons/fi';
 
 function Contact() {
-  const formRef = useRef(null);
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); // 'success' | 'error' | null
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [isMobile, setIsMobile] = useState(false);
 
-  // Chatbot states for mobile-only dialog terminal
+  // Chatbot states for interactive dialog terminal
   const [step, setStep] = useState(0);
   const [inputValue, setInputValue] = useState('');
   const [chatMessages, setChatMessages] = useState([
     { sender: 'bot', text: "Systems online. Welcome! I am your connection terminal. What should I call you?" }
   ]);
   const chatLogRef = useRef(null);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // Auto-scroll chat console to latest message bubble (Strictly container-scoped, prevents window scroll jumping)
   useEffect(() => {
@@ -39,11 +26,6 @@ function Contact() {
       }, 50);
     }
   }, [chatMessages]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   // Chat console send submission workflow
   const handleChatSend = (e) => {
@@ -122,7 +104,7 @@ function Contact() {
           } else {
             throw new Error('Formspree submit failed');
           }
-        } catch (err) {
+        } catch {
           setStep(5);
           setChatMessages(prev => [...prev, { 
             sender: 'bot', 
@@ -141,56 +123,6 @@ function Contact() {
     setChatMessages([
       { sender: 'bot', text: "Systems online. Welcome! I am your connection terminal. What should I call you?" }
     ]);
-  };
-
-  // Legacy Desktop Submission handler
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setStatus(null);
-
-    try {
-      const response = await fetch('https://formspree.io/f/xaqrrjzo', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        setLoading(false);
-        setStatus('success');
-        setFormData({ name: '', email: '', message: '' });
-      } else {
-        throw new Error('Formspree submission failed');
-      }
-    } catch (error) {
-      console.error('Formspree Error:', error);
-      setLoading(false);
-      setStatus('error');
-    }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.15
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 15 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: 'spring', stiffness: 120, damping: 14 }
-    }
   };
 
   return (

@@ -12,7 +12,7 @@ const AI_TAPE_2 = ['Machine Learning', 'NLP', 'Computer Vision', 'Neural Network
 
 const INFRA_TAPE = ['Git', 'GitHub', 'CI/CD', 'Docker', 'Apache Airflow', 'Oracle Cloud Infrastructure (OCI)', 'Vercel', 'Render'];
 
-function Technologies({ activeTech, setActiveTech }) {
+function Technologies({ setActiveTech }) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
