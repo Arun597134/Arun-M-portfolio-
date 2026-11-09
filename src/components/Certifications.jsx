@@ -204,7 +204,7 @@ function HolographicCredentialCard({ cert }) {
 
           <div className="pass-status-pill">
             <FiCheckCircle size={12} className="status-check-icon" />
-            <span>VERIFIED ON-CHAIN</span>
+            <span>VERIFIED · SPATIAL CERT</span>
           </div>
         </div>
 
@@ -276,7 +276,7 @@ function Certifications() {
         {/* Section Header */}
         <div className="certs-vault-header">
           <div className="certs-header-left">
-            <span className="section-label">06 / VERIFIED CREDENTIALS</span>
+            <span className="section-label">06 / SPATIAL CREDENTIALS · VISIONOS</span>
             <h2 className="section-title">Credentials Vault</h2>
             <p className="certs-vault-subtitle">
               Cryptographically verified proficiencies and certifications awarded by premier academic institutions and global cloud providers.

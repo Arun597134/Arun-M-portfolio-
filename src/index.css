@@ -53,13 +53,12 @@
   }
 }
 
-/* Native frictionless 120 FPS momentum scroll & smooth typography */
+/* Native frictionless 120 FPS momentum scroll & Apple iOS rubber-band physics */
 html {
   width: 100%;
   min-height: 100%;
-  overflow-x: clip;
-  overscroll-behavior-y: none;
-  touch-action: pan-y;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -70,13 +69,10 @@ body {
   background-color: var(--bg);
   color: var(--text-primary);
   font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  overflow-x: clip;
-  overscroll-behavior-y: none;
-  touch-action: pan-y;
+  overflow-x: clip; /* Cleanly prevents horizontal overflow without breaking WebKit inertia */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.4s ease, color 0.4s ease;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -463,6 +459,231 @@ section {
 
 [data-theme="light"] .nav-link.resume-btn:hover {
   background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* ==========================================================================
+   Bespoke Celestial 3D Orbit Precision Toggle (Crafted Swiss/Apple Design)
+   ========================================================================== */
+.celestial-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 10px 0 8px;
+  margin-left: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: 'Geist Mono', monospace;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  user-select: none;
+}
+
+.celestial-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.celestial-toggle-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Icon & Vector Glyph */
+.celestial-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+}
+
+.celestial-orbit-svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  overflow: visible;
+  transition: transform 0.4s ease;
+}
+
+.celestial-orbit-svg .orbit-sun {
+  fill: var(--text-secondary);
+  transition: fill 0.3s ease, filter 0.3s ease;
+}
+
+.celestial-orbit-svg .orbit-ellipse {
+  stroke: var(--text-secondary);
+  opacity: 0.5;
+  transition: stroke 0.3s ease, opacity 0.3s ease;
+}
+
+.celestial-orbit-svg .orbit-satellite {
+  fill: var(--text-secondary);
+  transition: fill 0.3s ease, filter 0.3s ease;
+}
+
+/* Typography Label Group */
+.celestial-label-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.celestial-label-title {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.celestial-status-pill {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(148, 163, 184, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+
+/* ACTIVE STATE (3D Solar System ON) */
+.celestial-toggle-btn.active {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.45);
+  box-shadow: 
+    inset 0 1px 0 rgba(254, 240, 138, 0.2),
+    0 0 14px rgba(245, 158, 11, 0.22);
+}
+
+.celestial-toggle-btn.active:hover {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.65);
+}
+
+.celestial-toggle-btn.active .celestial-orbit-svg {
+  animation: celestialSpin 28s linear infinite;
+}
+
+@keyframes celestialSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.celestial-toggle-btn.active .orbit-sun {
+  fill: #f59e0b;
+  filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.8));
+}
+
+.celestial-toggle-btn.active .orbit-ellipse {
+  stroke: #e2e8f0;
+  opacity: 0.8;
+}
+
+.celestial-toggle-btn.active .orbit-satellite {
+  fill: #38bdf8;
+  filter: drop-shadow(0 0 3px rgba(56, 189, 248, 0.8));
+}
+
+.celestial-toggle-btn.active .celestial-label-title {
+  color: #fef08a;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+}
+
+.celestial-toggle-btn.active .celestial-status-pill {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.25);
+}
+
+/* Light Theme Adaptations (3D Orbit Lockout / Precaution) */
+[data-theme="light"] .celestial-toggle-btn,
+.theme-light .celestial-toggle-btn {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+[data-theme="light"] .celestial-toggle-btn:hover,
+.theme-light .celestial-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+  transform: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .celestial-status-pill,
+.theme-light .celestial-status-pill {
+  background: rgba(0, 0, 0, 0.04);
+  color: #94a3b8;
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .celestial-mobile-btn,
+.theme-light .celestial-mobile-btn {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Mobile Header Precision Button */
+.celestial-mobile-btn {
+  position: relative;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0 !important;
+  border-radius: 8px;
+  border: 1px solid var(--border) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  transition: all 0.25s ease;
+}
+
+.celestial-mobile-btn.active {
+  border-color: rgba(245, 158, 11, 0.5) !important;
+  background: rgba(245, 158, 11, 0.1) !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+}
+
+.celestial-mobile-btn.active .orbit-sun {
+  fill: #f59e0b;
+}
+
+.celestial-mobile-btn.active .orbit-satellite {
+  fill: #38bdf8;
+}
+
+.celestial-mobile-btn.active .celestial-orbit-svg {
+  animation: celestialSpin 28s linear infinite;
+}
+
+.celestial-mobile-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: all 0.25s ease;
+}
+
+.celestial-mobile-btn.active .celestial-mobile-dot {
+  background-color: #10b981;
+  box-shadow: 0 0 6px #10b981;
 }
 
 .theme-toggle {
@@ -1410,27 +1631,42 @@ section {
    ========================================================================== */
 .architectural-glass-scene {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: -30px;
+  left: -30px;
+  width: calc(100% + 60px);
+  height: calc(100% + 60px);
   pointer-events: none;
   z-index: 1;
   overflow: hidden;
-  perspective: 1200px;
+  perspective: 1400px;
   transform-style: preserve-3d;
   contain: layout style;
+  opacity: 0.495; /* Exact 49.5% user requested */
+  transition: opacity 0.4s ease;
+  will-change: transform;
+  transform: translate3d(
+    calc(var(--tilt-x, 0) * 26px),
+    calc(var(--tilt-y, 0) * 26px),
+    0
+  ) rotateX(calc(var(--tilt-y, 0) * -3.5deg))
+    rotateY(calc(var(--tilt-x, 0) * 4.5deg));
 }
 
 /* Subtle Architectural Drafting Grid Watermark */
 .drafting-blueprint-grid {
   position: absolute;
-  inset: 0;
+  inset: -30px;
   background-size: 40px 40px;
   background-image: 
     linear-gradient(to right, rgba(15, 23, 42, 0.025) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(15, 23, 42, 0.025) 1px, transparent 1px);
   pointer-events: none;
+  will-change: transform;
+  transform: translate3d(
+    calc(var(--tilt-x, 0) * -14px),
+    calc(var(--tilt-y, 0) * -14px),
+    0
+  );
 }
 
 /* Individual 3D Anchor with Hardware Accelerated Parallax */
@@ -1443,8 +1679,8 @@ section {
     calc(var(--tilt-x, 0) * 36px * var(--depth, 1)),
     calc(var(--tilt-y, 0) * 36px * var(--depth, 1)),
     calc(var(--depth, 1) * 20px)
-  ) rotateX(calc(var(--tilt-y, 0) * -14deg))
-    rotateY(calc(var(--tilt-x, 0) * 16deg));
+  ) rotateX(calc(var(--tilt-y, 0) * -10deg))
+    rotateY(calc(var(--tilt-x, 0) * 12deg));
 }
 
 /* Architectural Glass Card Base */
@@ -1554,25 +1790,69 @@ section {
 .ch-br { bottom: 4px; right: 6px; }
 
 /* ==========================================================================
-   Centerpiece: Circular Frosted Iris Lens (Apple Style Hero Focal Piece)
+   Silver Hairline Motherboard Bus Conduits & Energy Supply Pulses
+   ========================================================================== */
+.motherboard-bus-conduits {
+  position: absolute;
+  inset: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+  will-change: transform;
+  transform: translate3d(
+    calc(var(--tilt-x, 0) * 16px),
+    calc(var(--tilt-y, 0) * 16px),
+    0
+  );
+}
+
+/* Luminous Glowing Silver Hairline Bus Conduits */
+.conduit-hairline-trace {
+  stroke: rgba(148, 163, 184, 0.55);
+  stroke-width: 1.2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 2px rgba(148, 163, 184, 0.4));
+  opacity: 0.85;
+}
+
+/* Solder Pad Terminals - Polished Metallic Silver & Slate */
+.conduit-terminal-dot {
+  fill: #64748b;
+  stroke: #cbd5e1;
+  stroke-width: 1px;
+}
+
+.conduit-terminal-dot.root-terminal {
+  fill: #334155;
+  stroke: #94a3b8;
+  stroke-width: 1.2px;
+  filter: drop-shadow(0 0 3px rgba(148, 163, 184, 0.4));
+}
+
+/* ==========================================================================
+   Centerpiece: React 19 Component Architecture Motherboard & Mini OLED Screen
    ========================================================================== */
 .arch-panel-center-hero {
   transform-origin: center center;
   z-index: 2;
 }
 
-.center-iris-lens {
+.react-core-module {
   position: relative;
-  width: 340px;
-  height: 340px;
-  border-radius: 50%;
+  width: 380px;
+  height: 250px;
+  max-width: 90vw;
+  border-radius: 18px;
   transform: translate(-50%, -50%);
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(255, 255, 255, 0.90) 0%,
-    rgba(248, 250, 252, 0.72) 40%,
-    rgba(241, 245, 249, 0.50) 75%,
-    rgba(255, 255, 255, 0.82) 100%
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(248, 250, 252, 0.76) 45%,
+    rgba(241, 245, 249, 0.58) 75%,
+    rgba(255, 255, 255, 0.88) 100%
   );
   border: 1.5px solid rgba(148, 163, 184, 0.40);
   border-top: 2px solid rgba(255, 255, 255, 1);
@@ -1585,16 +1865,16 @@ section {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  animation: irisBreatheFloat 12s ease-in-out infinite alternate;
+  animation: moduleBreatheFloat 12s ease-in-out infinite alternate;
 }
 
-@keyframes irisBreatheFloat {
+@keyframes moduleBreatheFloat {
   0% { transform: translate(-50%, -50%) translateY(0px) rotate(0deg); }
-  50% { transform: translate(-50%, -50%) translateY(-10px) rotate(1deg); }
-  100% { transform: translate(-50%, -50%) translateY(6px) rotate(-0.8deg); }
+  50% { transform: translate(-50%, -50%) translateY(-8px) rotate(0.8deg); }
+  100% { transform: translate(-50%, -50%) translateY(5px) rotate(-0.6deg); }
 }
 
-.iris-glare-sheen {
+.module-glare-sheen {
   position: absolute;
   top: 0;
   left: 0;
@@ -1606,75 +1886,65 @@ section {
     rgba(255, 255, 255, 0.10) 80%,
     transparent 100%
   );
-  border-top-left-radius: 340px;
-  border-top-right-radius: 340px;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
   pointer-events: none;
 }
 
-/* Outer Rotating Calibration Ticks Ring */
-.iris-dial-ring {
+/* React Quantum Orbit & Calibration Ring */
+.react-quantum-ring {
   position: absolute;
-  inset: 12px;
+  width: 290px;
+  height: 290px;
   border-radius: 50%;
   pointer-events: none;
-  animation: dialSlowRotate 90s linear infinite;
+  animation: quantumSlowRotate 80s linear infinite;
 }
 
-@keyframes dialSlowRotate {
+@keyframes quantumSlowRotate {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-.iris-dial-tick {
+.quantum-orbital-tick {
   position: absolute;
   top: 0;
   left: 50%;
   width: 1px;
-  height: 8px;
+  height: 7px;
   margin-left: -0.5px;
-  background-color: rgba(100, 116, 139, 0.45);
-  transform-origin: 50% 158px;
+  background-color: rgba(100, 116, 139, 0.4);
+  transform-origin: 50% 145px;
 }
 
-.iris-dial-tick:nth-child(3n+1) {
-  height: 12px;
+.quantum-orbital-tick:nth-child(3n+1) {
+  height: 10px;
   width: 1.5px;
   background-color: rgba(56, 189, 248, 0.75);
 }
 
-/* Concentric Drafting Rings */
-.iris-concentric-outer {
+.module-concentric-outer {
   position: absolute;
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
-  border: 1px dashed rgba(148, 163, 184, 0.35);
+  width: 330px;
+  height: 200px;
+  border-radius: 12px;
+  border: 1px dashed rgba(148, 163, 184, 0.3);
   pointer-events: none;
 }
 
-.iris-concentric-mid {
+.module-concentric-inner {
   position: absolute;
-  width: 170px;
-  height: 170px;
+  width: 190px;
+  height: 190px;
   border-radius: 50%;
-  border: 1px solid rgba(148, 163, 184, 0.28);
+  border: 1px dashed rgba(56, 189, 248, 0.35);
   pointer-events: none;
 }
 
-.iris-concentric-inner {
+.module-datum-axis-h {
   position: absolute;
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  border: 1px dashed rgba(56, 189, 248, 0.45);
-  pointer-events: none;
-}
-
-/* Crosshair Datum Axes */
-.iris-datum-axis-h {
-  position: absolute;
-  left: 30px;
-  right: 30px;
+  left: 20px;
+  right: 20px;
   top: 50%;
   height: 1px;
   background: linear-gradient(
@@ -1688,10 +1958,10 @@ section {
   pointer-events: none;
 }
 
-.iris-datum-axis-v {
+.module-datum-axis-v {
   position: absolute;
-  top: 30px;
-  bottom: 30px;
+  top: 15px;
+  bottom: 15px;
   left: 50%;
   width: 1px;
   background: linear-gradient(
@@ -1705,47 +1975,220 @@ section {
   pointer-events: none;
 }
 
-/* Focal Blue Optical Nucleus */
-.iris-focal-nucleus {
+/* ==========================================================================
+   CHISELED MINI OLED / LED TELEMETRY SCREEN (Teenage Engineering Style)
+   ========================================================================== */
+.mini-oled-screen {
   position: relative;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 35%,
-    #ffffff 0%,
-    rgba(56, 189, 248, 0.85) 45%,
-    rgba(79, 70, 229, 0.5) 75%,
-    rgba(56, 189, 248, 0.15) 100%
-  );
+  width: 290px;
+  max-width: 82%;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.95);
   box-shadow: 
-    0 0 16px rgba(56, 189, 248, 0.45),
-    inset 0 1px 2px rgba(255, 255, 255, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    0 8px 24px rgba(15, 23, 42, 0.04);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 12px 14px;
+  box-sizing: border-box;
+  overflow: hidden;
   z-index: 2;
-  animation: nucleusPulseGleam 4s ease-in-out infinite alternate;
 }
 
-@keyframes nucleusPulseGleam {
-  0% { transform: scale(0.92); opacity: 0.85; }
-  100% { transform: scale(1.08); opacity: 1; }
-}
-
-.nucleus-glint {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #ffffff;
-  box-shadow: 0 0 6px #ffffff;
-}
-
-/* Technical Blueprint Labels */
-.iris-spec-label {
+.oled-bezel-screws .screw {
   position: absolute;
   font-family: 'Geist Mono', monospace;
-  font-size: 0.58rem;
+  font-size: 0.55rem;
+  color: rgba(148, 163, 184, 0.4);
+  line-height: 1;
+  pointer-events: none;
+}
+.screw.s-tl { top: 3px; left: 4px; }
+.screw.s-tr { top: 3px; right: 4px; }
+.screw.s-bl { bottom: 3px; left: 4px; }
+.screw.s-br { bottom: 3px; right: 4px; }
+
+.oled-screen-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.oled-scanlines {
+  position: absolute;
+  inset: -12px -14px;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(148, 163, 184, 0.05) 0px,
+    rgba(148, 163, 184, 0.05) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.oled-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  position: relative;
+  z-index: 1;
+}
+
+.oled-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #10b981;
+  font-weight: 700;
+}
+
+.oled-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: oledDotBlink 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes oledDotBlink {
+  0% { opacity: 0.4; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1.15); }
+}
+
+.oled-chip-id {
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.52rem;
+}
+
+.oled-main-display {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.oled-readout-line.primary {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #0284c7;
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.2);
+  text-transform: uppercase;
+  min-height: 1.1rem;
+  display: flex;
+  align-items: center;
+}
+
+.typewriter-prefix {
+  color: #059669;
+  font-weight: 700;
+  margin-right: 3px;
+}
+
+.typewriter-text {
+  display: inline;
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  color: #0284c7;
+  font-weight: 900;
+  animation: typewriterCursorBlink 0.9s steps(2, start) infinite;
+}
+
+@keyframes typewriterCursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Live Active Section Tracker */
+.oled-section-tracker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(241, 245, 249, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.54rem;
+  letter-spacing: 0.06em;
+}
+
+.tracker-label {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.50rem;
+  text-transform: uppercase;
+}
+
+.tracker-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #0f172a;
+}
+
+.tracker-radar-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #0284c7;
+  box-shadow: 0 0 6px #0284c7;
+  animation: radarPulse 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes radarPulse {
+  0% { transform: scale(0.85); opacity: 0.5; }
+  100% { transform: scale(1.25); opacity: 1; box-shadow: 0 0 10px #38bdf8; }
+}
+
+.oled-readout-line.secondary {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.52rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  letter-spacing: 0.04em;
+}
+
+.oled-footer-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.48rem;
+  color: #64748b;
+  letter-spacing: 0.04em;
+  padding-top: 3px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+.oled-green-tag {
+  color: #34d399;
+  font-weight: 600;
+}
+
+.module-spec-label {
+  position: absolute;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.56rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   color: #64748b;
@@ -1753,18 +2196,10 @@ section {
   pointer-events: none;
   z-index: 2;
 }
+.module-spec-label.top { top: 12px; }
+.module-spec-label.bottom { bottom: 12px; color: #94a3b8; font-size: 0.50rem; }
 
-.iris-spec-label.top {
-  top: 42px;
-}
-
-.iris-spec-label.bottom {
-  bottom: 42px;
-  color: #94a3b8;
-}
-
-/* 4 Cardinal Crosshairs (+) */
-.iris-crosshair {
+.module-crosshair {
   position: absolute;
   font-family: 'Geist Mono', monospace;
   font-size: 0.75rem;
@@ -1774,89 +2209,64 @@ section {
   line-height: 1;
 }
 
-.cardinal-n { top: 18px; left: 50%; transform: translateX(-50%); }
-.cardinal-s { bottom: 18px; left: 50%; transform: translateX(-50%); }
-.cardinal-e { right: 18px; top: 50%; transform: translateY(-50%); }
-.cardinal-w { left: 18px; top: 50%; transform: translateY(-50%); }
+.cardinal-n { top: 12px; left: 50%; transform: translateX(-50%); }
+.cardinal-s { bottom: 12px; left: 50%; transform: translateX(-50%); }
+.cardinal-e { right: 12px; top: 50%; transform: translateY(-50%); }
+.cardinal-w { left: 12px; top: 50%; transform: translateY(-50%); }
 
-/* 1. Master Blueprint Panel (180px x 210px) */
-.panel-master {
-  width: 180px;
-  height: 210px;
+/* ==========================================================================
+   DEVELOPER ARCHITECTURE PANELS (10-MODULE MOTHERBOARD ECOSYSTEM)
+   ========================================================================== */
+.panel-perf-benchmark {
+  width: 185px;
+  min-height: 125px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.panel-blueprint-mesh {
-  position: relative;
-  width: 100%;
-  height: 90px;
-  border: 1px dashed rgba(148, 163, 184, 0.35);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mesh-line-h {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-  background: rgba(148, 163, 184, 0.25);
-}
-
-.mesh-line-v {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 1px;
-  background: rgba(148, 163, 184, 0.25);
-}
-
-.mesh-focal-ring {
-  width: 32px;
-  height: 32px;
-  border: 1px solid rgba(56, 189, 248, 0.45);
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
-}
-
-/* 2. Matrix Panel (140px x 140px) */
-.panel-matrix {
-  width: 140px;
-  height: 140px;
+.panel-ai-neural {
+  width: 195px;
+  min-height: 125px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.panel-dot-matrix {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  justify-items: center;
-  align-items: center;
-  padding: 10px 0;
+.panel-ts-core {
+  width: 160px;
+  min-height: 125px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.matrix-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background-color: rgba(148, 163, 184, 0.4);
-}
-.matrix-dot:nth-child(5) {
-  background-color: #38bdf8;
-  box-shadow: 0 0 6px rgba(56, 189, 248, 0.5);
+.panel-redux-store {
+  width: 170px;
+  min-height: 125px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* 3. Slender Slat Panel (90px x 240px) */
-.panel-slat {
-  width: 90px;
+.panel-html-structure {
+  width: 190px;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.panel-css-engine {
+  width: 175px;
+  min-height: 175px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.panel-react-hooks {
+  width: 105px;
   height: 240px;
   display: flex;
   flex-direction: column;
@@ -1864,108 +2274,215 @@ section {
   align-items: center;
 }
 
-.slat-metric-ticks {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  padding-left: 6px;
-}
-
-.tick-mark {
-  height: 1px;
-  width: 8px;
-  background: rgba(148, 163, 184, 0.35);
-}
-.tick-mark.major {
-  width: 18px;
-  background: rgba(79, 70, 229, 0.45);
-}
-
-.vertical-label {
-  font-family: 'Geist Mono', monospace;
-  font-size: 0.54rem;
-  color: #64748b;
-  letter-spacing: 0.12em;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  transform: rotate(180deg);
-}
-
-/* 4. Horizon Panel (220px x 100px) */
-.panel-horizon {
+.panel-api-data {
   width: 220px;
-  height: 100px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.horizon-datum-line {
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(56, 189, 248, 0.5) 30%, rgba(79, 70, 229, 0.4) 70%, transparent);
-}
-
-/* 5. Aspect Panel (150px x 170px) */
-.panel-aspect {
-  width: 150px;
-  height: 170px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.aspect-geometry-box {
-  position: relative;
-  width: 100%;
-  height: 70px;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  border-radius: 4px;
-}
-
-.geom-inner-rect {
-  position: absolute;
-  inset: 10px;
-  border: 1px dashed rgba(148, 163, 184, 0.25);
-}
-
-.geom-diagonal {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to top right, transparent calc(50% - 0.5px), rgba(148, 163, 184, 0.2) 50%, transparent calc(50% + 0.5px));
-}
-
-/* 6. Diamond Architectural Wafer */
-.panel-diamond {
-  width: 120px;
   height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.panel-devops-cloud {
+  width: 170px;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.panel-three-core {
+  width: 125px;
+  height: 125px;
   display: flex;
   align-items: center;
   justify-content: center;
   transform: rotate(45deg);
 }
 
-.diamond-inner-frame {
-  width: 70px;
-  height: 70px;
-  border: 1px dashed rgba(148, 163, 184, 0.4);
+/* Performance Gauge Cluster */
+.perf-metric-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.54rem;
+}
+
+.perf-gauge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.perf-metric-name {
+  color: #64748b;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.perf-metric-val {
+  color: #0f172a;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* AI Neural Tensor Weights Matrix */
+.neural-weights-matrix {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px 0;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.52rem;
+}
+
+.matrix-tensor-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.tensor-cell {
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 3px;
+  padding: 2px 4px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.neural-loss-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.50rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* Code Blueprint Typography & Wireframes */
+.code-blueprint-preview {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.58rem;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0;
+  color: #475569;
+}
+.code-blueprint-preview .indent-1 { padding-left: 10px; }
+.code-tag { color: #0284c7; font-weight: 700; }
+.code-val { color: #059669; font-weight: 600; }
+
+.palette-preview-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+}
+.palette-chip {
+  width: 14px;
+  height: 6px;
+  border-radius: 3px;
+  display: inline-block;
+}
+.chip-cyan { background-color: #38bdf8; }
+.chip-emerald { background-color: #10b981; }
+.chip-slate { background-color: #64748b; }
+.chip-amber { background-color: #f59e0b; }
+
+.hooks-metric-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.hook-pill {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.54rem;
+  font-weight: 600;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: #0284c7;
+  display: inline-block;
+}
+
+.api-flow-datum {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.56rem;
+}
+.datum-endpoint { color: #0284c7; font-weight: 700; }
+.datum-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.52rem;
+  color: #64748b;
+}
+.status-200 { color: #059669; font-weight: 700; }
+
+.devops-pipeline-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 10px 0;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.54rem;
+  font-weight: 600;
+}
+.pipeline-step {
+  padding: 3px 5px;
+  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #334155;
+}
+.pipeline-arrow { color: #0284c7; font-weight: 700; font-size: 0.68rem; }
+
+.three-inner-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transform: rotate(-45deg);
+}
+.three-coord-label {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #0284c7;
+}
+.three-axis-matrix {
+  display: flex;
+  gap: 6px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.48rem;
+  color: #64748b;
+}
+
+.micro-code-token {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #0284c7;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-.diamond-coord-label {
-  font-family: 'Geist Mono', monospace;
-  font-size: 0.58rem;
-  color: #64748b;
-  transform: rotate(-45deg);
-}
-
-/* Floating Micro Glass Tiles */
+/* Floating Micro Code Chips */
 .micro-tile-anchor {
   display: flex;
   align-items: center;
@@ -2001,10 +2518,1519 @@ section {
 .micro-crosshair.top-l { top: 2px; left: 3px; }
 .micro-crosshair.bot-r { bottom: 2px; right: 3px; }
 
+/* ==========================================================================
+   Architectural Developer Blueprint Panels (Dark Theme - Pure Transparent Minimalist)
+   ========================================================================== */
+[data-theme="dark"] .drafting-blueprint-grid,
+.theme-dark .drafting-blueprint-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+[data-theme="dark"] .arch-glass-card,
+.theme-dark .arch-glass-card {
+  background: linear-gradient(
+    135deg,
+    rgba(22, 24, 32, 0.88) 0%,
+    rgba(15, 17, 23, 0.78) 45%,
+    rgba(10, 11, 16, 0.88) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 12px;
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.08),
+    0 10px 30px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+[data-theme="dark"] .panel-glare-sheen,
+.theme-dark .panel-glare-sheen {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 100%);
+}
+
+[data-theme="dark"] .panel-tag,
+.theme-dark .panel-tag {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .panel-coord,
+.theme-dark .panel-coord {
+  color: #64748b;
+}
+
+[data-theme="dark"] .panel-status-dot,
+.theme-dark .panel-status-dot {
+  background-color: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
+[data-theme="dark"] .panel-footer-meta,
+.theme-dark .panel-footer-meta {
+  color: #64748b;
+}
+
+[data-theme="dark"] .corner-crosshair,
+.theme-dark .corner-crosshair {
+  color: rgba(255, 255, 255, 0.22);
+}
+
+/* Dark Theme React Core Module (Obsidian Glass Chassis - 120 FPS Composited) */
+[data-theme="dark"] .react-core-module,
+.theme-dark .react-core-module {
+  background: linear-gradient(
+    135deg,
+    rgba(20, 22, 30, 0.94) 0%,
+    rgba(13, 15, 21, 0.88) 45%,
+    rgba(8, 10, 15, 0.94) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.26);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.08),
+    0 16px 40px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+[data-theme="dark"] .module-glare-sheen,
+.theme-dark .module-glare-sheen {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.01) 80%,
+    transparent 100%
+  );
+}
+
+[data-theme="dark"] .quantum-orbital-tick,
+.theme-dark .quantum-orbital-tick {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+[data-theme="dark"] .quantum-orbital-tick:nth-child(3n+1),
+.theme-dark .quantum-orbital-tick:nth-child(3n+1) {
+  background-color: rgba(56, 189, 248, 0.6);
+  box-shadow: 0 0 4px rgba(56, 189, 248, 0.4);
+}
+
+[data-theme="dark"] .module-concentric-outer,
+.theme-dark .module-concentric-outer {
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .module-concentric-inner,
+.theme-dark .module-concentric-inner {
+  border-color: rgba(56, 189, 248, 0.2);
+}
+
+[data-theme="dark"] .module-datum-axis-h,
+.theme-dark .module-datum-axis-h {
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.08) 20%,
+    rgba(56, 189, 248, 0.4) 50%,
+    rgba(255, 255, 255, 0.08) 80%,
+    transparent
+  );
+}
+
+[data-theme="dark"] .module-datum-axis-v,
+.theme-dark .module-datum-axis-v {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.08) 20%,
+    rgba(56, 189, 248, 0.4) 50%,
+    rgba(255, 255, 255, 0.08) 80%,
+    transparent
+  );
+}
+
+/* Dark Theme Mini OLED Screen (Deep Matrix Black + High-Contrast Cyber LED) */
+[data-theme="dark"] .mini-oled-screen,
+.theme-dark .mini-oled-screen {
+  background: rgba(3, 7, 18, 0.92);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 
+    inset 0 1px 3px rgba(0, 0, 0, 0.9),
+    0 0 20px rgba(56, 189, 248, 0.08);
+}
+
+[data-theme="dark"] .oled-readout-line.primary,
+.theme-dark .oled-readout-line.primary {
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+}
+
+[data-theme="dark"] .typewriter-prefix,
+.theme-dark .typewriter-prefix {
+  color: #10b981;
+}
+
+[data-theme="dark"] .typewriter-cursor,
+.theme-dark .typewriter-cursor {
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .oled-section-tracker,
+.theme-dark .oled-section-tracker {
+  background: rgba(0, 0, 0, 0.6);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+[data-theme="dark"] .tracker-label,
+.theme-dark .tracker-label {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .tracker-value,
+.theme-dark .tracker-value {
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+}
+
+[data-theme="dark"] .tracker-radar-dot,
+.theme-dark .tracker-radar-dot {
+  background-color: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
+[data-theme="dark"] .module-spec-label,
+.theme-dark .module-spec-label {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .module-crosshair,
+.theme-dark .module-crosshair {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* Dark Theme Adaptations for Silver Hairline Bus Cables - Luminous Glowing Silver */
+[data-theme="dark"] .conduit-hairline-trace,
+.theme-dark .conduit-hairline-trace {
+  stroke: rgba(226, 232, 240, 0.65);
+  stroke-width: 1px;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.45));
+}
+
+[data-theme="dark"] .conduit-terminal-dot,
+.theme-dark .conduit-terminal-dot {
+  fill: #cbd5e1;
+  stroke: rgba(255, 255, 255, 0.75);
+}
+
+[data-theme="dark"] .conduit-terminal-dot.root-terminal,
+.theme-dark .conduit-terminal-dot.root-terminal {
+  fill: #ffffff;
+  stroke: rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
+}
+
+/* Dark Theme Code Blueprints & Micro Tiles */
+[data-theme="dark"] .code-blueprint-preview,
+.theme-dark .code-blueprint-preview {
+  color: #94a3b8;
+}
+[data-theme="dark"] .code-tag,
+.theme-dark .code-tag {
+  color: #38bdf8;
+}
+[data-theme="dark"] .code-val,
+.theme-dark .code-val {
+  color: #34d399;
+}
+[data-theme="dark"] .hook-pill,
+.theme-dark .hook-pill {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+}
+[data-theme="dark"] .datum-endpoint,
+.theme-dark .datum-endpoint {
+  color: #38bdf8;
+}
+[data-theme="dark"] .status-200,
+.theme-dark .status-200 {
+  color: #34d399;
+}
+[data-theme="dark"] .pipeline-step,
+.theme-dark .pipeline-step {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+[data-theme="dark"] .three-coord-label,
+.theme-dark .three-coord-label {
+  color: #38bdf8;
+}
+[data-theme="dark"] .micro-code-token,
+.theme-dark .micro-code-token {
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .micro-tile-panel,
+.theme-dark .micro-tile-panel {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .micro-crosshair,
+.theme-dark .micro-crosshair {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .perf-metric-val,
+.theme-dark .perf-metric-val {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .tensor-cell,
+.theme-dark .tensor-cell {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+}
+
+/* ==========================================================================
+   Realistic 3D Solar System (Heliocentric Orrery with 8 Planets & 3D IMAX Flyby)
+   ========================================================================== */
+.solar-system-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+  background-color: #02040a;
+  animation: solarFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes solarFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.solar-system-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.solar-telemetry-hud {
+  position: absolute;
+  bottom: 24px;
+  left: 32px;
+  right: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  pointer-events: none;
+  z-index: 2;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.58rem;
+  color: rgba(148, 163, 184, 0.45);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.solar-hud-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.solar-hud-row {
+  display: flex;
+  align-items: center;
+}
+
+.solar-hud-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
+  margin-right: 8px;
+  animation: solarDotPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes solarDotPulse {
+  0% { opacity: 0.5; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1.1); }
+}
+
+.solar-hud-title {
+  color: #e2e8f0;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+.solar-hud-meta,
+.solar-hud-status {
+  color: rgba(148, 163, 184, 0.55);
+}
+
+.solar-hud-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  text-align: right;
+}
+
+.solar-hud-metric {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.solar-vignette-mask {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 35%,
+    rgba(2, 4, 10, 0.4) 80%,
+    rgba(1, 2, 6, 0.85) 100%
+  );
+}
+
+@media (max-width: 768px) {
+  .solar-telemetry-hud {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Apple Keynote "Far Out" — Deep Space Eclipse & Concentric Orbital Rings
+   ========================================================================== */
+.center-farout-system {
+  position: relative;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: faroutFloat 14s ease-in-out infinite alternate;
+}
+
+@keyframes faroutFloat {
+  0% { transform: translate(-50%, -50%) translateY(0px) rotate(0deg); }
+  50% { transform: translate(-50%, -50%) translateY(-10px) rotate(1.2deg); }
+  100% { transform: translate(-50%, -50%) translateY(6px) rotate(-1deg); }
+}
+
+/* Starlight Corona Halo behind the Eclipse */
+.farout-corona-halo {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(99, 102, 241, 0.35) 0%,
+    rgba(168, 85, 247, 0.20) 40%,
+    rgba(56, 189, 248, 0.08) 65%,
+    transparent 80%
+  );
+  filter: blur(14px);
+  animation: coronaBreathe 6s ease-in-out infinite alternate;
+}
+
+@keyframes coronaBreathe {
+  0% { transform: scale(0.92); opacity: 0.6; }
+  100% { transform: scale(1.12); opacity: 0.95; }
+}
+
+/* Orbit 1: Outer Gravitational Orbit Ring (360px) */
+.farout-orbit-outer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  animation: orbitRotateCW 120s linear infinite;
+}
+
+@keyframes orbitRotateCW {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orbitRotateCCW {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+.farout-orbit-tick {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 6px;
+  margin-left: -0.5px;
+  background-color: rgba(148, 163, 184, 0.28);
+  transform-origin: 50% 180px;
+}
+
+.farout-orbit-tick:nth-child(6n+1) {
+  height: 10px;
+  width: 1.5px;
+  background-color: rgba(129, 140, 248, 0.85);
+  box-shadow: 0 0 6px rgba(129, 140, 248, 0.6);
+}
+
+.farout-orbit-cardinal {
+  position: absolute;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.52rem;
+  font-weight: 600;
+  color: rgba(148, 163, 184, 0.5);
+  letter-spacing: 0.06em;
+}
+.farout-orbit-cardinal.north { top: 12px; left: 50%; transform: translateX(-50%); }
+.farout-orbit-cardinal.south { bottom: 12px; left: 50%; transform: translateX(-50%); }
+.farout-orbit-cardinal.east { right: 10px; top: 50%; transform: translateY(-50%); }
+.farout-orbit-cardinal.west { left: 10px; top: 50%; transform: translateY(-50%); }
+
+/* Orbit 2: Mid Counter-Rotating Orbit (270px) */
+.farout-orbit-mid {
+  position: absolute;
+  width: 270px;
+  height: 270px;
+  border-radius: 50%;
+  border: 1px dashed rgba(129, 140, 248, 0.35);
+  animation: orbitRotateCCW 75s linear infinite;
+}
+
+/* Satellite Nodes Orbiting along Mid Orbit */
+.farout-satellite {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.farout-satellite.sat-alpha {
+  top: -7px;
+  left: 50%;
+  margin-left: -7px;
+}
+
+.farout-satellite.sat-beta {
+  bottom: -7px;
+  left: 50%;
+  margin-left: -7px;
+}
+
+.satellite-beacon {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #818cf8;
+  box-shadow: 0 0 10px #818cf8, 0 0 18px rgba(99, 102, 241, 0.8);
+  border: 1.5px solid #ffffff;
+}
+
+/* Orbit 3: Inner Orbital Ring (190px) */
+.farout-orbit-inner {
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  animation: orbitRotateCW 45s linear infinite;
+}
+
+/* Celestial Datum Crosshair Axes */
+.farout-datum-axis-h {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.1) 20%,
+    rgba(129, 140, 248, 0.6) 50%,
+    rgba(255, 255, 255, 0.1) 80%,
+    transparent
+  );
+}
+
+.farout-datum-axis-v {
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.1) 20%,
+    rgba(129, 140, 248, 0.6) 50%,
+    rgba(255, 255, 255, 0.1) 80%,
+    transparent
+  );
+}
+
+/* Deep Space Obsidian Eclipse Core Disc (130px) */
+.farout-eclipse-core {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(30, 41, 59, 0.95) 0%,
+    rgba(15, 23, 42, 0.98) 50%,
+    rgba(5, 9, 20, 1) 100%
+  );
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-top: 2px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 
+    inset 0 2px 6px rgba(255, 255, 255, 0.35),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.9),
+    0 0 35px rgba(99, 102, 241, 0.4),
+    0 16px 40px rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.eclipse-sheen-rim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.28) 0%, transparent 100%);
+  border-top-left-radius: 130px;
+  border-top-right-radius: 130px;
+  pointer-events: none;
+}
+
+/* Central Starlight Singularity with 4-Point Glint */
+.eclipse-starlight-singularity {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: singularityPulse 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes singularityPulse {
+  0% { transform: scale(0.9); opacity: 0.85; }
+  100% { transform: scale(1.15); opacity: 1; }
+}
+
+.singularity-core {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px #ffffff, 0 0 22px rgba(129, 140, 248, 0.9), 0 0 35px rgba(56, 189, 248, 0.6);
+  z-index: 2;
+}
+
+.singularity-flare-h {
+  position: absolute;
+  width: 32px;
+  height: 1.5px;
+  background: linear-gradient(to right, transparent, #ffffff 50%, transparent);
+  box-shadow: 0 0 8px #ffffff;
+}
+
+.singularity-flare-v {
+  position: absolute;
+  height: 32px;
+  width: 1.5px;
+  background: linear-gradient(to bottom, transparent, #ffffff 50%, transparent);
+  box-shadow: 0 0 8px #ffffff;
+}
+
+/* Astrometry Technical Labels */
+.farout-spec-label {
+  position: absolute;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.54rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 3;
+}
+.farout-spec-label.top { top: 22px; }
+.farout-spec-label.bottom { bottom: 22px; color: #64748b; }
+
+.farout-crosshair {
+  position: absolute;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: rgba(148, 163, 184, 0.35);
+  pointer-events: none;
+  line-height: 1;
+}
+.cardinal-nw { top: 35px; left: 35px; }
+.cardinal-ne { top: 35px; right: 35px; }
+.cardinal-sw { bottom: 35px; left: 35px; }
+.cardinal-se { bottom: 35px; right: 35px; }
+
+/* ==========================================================================
+   Interstellar Gargantua Black Hole (Cinematic Relativity - Dark Theme)
+   ========================================================================== */
+.gargantua-blackhole-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  background-color: var(--bg);
+  contain: layout style;
+}
+
+.gargantua-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: block;
+}
+
+/* Gravitational Astrometry Telemetry Overlays */
+.gargantua-telemetry {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-family: 'Geist Mono', monospace;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.gargantua-telemetry.top-left {
+  top: 18%;
+  left: 8%;
+}
+
+.gargantua-telemetry.bottom-right {
+  bottom: 22%;
+  right: 8%;
+  align-items: flex-end;
+}
+
+.gargantua-telemetry .telemetry-tag {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #38bdf8;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+.gargantua-telemetry .telemetry-meta {
+  font-size: 0.56rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+/* Cardinal Gravitational Datum Axes */
+.gargantua-datum-axis-h {
+  position: absolute;
+  left: 60px;
+  right: 60px;
+  top: 48%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.08) 25%,
+    rgba(56, 189, 248, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 75%,
+    transparent
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.gargantua-datum-axis-v {
+  position: absolute;
+  top: 60px;
+  bottom: 60px;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.08) 25%,
+    rgba(56, 189, 248, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 75%,
+    transparent
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .gargantua-telemetry.top-left {
+    top: 10%;
+    left: 4%;
+  }
+  .gargantua-telemetry.bottom-right {
+    bottom: 12%;
+    right: 4%;
+  }
+  .gargantua-telemetry .telemetry-meta {
+    display: none;
+  }
+  .gargantua-datum-axis-h,
+  .gargantua-datum-axis-v {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Apple Intelligence / Siri Glowing Fluid Aurora (WWDC 2024 / iOS 18 Style - Dark Theme)
+   ========================================================================== */
+.apple-intelligence-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  background-color: var(--bg);
+  contain: layout style;
+}
+
+/* 1. Iconic Siri / Apple Intelligence Screen Perimeter Glow */
+.siri-edge-glow-ribbon {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: 
+    inset 0 0 60px 4px rgba(6, 182, 212, 0.22),
+    inset 0 0 100px 10px rgba(168, 85, 247, 0.18),
+    inset 0 0 160px 20px rgba(244, 63, 94, 0.14);
+  animation: siriEdgePulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes siriEdgePulse {
+  0% {
+    box-shadow: 
+      inset 0 0 50px 3px rgba(6, 182, 212, 0.2),
+      inset 0 0 90px 8px rgba(168, 85, 247, 0.18),
+      inset 0 0 150px 15px rgba(244, 63, 94, 0.12);
+    opacity: 0.75;
+  }
+  50% {
+    box-shadow: 
+      inset 0 0 70px 5px rgba(244, 63, 94, 0.25),
+      inset 0 0 120px 12px rgba(251, 191, 36, 0.16),
+      inset 0 0 180px 25px rgba(6, 182, 212, 0.2);
+    opacity: 0.95;
+  }
+  100% {
+    box-shadow: 
+      inset 0 0 65px 4px rgba(168, 85, 247, 0.25),
+      inset 0 0 110px 10px rgba(6, 182, 212, 0.22),
+      inset 0 0 170px 20px rgba(244, 63, 94, 0.16);
+    opacity: 0.85;
+  }
+}
+
+/* 2. Deep Ambient Chromatic Nebula Backlights */
+.siri-ambient-nebula {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+  opacity: 0.45;
+  will-change: transform;
+}
+
+.siri-ambient-nebula.top-left {
+  top: -10%;
+  left: -5%;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.4) 0%, rgba(99, 102, 241, 0.25) 50%, transparent 75%);
+  animation: nebulaDriftTL 16s ease-in-out infinite alternate;
+}
+
+.siri-ambient-nebula.bottom-right {
+  bottom: -10%;
+  right: -5%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(244, 63, 94, 0.35) 0%, rgba(168, 85, 247, 0.25) 50%, transparent 75%);
+  animation: nebulaDriftBR 18s ease-in-out infinite alternate;
+}
+
+.siri-ambient-nebula.center-pulse {
+  top: 35%;
+  left: 30%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(6, 182, 212, 0.15) 55%, transparent 75%);
+  animation: nebulaCenterBreathe 10s ease-in-out infinite alternate;
+}
+
+@keyframes nebulaDriftTL {
+  0% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(40px, 30px) scale(1.1); }
+  100% { transform: translate(-30px, 50px) scale(0.95); }
+}
+
+@keyframes nebulaDriftBR {
+  0% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(-40px, -30px) scale(1.08); }
+  100% { transform: translate(20px, -45px) scale(0.96); }
+}
+
+@keyframes nebulaCenterBreathe {
+  0% { transform: scale(0.9); opacity: 0.35; }
+  100% { transform: scale(1.2); opacity: 0.6; }
+}
+
+/* 3. Fluid Hydrodynamic Silk Waves Canvas */
+.siri-fluid-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: block;
+}
+
+/* ==========================================================================
+   3D Quantum Particle Star-Cloud (Anthropic / GitHub Universe Style - Dark Theme)
+   ========================================================================== */
+.quantum-particle-cloud-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  background-color: var(--bg);
+}
+
+.particle-ambient-aura {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(circle at calc(50% + var(--tilt-x, 0) * 80px) calc(45% + var(--tilt-y, 0) * 80px), rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.06) 35%, transparent 65%),
+    radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.06) 0%, transparent 45%);
+  will-change: transform;
+  transition: background 0.2s ease-out;
+}
+
+.quantum-particle-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: block;
+}
+
+/* ==========================================================================
+   Topographic Radar & 3D Wireframe Terrain (Vercel / Linear Style - Dark Theme)
+   ========================================================================== */
+.topographic-radar-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  contain: layout style;
+}
+
+/* Undulating Topographic Contour Lines SVG */
+.topographic-contour-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.75;
+  will-change: transform;
+  transform: translate3d(
+    calc(var(--tilt-x, 0) * 18px),
+    calc(var(--tilt-y, 0) * 18px),
+    0
+  );
+  transition: transform 0.15s ease-out;
+}
+
+.topo-line {
+  animation: topoUndulate 16s ease-in-out infinite alternate;
+}
+
+.topo-line.line-1 { animation-delay: 0s; }
+.topo-line.line-2 { animation-delay: -3s; }
+.topo-line.line-3 { animation-delay: -6s; }
+.topo-line.line-4 { animation-delay: -9s; }
+.topo-line.line-5 { animation-delay: -12s; }
+.topo-line.line-6 { animation-delay: -15s; }
+
+@keyframes topoUndulate {
+  0% { transform: translateY(0px) scaleY(1); }
+  50% { transform: translateY(-12px) scaleY(1.04); }
+  100% { transform: translateY(10px) scaleY(0.96); }
+}
+
+/* Topographic Elevation Coordinate Grid Watermark */
+.topo-coordinate-grid {
+  position: absolute;
+  inset: 0;
+  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  pointer-events: none;
+}
+
+/* Hero Centerpiece Anchor with 3D Parallax Tilt */
+.topo-center-hero-anchor {
+  position: absolute;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transform: translate3d(
+    calc(var(--tilt-x, 0) * 36px),
+    calc(var(--tilt-y, 0) * 36px),
+    20px
+  ) rotateX(calc(var(--tilt-y, 0) * -14deg))
+    rotateY(calc(var(--tilt-x, 0) * 16deg));
+}
+
+.radar-survey-platform {
+  position: relative;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* 360° Continuous Sweeping Sonar Radar Beam */
+.radar-sweep-cone {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 300deg,
+    rgba(99, 102, 241, 0.12) 340deg,
+    rgba(56, 189, 248, 0.45) 360deg
+  );
+  animation: radarBeamSweep 10s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes radarBeamSweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Concentric Sonar Range Rings */
+.radar-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.radar-ring.range-1000 {
+  width: 140px;
+  height: 140px;
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.radar-ring.range-2500 {
+  width: 220px;
+  height: 220px;
+  border-color: rgba(99, 102, 241, 0.22);
+}
+
+.radar-ring.range-5000 {
+  width: 300px;
+  height: 300px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+}
+
+.radar-ring.range-outer {
+  width: 380px;
+  height: 380px;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 35px rgba(99, 102, 241, 0.15);
+}
+
+.range-tag {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.5rem;
+  font-weight: 600;
+  color: rgba(148, 163, 184, 0.45);
+  margin-top: -8px;
+  background: rgba(10, 15, 28, 0.85);
+  padding: 0 4px;
+}
+
+/* Cardinal Markers */
+.radar-cardinal-markers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.radar-cardinal-markers .cardinal {
+  position: absolute;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: rgba(129, 140, 248, 0.7);
+  letter-spacing: 0.06em;
+}
+
+.cardinal.c-000 { top: 6px; left: 50%; transform: translateX(-50%); }
+.cardinal.c-180 { bottom: 6px; left: 50%; transform: translateX(-50%); }
+.cardinal.c-090 { right: 8px; top: 50%; transform: translateY(-50%); }
+.cardinal.c-270 { left: 8px; top: 50%; transform: translateY(-50%); }
+
+/* Datum Coordinate Axes */
+.radar-datum-axis-h {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.12) 25%,
+    rgba(56, 189, 248, 0.6) 50%,
+    rgba(255, 255, 255, 0.12) 75%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+.radar-datum-axis-v {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.12) 25%,
+    rgba(56, 189, 248, 0.6) 50%,
+    rgba(255, 255, 255, 0.12) 75%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* Radar Ping Nodes */
+.radar-ping-node {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ping-beacon {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.ping-ripple {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  animation: pingRipplePulse 4s ease-out infinite;
+}
+
+@keyframes pingRipplePulse {
+  0% { transform: scale(0.2); opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* ==========================================================================
+   4. THE 3D TESSERACT HYPERCUBE CORE (CSS 3D Wireframe Architecture)
+   ========================================================================== */
+.tesseract-3d-stage {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.tesseract-gyro-anchor {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  transform-style: preserve-3d;
+  animation: tesseractTumble 18s linear infinite;
+}
+
+@keyframes tesseractTumble {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+  }
+}
+
+/* Outer Wireframe Cube (100px x 100px x 100px) */
+.hypercube-outer {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  transform-style: preserve-3d;
+}
+
+.hypercube-outer .cube-face {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border: 1.5px solid rgba(129, 140, 248, 0.65);
+  background: rgba(99, 102, 241, 0.04);
+  box-shadow: inset 0 0 14px rgba(99, 102, 241, 0.12);
+  backface-visibility: visible;
+}
+
+.hypercube-outer .face-front  { transform: translateZ(50px); }
+.hypercube-outer .face-back   { transform: rotateY(180deg) translateZ(50px); }
+.hypercube-outer .face-left   { transform: rotateY(-90deg) translateZ(50px); }
+.hypercube-outer .face-right  { transform: rotateY(90deg) translateZ(50px); }
+.hypercube-outer .face-top    { transform: rotateX(90deg) translateZ(50px); }
+.hypercube-outer .face-bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+/* Inner Wireframe Cube (50px x 50px x 50px, Counter-Rotating) */
+.hypercube-inner {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  width: 50px;
+  height: 50px;
+  transform-style: preserve-3d;
+  animation: tesseractCounterTumble 10s linear infinite reverse;
+}
+
+@keyframes tesseractCounterTumble {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(-360deg) rotateZ(-360deg);
+  }
+}
+
+.hypercube-inner .cube-face {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border: 1.5px solid rgba(56, 189, 248, 0.85);
+  background: rgba(56, 189, 248, 0.08);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+  backface-visibility: visible;
+}
+
+.hypercube-inner .face-front  { transform: translateZ(25px); }
+.hypercube-inner .face-back   { transform: rotateY(180deg) translateZ(25px); }
+.hypercube-inner .face-left   { transform: rotateY(-90deg) translateZ(25px); }
+.hypercube-inner .face-right  { transform: rotateY(90deg) translateZ(25px); }
+.hypercube-inner .face-top    { transform: rotateX(90deg) translateZ(25px); }
+.hypercube-inner .face-bottom { transform: rotateX(-90deg) translateZ(25px); }
+
+/* Central Quantum Sonar Singularity Core */
+.tesseract-singularity-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  margin-left: -8px;
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.core-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px #ffffff, 0 0 20px #38bdf8, 0 0 35px #818cf8;
+}
+
+.core-pulse-glow {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.5) 0%, transparent 70%);
+  animation: coreBreathe 3s ease-in-out infinite alternate;
+}
+
+@keyframes coreBreathe {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1.3); opacity: 1; }
+}
+
+/* Telemetry Badges */
+.topo-telemetry-badge {
+  position: absolute;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.topo-telemetry-badge.top { top: 22px; }
+.topo-telemetry-badge.bottom { bottom: 22px; color: #64748b; }
+
+/* ==========================================================================
+   5. Perimeter Floating Topographic Telemetry Pods (Linear / Vercel Glass)
+   ========================================================================== */
+.topo-pod-anchor {
+  position: absolute;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transform: translate3d(
+    calc(var(--tilt-x, 0) * 36px * var(--depth, 1)),
+    calc(var(--tilt-y, 0) * 36px * var(--depth, 1)),
+    calc(var(--depth, 1) * 20px)
+  ) rotateX(calc(var(--tilt-y, 0) * -12deg))
+    rotateY(calc(var(--tilt-x, 0) * 14deg));
+}
+
+.topo-telemetry-pod {
+  position: relative;
+  width: 170px;
+  padding: 16px;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.72) 0%,
+    rgba(15, 23, 42, 0.88) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.32);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.18),
+    0 16px 36px rgba(0, 0, 0, 0.45),
+    0 0 20px rgba(99, 102, 241, 0.12);
+  overflow: hidden;
+  box-sizing: border-box;
+  animation: podFloat 10s ease-in-out infinite alternate;
+}
+
+@keyframes podFloat {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-7px) rotate(0.6deg); }
+  100% { transform: translateY(5px) rotate(-0.5deg); }
+}
+
+.pod-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.pod-tag {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #818cf8;
+  letter-spacing: 0.08em;
+}
+
+.pod-status-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  animation: statusPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes statusPulse {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.pod-metric-val {
+  font-family: 'Geist Mono', monospace;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin-bottom: 2px;
+}
+
+.pod-metric-desc {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.58rem;
+  color: #64748b;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+/* Waveform Bars */
+.pod-waveform {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 18px;
+}
+
+.wave-bar {
+  flex: 1;
+  background: rgba(99, 102, 241, 0.5);
+  border-radius: 2px;
+  animation: wavePulse 1.8s ease-in-out infinite alternate;
+}
+
+.wave-bar.h-1 { height: 35%; animation-delay: 0.1s; }
+.wave-bar.h-2 { height: 60%; animation-delay: 0.3s; }
+.wave-bar.h-3 { height: 85%; animation-delay: 0.2s; background: rgba(56, 189, 248, 0.7); }
+.wave-bar.h-4 { height: 100%; animation-delay: 0.4s; background: rgba(129, 140, 248, 0.9); }
+
+@keyframes wavePulse {
+  0% { transform: scaleY(0.7); }
+  100% { transform: scaleY(1.15); }
+}
+
+/* Matrix Dot Grid in Pod */
+.pod-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  width: 40px;
+}
+
+.pod-matrix-grid .pt {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.pod-matrix-grid .pt.active {
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
+.pod-footer-meta {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.55rem;
+  color: #818cf8;
+}
+
+.pod-freq-pill {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.corner-plus {
+  position: absolute;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(148, 163, 184, 0.35);
+  line-height: 1;
+}
+
+.corner-plus.tl { top: 4px; left: 6px; }
+.corner-plus.br { bottom: 4px; right: 6px; }
+
 /* Responsive adjustments for Mobile & Tablets - 100% Smooth Real Glass (Locked 120 FPS) */
 @media (max-width: 768px) {
   .prismatic-3d-scene,
-  .architectural-glass-scene {
+  .architectural-glass-scene,
+  .topographic-radar-scene {
     overflow: hidden;
     width: 100vw;
     max-width: 100%;
@@ -2092,61 +4118,650 @@ section {
     display: none !important;
   }
 
-  /* Architectural Glass Panels Mobile View: 3 curated panels on mobile for crisp composition */
-  .arch-panel-pos-1 {
-    display: block !important;
-    top: 7% !important;
-    left: auto !important;
-    right: 3% !important;
-    transform: scale(0.68) !important;
+  /* ==========================================================================
+     Architectural Motherboard Mobile View: Apple iOS Smooth & 100% Responsive
+     ========================================================================== */
+  .architectural-glass-scene {
+    position: absolute !important;
+    inset: -20px !important;
+    width: calc(100% + 40px) !important;
+    height: calc(100% + 40px) !important;
+    pointer-events: none;
+    overflow: hidden;
+    perspective: none !important;
+    transform-style: flat !important;
+    opacity: 0.495 !important;
+    contain: layout style !important;
+    /* Clean 2D GPU translation for 100% Retina text & SVG vector clarity (NO 3D texture blur) */
+    transform: translate3d(
+      calc(var(--tilt-x, 0) * 16px),
+      calc(var(--tilt-y, 0) * 16px),
+      0
+    ) !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeLegibility !important;
   }
 
+  .drafting-blueprint-grid {
+    position: absolute !important;
+    inset: -30px !important;
+    width: calc(100% + 60px) !important;
+    height: calc(100% + 60px) !important;
+    will-change: transform;
+    transform: translate3d(
+      calc(var(--tilt-x, 0) * -8px),
+      calc(var(--tilt-y, 0) * -8px),
+      0
+    ) !important;
+  }
+
+  .motherboard-bus-conduits {
+    position: absolute !important;
+    inset: -20px !important;
+    width: calc(100% + 40px) !important;
+    height: calc(100% + 40px) !important;
+    will-change: transform;
+    transform: translate3d(
+      calc(var(--tilt-x, 0) * 10px),
+      calc(var(--tilt-y, 0) * 10px),
+      0
+    ) !important;
+  }
+
+  /* Central Motherboard Module: 100% Dead-Center on any mobile screen with smooth gyro response */
+  .arch-panel-center-hero {
+    position: absolute !important;
+    top: 50% !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    will-change: transform;
+    transform: translateY(-50%) translate3d(
+      calc(var(--tilt-x, 0) * 10px),
+      calc(var(--tilt-y, 0) * 10px),
+      0
+    ) !important;
+    z-index: 2;
+    pointer-events: none !important;
+  }
+
+  .react-core-module {
+    position: relative !important;
+    width: 310px !important;
+    height: 195px !important;
+    max-width: 90vw !important;
+    padding: 10px !important;
+    border-radius: 14px !important;
+    transform: none !important;
+    margin: 0 auto !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    animation: mobileBoardFloat 8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate !important;
+  }
+
+  [data-theme="dark"] .react-core-module,
+  .theme-dark .react-core-module {
+    background: rgba(11, 15, 25, 0.98) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.5) !important;
+    box-shadow: 
+      inset 0 1px 1px rgba(255, 255, 255, 0.15),
+      0 0 25px rgba(56, 189, 248, 0.15),
+      0 12px 28px rgba(0, 0, 0, 0.7) !important;
+  }
+
+  .react-core-module {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 1.5px solid rgba(14, 165, 233, 0.45) !important;
+    box-shadow: 
+      inset 0 1px 2px rgba(255, 255, 255, 0.9),
+      0 10px 24px rgba(15, 23, 42, 0.1) !important;
+  }
+
+  @keyframes mobileBoardFloat {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(0, -6px, 0); }
+  }
+
+  .react-quantum-ring {
+    width: 210px !important;
+    height: 210px !important;
+    opacity: 0.35 !important;
+  }
+
+  .quantum-orbital-tick {
+    transform-origin: 50% 105px !important;
+  }
+
+  .module-concentric-outer {
+    width: 250px !important;
+    height: 155px !important;
+  }
+
+  .module-concentric-inner {
+    width: 190px !important;
+    height: 120px !important;
+  }
+
+  /* CHISELED MINI OLED / LED TELEMETRY SCREEN - Maximum Clarity on Mobile */
+  .mini-oled-screen {
+    width: 275px !important;
+    max-width: 92% !important;
+    height: auto !important;
+    min-height: 135px !important;
+    padding: 10px 12px !important;
+    border-radius: 9px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  [data-theme="dark"] .mini-oled-screen,
+  .theme-dark .mini-oled-screen {
+    background: rgba(2, 6, 23, 0.98) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.65) !important;
+    box-shadow: 
+      inset 0 0 12px rgba(0, 0, 0, 0.9),
+      0 0 14px rgba(56, 189, 248, 0.2) !important;
+  }
+
+  .mini-oled-screen {
+    background: rgba(248, 250, 252, 0.98) !important;
+    border: 1.5px solid rgba(14, 165, 233, 0.5) !important;
+    box-shadow: 
+      inset 0 1px 2px rgba(255, 255, 255, 1),
+      0 4px 14px rgba(15, 23, 42, 0.08) !important;
+  }
+
+  /* Remove CRT scanlines on mobile - eliminates moire and blurry mask */
+  .oled-scanlines {
+    display: none !important;
+  }
+
+  /* High Clarity OLED Typography */
+  .oled-status-bar {
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+  }
+
+  .oled-live-badge {
+    font-size: 0.62rem !important;
+    font-weight: 800 !important;
+    color: #10b981 !important;
+  }
+
+  .oled-chip-id {
+    font-size: 0.58rem !important;
+    font-weight: 700 !important;
+    color: #94a3b8 !important;
+  }
+
+  /* OLED Primary Typewriter Readout - Crisp, Bold, Vibrant */
+  .oled-readout-line.primary {
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.06em !important;
+    min-height: 1.3rem !important;
+    line-height: 1.3 !important;
+    text-shadow: none !important;
+  }
+  [data-theme="dark"] .oled-readout-line.primary,
+  .theme-dark .oled-readout-line.primary {
+    color: #38bdf8 !important;
+  }
+  .oled-readout-line.primary {
+    color: #0284c7 !important;
+  }
+
+  .typewriter-prefix {
+    font-size: 0.78rem !important;
+    font-weight: 900 !important;
+    color: #10b981 !important;
+  }
+
+  .typewriter-cursor {
+    font-size: 0.82rem !important;
+    font-weight: 900 !important;
+  }
+
+  /* OLED Section Tracker - High Contrast & Sharp */
+  .oled-section-tracker {
+    padding: 4px 8px !important;
+    font-size: 0.56rem !important;
+    gap: 6px !important;
+    margin-top: 4px !important;
+    border-radius: 6px !important;
+  }
+  [data-theme="dark"] .oled-section-tracker,
+  .theme-dark .oled-section-tracker {
+    background: rgba(0, 0, 0, 0.75) !important;
+    border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  }
+  .oled-section-tracker {
+    background: rgba(241, 245, 249, 0.95) !important;
+    border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  }
+
+  .tracker-label {
+    font-size: 0.52rem !important;
+    font-weight: 700 !important;
+    color: #94a3b8 !important;
+  }
+
+  .tracker-value {
+    font-size: 0.56rem !important;
+    font-weight: 800 !important;
+    text-shadow: none !important;
+  }
+  [data-theme="dark"] .tracker-value,
+  .theme-dark .tracker-value {
+    color: #38bdf8 !important;
+  }
+  .tracker-value {
+    color: #0f172a !important;
+  }
+
+  .oled-footer-meta {
+    font-size: 0.52rem !important;
+    font-weight: 700 !important;
+    padding-top: 3px !important;
+    color: #94a3b8 !important;
+  }
+
+  /* ==========================================================================
+     High-Density Engineering Architecture Layout on Mobile (6 Modules + Center CPU)
+     Motherboard dead-center + 6 architectural modules framing the viewport
+     ========================================================================== */
+
+  /* Ensure 100% native touch pass-through for buttery iOS scrolling */
+  .architectural-glass-scene,
+  .architectural-glass-scene * {
+    pointer-events: none !important;
+  }
+
+  /* --- TOP ZONE --- */
+  /* 1. Top-Left: CSS3 Design System */
   .arch-panel-pos-2 {
     display: block !important;
-    top: 15% !important;
-    left: 3% !important;
+    top: 4% !important;
+    left: 2% !important;
     right: auto !important;
-    transform: scale(0.62) !important;
+    will-change: transform;
+    transform: translate3d(
+      calc(var(--tilt-x, 0) * 14px),
+      calc(var(--tilt-y, 0) * 14px),
+      0
+    ) scale(0.52) !important;
+    transform-origin: top left !important;
+    z-index: 2;
   }
 
+  /* 2. Top-Right: HTML5 Semantic Structure */
+  .arch-panel-pos-1 {
+    display: block !important;
+    top: 4% !important;
+    right: 2% !important;
+    left: auto !important;
+    will-change: transform;
+    transform: translate3d(
+      calc(var(--tilt-x, 0) * 14px),
+      calc(var(--tilt-y, 0) * 14px),
+      0
+    ) scale(0.52) !important;
+    transform-origin: top right !important;
+    z-index: 2;
+  }
+
+  /* --- MID FLANKS (Beside Center Motherboard) --- */
+  /* 3. Mid-Left: React Hooks Slat */
+  .arch-panel-pos-3 {
+    display: block !important;
+    top: 36% !important;
+    left: 2% !important;
+    right: auto !important;
+    will-change: transform;
+    transform: translate3d(
+      calc(var(--tilt-x, 0) * 18px),
+      calc(var(--tilt-y, 0) * 18px),
+      0
+    ) scale(0.50) !important;
+    transform-origin: top left !important;
+    z-index: 2;
+  }
+
+  /* 4. Mid-Right: REST API & Latency */
   .arch-panel-pos-4 {
     display: block !important;
-    top: 52% !important;
+    top: 36% !important;
+    right: 2% !important;
     left: auto !important;
+    will-change: transform;
+    transform: translate3d(
+      calc(var(--tilt-x, 0) * 18px),
+      calc(var(--tilt-y, 0) * 18px),
+      0
+    ) scale(0.50) !important;
+    transform-origin: top right !important;
+    z-index: 2;
+  }
+
+  /* --- BOTTOM ZONE --- */
+  /* 5. Lower-Left: DevOps CI/CD Pipeline */
+  .arch-panel-pos-5 {
+    display: block !important;
+    top: 76% !important;
+    bottom: auto !important;
+    left: 2% !important;
+    right: auto !important;
+    will-change: transform;
+    transform: translate3d(
+      calc(var(--tilt-x, 0) * 12px),
+      calc(var(--tilt-y, 0) * 12px),
+      0
+    ) scale(0.52) !important;
+    transform-origin: top left !important;
+    z-index: 2;
+  }
+
+  /* 6. Lower-Right: 3D Three.js Shader Diamond */
+  .arch-panel-pos-6 {
+    display: block !important;
+    top: 75% !important;
+    bottom: auto !important;
     right: 3% !important;
-    transform: scale(0.60) !important;
+    left: auto !important;
+    will-change: transform;
+    transform: translate3d(
+      calc(var(--tilt-x, 0) * 12px),
+      calc(var(--tilt-y, 0) * 12px),
+      0
+    ) scale(0.52) !important;
+    transform-origin: center center !important;
+    z-index: 2;
   }
 
-  /* Center Hero Iris Lens scaled gracefully on mobile */
-  .arch-panel-center-hero {
-    top: 48% !important;
-    left: 50% !important;
+  /* 6 Silver PCB Hairline Conduits Active on Mobile */
+  .bus-conduit-group {
+    display: block !important;
+    opacity: 0.95 !important;
   }
 
-  .center-iris-lens {
-    width: 220px !important;
-    height: 220px !important;
-    box-shadow: 
-      inset 0 1.5px 3px rgba(255, 255, 255, 0.95),
-      0 12px 28px rgba(15, 23, 42, 0.05) !important;
+  /* Micro Code Tiles floating subtly between PCB routes */
+  .micro-tile-anchor {
+    display: block !important;
+    opacity: 0.45 !important;
+    will-change: transform;
+    transform: translate3d(
+      calc(var(--tilt-x, 0) * 20px),
+      calc(var(--tilt-y, 0) * 20px),
+      0
+    ) scale(0.60) !important;
+    z-index: 1 !important;
   }
 
-  .iris-dial-tick {
-    transform-origin: 50% 98px !important;
+  /* Mobile High-Clarity Card Base */
+  .arch-glass-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 10px 12px !important;
+    border-radius: 10px !important;
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 
-  .iris-concentric-outer { width: 160px !important; height: 160px !important; }
-  .iris-concentric-mid { width: 110px !important; height: 110px !important; }
-  .iris-concentric-inner { width: 60px !important; height: 60px !important; }
-  .iris-spec-label.top { top: 26px !important; font-size: 0.48rem !important; }
-  .iris-spec-label.bottom { bottom: 26px !important; font-size: 0.48rem !important; }
+  [data-theme="dark"] .arch-glass-card,
+  .theme-dark .arch-glass-card {
+    background: rgba(11, 15, 25, 0.98) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.45) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;
+  }
 
-  /* Hide auxiliary blueprint panels & excess micro tiles on mobile */
-  .arch-panel-pos-3,
-  .arch-panel-pos-5,
-  .arch-panel-pos-6,
-  .micro-tile-anchor:nth-child(n+5) {
-    display: none !important;
+  .arch-glass-card {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 1.5px solid rgba(148, 163, 184, 0.5) !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
+  }
+
+  /* High-Clarity Typography Inside Mobile Cards */
+  .panel-header-bar {
+    margin-bottom: 6px !important;
+  }
+
+  .panel-tag {
+    font-size: 0.74rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.05em !important;
+  }
+  [data-theme="dark"] .panel-tag,
+  .theme-dark .panel-tag {
+    color: #38bdf8 !important;
+  }
+  .panel-tag {
+    color: #0284c7 !important;
+  }
+
+  .panel-coord {
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+  }
+  [data-theme="dark"] .panel-coord,
+  .theme-dark .panel-coord {
+    color: #94a3b8 !important;
+  }
+
+  .code-blueprint-preview .code-line {
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    line-height: 1.35 !important;
+  }
+  [data-theme="dark"] .code-blueprint-preview .code-line,
+  .theme-dark .code-blueprint-preview .code-line {
+    color: #f1f5f9 !important;
+  }
+  .code-blueprint-preview .code-line {
+    color: #0f172a !important;
+  }
+
+  .code-tag {
+    color: #38bdf8 !important;
+    font-weight: 800 !important;
+  }
+
+  .code-val {
+    color: #10b981 !important;
+    font-weight: 800 !important;
+  }
+
+  .panel-footer-meta {
+    margin-top: 8px !important;
+    font-size: 0.60rem !important;
+    font-weight: 700 !important;
+  }
+  [data-theme="dark"] .panel-footer-meta,
+  .theme-dark .panel-footer-meta {
+    color: #94a3b8 !important;
+  }
+  .panel-footer-meta {
+    color: #475569 !important;
+  }
+
+  /* React Hooks Slat */
+  .panel-react-hooks {
+    min-height: auto !important;
+    padding: 8px 10px !important;
+  }
+
+  .hooks-metric-list {
+    gap: 4px !important;
+  }
+
+  .hook-pill {
+    font-size: 0.64rem !important;
+    font-weight: 800 !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+  }
+  [data-theme="dark"] .hook-pill,
+  .theme-dark .hook-pill {
+    background: rgba(56, 189, 248, 0.2) !important;
+    color: #38bdf8 !important;
+    border: 1px solid rgba(56, 189, 248, 0.5) !important;
+  }
+  .hook-pill {
+    background: rgba(2, 132, 199, 0.12) !important;
+    color: #0284c7 !important;
+    border: 1px solid rgba(2, 132, 199, 0.35) !important;
+  }
+
+  .vertical-label {
+    font-size: 0.60rem !important;
+    font-weight: 800 !important;
+    color: #94a3b8 !important;
+  }
+
+  /* REST API Card */
+  .datum-endpoint {
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+  }
+  [data-theme="dark"] .datum-endpoint,
+  .theme-dark .datum-endpoint {
+    color: #38bdf8 !important;
+  }
+  .datum-endpoint {
+    color: #0284c7 !important;
+  }
+
+  .datum-status-row {
+    font-size: 0.60rem !important;
+    font-weight: 700 !important;
+  }
+  .status-200 {
+    color: #10b981 !important;
+    font-weight: 800 !important;
+  }
+
+  /* DevOps Pipeline Card */
+  .devops-pipeline-flow {
+    gap: 4px !important;
+    padding: 4px 0 !important;
+  }
+
+  .pipeline-step {
+    font-size: 0.64rem !important;
+    font-weight: 800 !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+  }
+  [data-theme="dark"] .pipeline-step,
+  .theme-dark .pipeline-step {
+    background: rgba(56, 189, 248, 0.18) !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(56, 189, 248, 0.45) !important;
+  }
+  .pipeline-step {
+    background: rgba(14, 165, 233, 0.12) !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(14, 165, 233, 0.35) !important;
+  }
+
+  .pipeline-arrow {
+    color: #10b981 !important;
+    font-weight: 800 !important;
+    font-size: 0.70rem !important;
+  }
+
+  /* Three.js Diamond Core */
+  .panel-three-core {
+    width: 85px !important;
+    height: 85px !important;
+  }
+
+  .three-coord-label {
+    font-size: 0.66rem !important;
+    font-weight: 800 !important;
+    color: #38bdf8 !important;
+  }
+
+  .three-axis-matrix {
+    font-size: 0.58rem !important;
+    font-weight: 700 !important;
+  }
+
+  /* Silver Hairline Conduits on Mobile: Crisp, High-Visibility Traces */
+  .conduit-hairline-trace {
+    stroke-width: 1.8px !important;
+    opacity: 0.95 !important;
+  }
+
+  [data-theme="dark"] .conduit-hairline-trace,
+  .theme-dark .conduit-hairline-trace {
+    stroke: rgba(241, 245, 249, 0.92) !important;
+  }
+
+  .conduit-hairline-trace {
+    stroke: rgba(71, 85, 105, 0.85) !important;
+  }
+
+  .conduit-terminal-dot {
+    opacity: 1 !important;
+  }
+
+  [data-theme="dark"] .conduit-terminal-dot,
+  .theme-dark .conduit-terminal-dot {
+    fill: #38bdf8 !important;
+  }
+
+  .conduit-terminal-dot {
+    fill: #0284c7 !important;
+  }
+
+  /* Apple iOS Desynchronized Ambient Float Keyframes for Butter-Smooth Zero-Gravity Feel */
+  @keyframes mobileCardFloatA {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(0, -8px, 0); }
+  }
+
+  @keyframes mobileCardFloatB {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(0, 8px, 0); }
+  }
+
+  @keyframes mobileCardFloatC {
+    0% { transform: translate3d(0, -5px, 0); }
+    100% { transform: translate3d(0, 5px, 0); }
+  }
+
+  @keyframes mobileFloatDiamond {
+    0% { transform: rotate(45deg) translate3d(0, 0, 0); }
+    100% { transform: rotate(45deg) translate3d(0, -7px, 0); }
+  }
+
+  .arch-panel-pos-1 .arch-glass-card {
+    animation: mobileCardFloatA 7.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate !important;
+  }
+  .arch-panel-pos-2 .arch-glass-card {
+    animation: mobileCardFloatB 7.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate !important;
+  }
+  .arch-panel-pos-3 .arch-glass-card {
+    animation: mobileCardFloatC 8.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.5s infinite alternate !important;
+  }
+  .arch-panel-pos-4 .arch-glass-card {
+    animation: mobileCardFloatA 8.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.0s infinite alternate !important;
+  }
+  .arch-panel-pos-5 .arch-glass-card {
+    animation: mobileCardFloatB 7.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.3s infinite alternate !important;
+  }
+  .arch-panel-pos-6 .panel-three-core {
+    animation: mobileFloatDiamond 6.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.8s infinite alternate !important;
   }
 
   /* Pure hardware GPU compositor ambient float on mobile (0 JS execution overhead) */
@@ -4391,33 +7006,46 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 18px;
+  padding: 8px 18px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12);
   color: var(--text-secondary);
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 600;
-  transition: all 0.25s ease;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 [data-theme="light"] .filter-pill-btn {
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-top: 1px solid rgba(255, 255, 255, 1);
+  box-shadow: inset 0 1px 1px #ffffff, 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 .filter-pill-btn:hover {
   color: var(--text-primary);
-  border-color: rgba(99, 102, 241, 0.35);
-  background: rgba(99, 102, 241, 0.06);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] .filter-pill-btn:hover {
+  background: #ffffff;
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
 }
 
 .filter-pill-btn.active {
   color: #ffffff;
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 4px 18px rgba(79, 70, 229, 0.35);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(79, 70, 229, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
 [data-theme="light"] .filter-pill-btn.active {
@@ -4458,10 +7086,10 @@ main {
   }
 }
 
-/* Individual Holographic Security Pass */
+/* Individual Apple Vision Pro Spatial Credential Pass */
 .credential-pass-wrapper {
   position: relative;
-  border-radius: 20px;
+  border-radius: 24px;
 }
 
 .credential-pass-card {
@@ -4470,44 +7098,76 @@ main {
   flex-direction: column;
   justify-content: space-between;
   min-height: 440px;
-  padding: 26px;
-  border-radius: 20px;
-  background: rgba(18, 18, 22, 0.85);
-  border: 1px solid var(--border);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  padding: 28px;
+  border-radius: 24px;
+  background: linear-gradient(
+    145deg,
+    rgba(30, 41, 59, 0.70) 0%,
+    rgba(15, 23, 42, 0.88) 50%,
+    rgba(10, 15, 28, 0.94) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.18),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.55),
+    0 18px 42px rgba(0, 0, 0, 0.45);
   overflow: hidden;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, box-shadow 0.35s ease;
   will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 
 [data-theme="light"] .credential-pass-card {
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.85) 50%,
+    rgba(241, 245, 249, 0.75) 100%
+  );
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-top: 1.5px solid rgba(255, 255, 255, 1);
+  box-shadow: 
+    inset 0 1.5px 3px rgba(255, 255, 255, 1),
+    inset 0 -1px 2px rgba(148, 163, 184, 0.15),
+    0 14px 32px rgba(15, 23, 42, 0.05);
 }
 
 .credential-pass-card:hover {
-  border-color: var(--pass-accent, var(--accent));
-  box-shadow: 0 16px 40px var(--pass-glow, rgba(79, 70, 229, 0.18));
+  border-color: rgba(255, 255, 255, 0.28);
+  border-top-color: rgba(255, 255, 255, 0.65);
+  box-shadow: 
+    inset 0 1.5px 3px rgba(255, 255, 255, 0.32),
+    0 24px 54px rgba(0, 0, 0, 0.6),
+    0 0 35px var(--pass-glow, rgba(99, 102, 241, 0.25));
 }
 
-/* Holographic Moving Foil Layer (Pure GPU opacity, 0 mix-blend-mode raster penalty) */
+[data-theme="light"] .credential-pass-card:hover {
+  border-color: rgba(148, 163, 184, 0.5);
+  border-top-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    inset 0 2px 4px rgba(255, 255, 255, 1),
+    0 20px 44px rgba(15, 23, 42, 0.08),
+    0 0 28px var(--pass-glow, rgba(56, 189, 248, 0.22));
+}
+
+/* VisionOS Holographic Moving Foil Layer */
 .holo-shimmer-layer {
   position: absolute;
   inset: 0;
-  border-radius: 20px;
+  border-radius: 24px;
   pointer-events: none;
   z-index: 1;
-  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.02) 40%, transparent 70%);
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 45%, transparent 70%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 [data-theme="light"] .holo-shimmer-layer {
-  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(79, 70, 229, 0.08) 0%, rgba(79, 70, 229, 0.01) 40%, transparent 70%);
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.1) 45%, transparent 70%);
 }
 
 .credential-pass-card:hover .holo-shimmer-layer {
@@ -4518,7 +7178,7 @@ main {
 .security-watermark-grid {
   position: absolute;
   inset: 0;
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
   pointer-events: none;
   z-index: 1;
@@ -4586,7 +7246,7 @@ main {
   opacity: 0.85;
 }
 
-/* Card Header Banner */
+/* Card Header Banner — VisionOS Spatial Capsule Bar */
 .pass-header-row {
   position: relative;
   z-index: 2;
@@ -4601,15 +7261,17 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 5px 11px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 5px 12px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
 [data-theme="light"] .pass-issuer-chip {
-  background: rgba(0, 0, 0, 0.03);
-  border-color: rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: inset 0 1px 1px #ffffff, 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .issuer-indicator-dot {
@@ -4631,36 +7293,38 @@ main {
 .pass-status-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-family: 'Geist Mono', monospace;
   font-size: 0.62rem;
   font-weight: 700;
   color: #10b981;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  padding: 4px 9px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 5px 11px;
   border-radius: 9999px;
   letter-spacing: 0.05em;
+  box-shadow: inset 0 1px 1px rgba(16, 185, 129, 0.2);
 }
 
-/* Elite Rank Foil Banner */
+/* VisionOS Titanium Elite Ribbon */
 .pass-elite-banner {
   position: relative;
   z-index: 2;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   margin-bottom: 14px;
-  padding: 5px 12px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, rgba(234, 179, 8, 0.18) 0%, rgba(245, 158, 11, 0.05) 100%);
-  border: 1px solid rgba(234, 179, 8, 0.4);
+  padding: 5px 13px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.22) 0%, rgba(245, 158, 11, 0.08) 100%);
+  border: 1px solid rgba(234, 179, 8, 0.45);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
   color: #fbbf24;
   font-family: 'Geist Mono', monospace;
-  font-size: 0.65rem;
+  font-size: 0.64rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
-  box-shadow: 0 2px 10px rgba(234, 179, 8, 0.15);
+  letter-spacing: 0.09em;
+  box-shadow: 0 2px 12px rgba(234, 179, 8, 0.18), inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
 /* Card Main Content */
@@ -4710,7 +7374,7 @@ main {
   line-height: 1.55;
 }
 
-/* Competency Clearance Tags */
+/* Competency Clearance Tags — VisionOS Frosted Micro-Pills */
 .pass-skills-container {
   position: relative;
   z-index: 2;
@@ -4725,20 +7389,22 @@ main {
   font-size: 0.68rem;
   font-weight: 600;
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid var(--border);
-  padding: 4px 9px;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 5px 11px;
+  border-radius: 9999px;
   transition: all 0.2s ease;
 }
 
 [data-theme="light"] .pass-skill-tag {
-  background: rgba(0, 0, 0, 0.025);
+  background: rgba(241, 245, 249, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.25);
 }
 
 .credential-pass-card:hover .pass-skill-tag {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
   color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* Security Barcode & Serial Strip */
@@ -4812,18 +7478,21 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 0.8rem;
+  padding: 7px 15px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
   transition: all 0.25s ease;
 }
 
 [data-theme="light"] .pass-verify-link {
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: inset 0 1px 1px #ffffff, 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .pass-verify-link:hover {
@@ -4841,17 +7510,38 @@ main {
   transform: translate(2px, -2px);
 }
 
-/* Vault Telemetry Bottom Banner */
+/* VisionOS Spatial Telemetry Bottom Banner */
 .vault-footer-telemetry {
   display: grid;
   grid-template-columns: 1fr;
   gap: 20px;
   padding: 24px 32px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.015);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.65) 0%,
+    rgba(15, 23, 42, 0.85) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.32);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.18),
+    0 18px 40px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+[data-theme="light"] .vault-footer-telemetry {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(248, 250, 252, 0.8) 100%
+  );
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-top: 1.5px solid rgba(255, 255, 255, 1);
+  box-shadow: 
+    inset 0 1.5px 3px rgba(255, 255, 255, 1),
+    0 14px 32px rgba(15, 23, 42, 0.05);
 }
 
 @media (min-width: 768px) {
@@ -5367,10 +8057,9 @@ main {
   left: 0;
   top: 0;
   height: 100%;
-  width: 100%;
+  max-width: 100%;
   background: linear-gradient(to right, var(--accent) 0%, #a5b4fc 100%);
   box-shadow: 0 0 3px var(--accent);
-  transform-origin: left;
   border-radius: 1px;
 }
 
@@ -5392,6 +8081,7 @@ main {
   align-items: center;
   justify-content: center;
   z-index: 10;
+  margin-left: -16px; /* Center circle horizontally without transform collision */
   will-change: left;
 }
 

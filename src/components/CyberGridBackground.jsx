@@ -1,27 +1,18 @@
 import React, { useEffect, useRef } from 'react';
-import PrismaticCrystals from './PrismaticCrystals';
 import ArchitecturalGlassPanels from './ArchitecturalGlassPanels';
+import RealisticSolarSystem from './RealisticSolarSystem';
 
 /**
- * Pure 3D Optical Glass Architecture Background
- * - Dark Theme: Authentic Photorealistic 3D Prismatic Crystals with Spectral Caustics
- * - Light Theme: Architectural Frosted Glass Blueprint Panels (Apple / Drafting Style)
+ * Pure 3D Optical Glass Architecture & Interactive 3D Solar Lab Background (Option B)
+ * - Default Background: Architectural Frosted Glass Blueprint Panels (Apple / Drafting Style)
+ * - Space Mode (Interactive Toggle): Realistic 3D Solar System (Heliocentric Orrery with 8 Planets, Moons & 3D IMAX flyby)
  * 100% GPU compositor-driven with buttery 120 FPS momentum.
  */
-function CyberGridBackground({ theme }) {
+function CyberGridBackground({ theme, spaceMode = false, activeSection = 'hero' }) {
   const containerRef = useRef(null);
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
 
   useEffect(() => {
-    const isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
-
-    // Mouse coordinates with silky smooth spring inertia
-    const mouse = {
-      x: window.innerWidth * 0.5,
-      y: window.innerHeight * 0.5,
-      targetX: window.innerWidth * 0.5,
-      targetY: window.innerHeight * 0.5,
-    };
-
     let animationFrameId;
     let width = window.innerWidth;
     let height = window.innerHeight;
@@ -31,64 +22,136 @@ function CyberGridBackground({ theme }) {
       height = window.innerHeight;
     };
 
-    const handleMouseMove = (e) => {
-      mouse.targetX = e.clientX;
-      mouse.targetY = e.clientY;
-    };
-
     window.addEventListener('resize', handleResize, { passive: true });
-    
-    // Pause style mutations during active scroll to free 100% GPU bandwidth for buttery scroll
-    let isScrolling = false;
-    let scrollTimer = null;
-    const handleScroll = () => {
-      isScrolling = true;
-      if (scrollTimer) clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => {
-        isScrolling = false;
-      }, 100);
+
+    // Target and current tilt coordinates with spring momentum
+    const tilt = {
+      currentX: 0,
+      currentY: 0,
+      targetX: 0,
+      targetY: 0,
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // On mobile devices: 100% bypass JS RAF loop to free 100% CPU thread for buttery 120Hz native touch scroll
+    let baseGamma = null;
+    let baseBeta = null;
+    const shake = { x: 0, y: 0 };
+
+    // 1. MOBILE: Device Orientation Tracking (Phone Tilt & Turn)
+    const handleOrientation = (e) => {
+      if (e.gamma === null || e.beta === null) return;
+
+      // Auto-calibrate resting baseline on first readings
+      if (baseGamma === null) {
+        baseGamma = e.gamma;
+        baseBeta = e.beta;
+      } else {
+        // Slow adaptive baseline drift so re-positioning hands re-centers naturally
+        baseGamma += (e.gamma - baseGamma) * 0.005;
+        baseBeta += (e.beta - baseBeta) * 0.005;
+      }
+
+      // e.gamma: left/right tilt [-90 to 90]
+      // e.beta: front/back tilt [-180 to 180]
+      const deltaX = (e.gamma - baseGamma) / 16;
+      const deltaY = (e.beta - baseBeta) / 16;
+
+      tilt.targetX = Math.max(-2.2, Math.min(2.2, deltaX));
+      tilt.targetY = Math.max(-2.2, Math.min(2.2, deltaY));
+    };
+
+    // 2. MOBILE: Shake & Physical Motion Impulse (DeviceMotion)
+    const handleMotion = (e) => {
+      const acc = e.acceleration || e.accelerationIncludingGravity;
+      if (!acc) return;
+      const ax = acc.x || 0;
+      const ay = acc.y || 0;
+
+      // When the user physically shakes the phone, add velocity kick in the shake direction
+      if (Math.abs(ax) > 1.2 || Math.abs(ay) > 1.2) {
+        shake.x = Math.max(-2.5, Math.min(2.5, shake.x + (ax * 0.22)));
+        shake.y = Math.max(-2.5, Math.min(2.5, shake.y - (ay * 0.22)));
+      }
+    };
+
+    // 3. MOBILE: Touch Drag Fallback & Hybrid Travel
+    const handleTouchMove = (e) => {
+      if (e.touches && e.touches[0]) {
+        const touch = e.touches[0];
+        const normX = ((touch.clientX / width) - 0.5) * 2.2;
+        const normY = ((touch.clientY / height) - 0.5) * 2.2;
+        tilt.targetX = Math.max(-2.0, Math.min(2.0, normX));
+        tilt.targetY = Math.max(-2.0, Math.min(2.0, normY));
+      }
+    };
+
+    // 4. DESKTOP: Mouse Movement Tracking
+    const handleMouseMove = (e) => {
+      const normX = ((e.clientX / width) - 0.5) * 2.2;
+      const normY = ((e.clientY / height) - 0.5) * 2.2;
+      tilt.targetX = Math.max(-2.0, Math.min(2.0, normX));
+      tilt.targetY = Math.max(-2.0, Math.min(2.0, normY));
+    };
+
+    // Attach listeners conditionally
     if (isMobile) {
-      return () => {
-        window.removeEventListener('resize', handleResize);
-        window.removeEventListener('scroll', handleScroll);
-        if (scrollTimer) clearTimeout(scrollTimer);
-      };
-    }
+      // Support DeviceOrientation
+      if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
+        window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+        // Handle iOS 13+ permission request on user tap
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+          const requestIOSPerm = () => {
+            DeviceOrientationEvent.requestPermission()
+              .then((state) => {
+                if (state === 'granted') {
+                  window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+                }
+              })
+              .catch(() => {});
+            window.removeEventListener('touchstart', requestIOSPerm);
+          };
+          window.addEventListener('touchstart', requestIOSPerm, { passive: true, once: true });
+        }
+      }
 
-    // Desktop only mouse tracking with smooth spring inertia
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+      // Support DeviceMotion (shake impulse)
+      if (typeof window !== 'undefined' && 'DeviceMotionEvent' in window) {
+        window.addEventListener('devicemotion', handleMotion, { passive: true });
+      }
+
+      // Support touch drag
+      window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    } else {
+      // Desktop mousemove
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    }
 
     let time = 0;
 
+    // Silky Spring Render Loop (Locked 120 FPS momentum)
     const render = () => {
-      if (isScrolling) {
-        // Skip DOM property mutations during active scroll for 0-jank compositor momentum
-        animationFrameId = requestAnimationFrame(render);
-        return;
-      }
-
       time += 0.015;
 
-      // Gentle ambient floating oscillation
-      const autoTiltX = Math.sin(time * 0.8) * 0.16;
-      const autoTiltY = Math.cos(time * 0.6) * 0.12;
+      // Gentle ambient floating oscillation (breathing zero-gravity motion)
+      const autoTiltX = Math.sin(time * 0.8) * 0.08;
+      const autoTiltY = Math.cos(time * 0.6) * 0.06;
 
-      // Silky-smooth spring inertia on desktop (responsive, fluid 120 FPS glide)
-      mouse.x += (mouse.targetX - mouse.x) * 0.08;
-      mouse.y += (mouse.targetY - mouse.y) * 0.08;
+      // Decay shake impulse smoothly like a physical spring damper
+      shake.x *= 0.90;
+      shake.y *= 0.90;
+
+      const combinedTargetX = Math.max(-2.8, Math.min(2.8, tilt.targetX + shake.x));
+      const combinedTargetY = Math.max(-2.8, Math.min(2.8, tilt.targetY + shake.y));
+
+      // Critically damped Apple spring lerp
+      tilt.currentX += (combinedTargetX - tilt.currentX) * 0.085;
+      tilt.currentY += (combinedTargetY - tilt.currentY) * 0.085;
 
       if (containerRef.current) {
-        const normX = ((mouse.x / width) - 0.5) * 1.8;
-        const normY = ((mouse.y / height) - 0.5) * 1.8;
-        const finalTiltX = Math.max(-1.5, Math.min(1.5, normX + autoTiltX));
-        const finalTiltY = Math.max(-1.5, Math.min(1.5, normY + autoTiltY));
+        const finalX = (tilt.currentX + autoTiltX).toFixed(4);
+        const finalY = (tilt.currentY + autoTiltY).toFixed(4);
 
-        containerRef.current.style.setProperty('--tilt-x', finalTiltX.toFixed(4));
-        containerRef.current.style.setProperty('--tilt-y', finalTiltY.toFixed(4));
+        containerRef.current.style.setProperty('--tilt-x', finalX);
+        containerRef.current.style.setProperty('--tilt-y', finalY);
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -98,21 +161,28 @@ function CyberGridBackground({ theme }) {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', handleScroll);
-      if (scrollTimer) clearTimeout(scrollTimer);
-      if (!isMobile) {
+      if (isMobile) {
+        window.removeEventListener('deviceorientation', handleOrientation);
+        window.removeEventListener('devicemotion', handleMotion);
+        window.removeEventListener('touchmove', handleTouchMove);
+      } else {
         window.removeEventListener('mousemove', handleMouseMove);
       }
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isMobile]);
+
+  // Bulletproof Precaution: On mobile devices, 3D Solar System is 100% disabled
+  // to reserve 100% of the mobile GPU thread for locked 120 FPS native scrolling.
+  // Space mode can ONLY run on desktop when spaceMode is explicitly true and theme is dark.
+  const isSolarActive = !isMobile && spaceMode && theme === 'dark';
 
   return (
     <div ref={containerRef} className="cyber-grid-container" aria-hidden="true">
-      {theme === 'dark' ? (
-        <PrismaticCrystals theme={theme} />
+      {isSolarActive ? (
+        <RealisticSolarSystem />
       ) : (
-        <ArchitecturalGlassPanels />
+        <ArchitecturalGlassPanels theme={theme} activeSection={activeSection} />
       )}
     </div>
   );

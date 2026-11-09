@@ -19,7 +19,17 @@ export default function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'dark';
   });
+  // Option B: 3D Solar Lab interactive mode (clean default dark background; 3D Solar System launches on click)
+  const [spaceMode, setSpaceMode] = useState(() => {
+    if (typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches)) {
+      return false; // Guarantee 100% false on mobile devices
+    }
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') return false;
+    return localStorage.getItem('spaceMode') === 'true'; // false by default for clean resume readability
+  });
   const [activeTech, setActiveTech] = useState(null); // Lifted state for project highlights
+  const [activeSection, setActiveSection] = useState('hero'); // Lifted state for live HUD & telemetry tracking
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === 'undefined') return false;
     return window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
@@ -33,8 +43,38 @@ export default function App() {
 
   // Handle Theme Toggle
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    setTheme((prev) => {
+      const nextTheme = prev === 'dark' ? 'light' : 'dark';
+      // Precaution: If switching to light theme, immediately disable 3D solar background
+      if (nextTheme === 'light') {
+        setSpaceMode(false);
+        localStorage.setItem('spaceMode', 'false');
+      }
+      return nextTheme;
+    });
   };
+
+  // Handle 3D Solar Lab Toggle
+  const toggleSpaceMode = () => {
+    // Strict Precaution: In light theme, 3D Solar background is locked out.
+    // Accidental clicks in light theme will NOT change background animation.
+    if (theme === 'light') {
+      return;
+    }
+    setSpaceMode((prev) => {
+      const next = !prev;
+      localStorage.setItem('spaceMode', String(next));
+      return next;
+    });
+  };
+
+  // Precautionary Guard: Ensure spaceMode is never active in Light Theme
+  useEffect(() => {
+    if (theme === 'light' && spaceMode) {
+      setSpaceMode(false);
+      localStorage.setItem('spaceMode', 'false');
+    }
+  }, [theme, spaceMode]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -181,8 +221,8 @@ export default function App() {
 
   return (
     <div ref={appRef} className="app-container cursor-default">
-      {/* Dynamic Cyber Grid Wave Background with Neon Sparks */}
-      <CyberGridBackground theme={theme} />
+      {/* Dynamic Cyber Grid Wave Background with Neon Sparks & 3D Solar Lab */}
+      <CyberGridBackground theme={theme} spaceMode={spaceMode} activeSection={activeSection} />
       
       {/* Custom Cursor elements (Desktop only) */}
       {!isMobile && (
@@ -193,7 +233,14 @@ export default function App() {
       )}
 
       {/* Main site pages */}
-      <Navbar theme={theme} toggleTheme={toggleTheme} />
+      <Navbar 
+        theme={theme} 
+        toggleTheme={toggleTheme} 
+        spaceMode={spaceMode} 
+        toggleSpaceMode={toggleSpaceMode} 
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+      />
       <main>
         <Hero theme={theme} />
         <About />

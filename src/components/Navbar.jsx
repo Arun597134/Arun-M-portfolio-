@@ -26,9 +26,38 @@ const NAV_ITEMS = [
   { id: 'contact', label: 'Contact' }
 ];
 
-function Navbar({ theme, toggleTheme }) {
+// Ultra-fast linear piecewise interpolation helper for silky smooth 120 FPS tracking
+function interpolateProgress(val, inputArr, outputArr) {
+  if (!inputArr || !outputArr || inputArr.length === 0 || outputArr.length === 0) {
+    return 0;
+  }
+  const len = Math.min(inputArr.length, outputArr.length);
+  if (val <= inputArr[0]) return outputArr[0];
+  if (val >= inputArr[len - 1]) return outputArr[len - 1];
+
+  for (let i = 0; i < len - 1; i++) {
+    if (val >= inputArr[i] && val <= inputArr[i + 1]) {
+      const range = inputArr[i + 1] - inputArr[i];
+      if (range === 0) return outputArr[i];
+      const t = (val - inputArr[i]) / range;
+      return outputArr[i] + t * (outputArr[i + 1] - outputArr[i]);
+    }
+  }
+  return outputArr[len - 1];
+}
+
+function Navbar({ 
+  theme, 
+  toggleTheme, 
+  spaceMode = false, 
+  toggleSpaceMode, 
+  activeSection: activeSectionProp, 
+  setActiveSection: setActiveSectionProp 
+}) {
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('hero');
+  const [internalActiveSection, setInternalActiveSection] = useState('hero');
+  const activeSection = activeSectionProp !== undefined ? activeSectionProp : internalActiveSection;
+  const setActiveSection = setActiveSectionProp || setInternalActiveSection;
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBtn, setShowInstallBtn] = useState(false);
 
@@ -71,30 +100,51 @@ function Navbar({ theme, toggleTheme }) {
   const sectionCount = NAV_ITEMS.length;
   const progressBreaks = NAV_ITEMS.map((_, i) => i / (sectionCount - 1)); // [0, 0.143, 0.286, ...]
   const [scrollBreakpoints, setScrollBreakpoints] = useState(progressBreaks);
+  
+  const breakpointsRef = useRef(progressBreaks);
+  const btnPositionsRef = useRef([]);
 
   // Global window scroll progress (0 at top, 1 at bottom)
   const { scrollYProgress } = useScroll();
 
-  // 1. Measure mobile bottom nav button X-center positions on mount and resize
+  // Critically damped Apple spring for instantaneous, buttery 120 FPS momentum (Zero sluggishness, zero sticking)
+  const smoothScrollProgress = useSpring(scrollYProgress, {
+    stiffness: 260,
+    damping: 30,
+    mass: 0.2,
+    restDelta: 0.0005
+  });
+
+  // 1. Measure mobile bottom nav button X-center positions relative to track on mount and resize
   useEffect(() => {
     const measure = () => {
       if (!mobileLinksRef.current) return;
       const container = mobileLinksRef.current;
-      const containerRect = container.getBoundingClientRect();
+      const track = container.querySelector('.mobile-robot-track-horizontal');
+      const trackRect = track ? track.getBoundingClientRect() : container.getBoundingClientRect();
       const buttons = container.querySelectorAll('.mobile-nav-btn');
+      if (buttons.length === 0) return;
+
       const positions = Array.from(buttons).map(btn => {
         const r = btn.getBoundingClientRect();
-        return (r.left - containerRect.left) + (r.width / 2);
+        return (r.left - trackRect.left) + (r.width / 2);
       });
+      btnPositionsRef.current = positions;
       setBtnPositions(positions);
     };
-    // Measure after a short delay to ensure layout is settled
-    const timer = setTimeout(measure, 300);
+
+    measure();
+    const timer1 = setTimeout(measure, 150);
+    const timer2 = setTimeout(measure, 500);
     window.addEventListener('resize', measure);
-    return () => { clearTimeout(timer); window.removeEventListener('resize', measure); };
+    return () => { 
+      clearTimeout(timer1); 
+      clearTimeout(timer2); 
+      window.removeEventListener('resize', measure); 
+    };
   }, []);
 
-  // 2. Measure actual section offset tops dynamically to build physical scroll progress breakpoints
+  // 2. Measure actual section offset tops dynamically to build strictly monotonic physical scroll progress breakpoints
   useEffect(() => {
     const computeBreakpoints = () => {
       const docHeight = Math.max(
@@ -104,58 +154,72 @@ function Navbar({ theme, toggleTheme }) {
         document.documentElement.offsetHeight
       );
       const viewHeight = window.innerHeight;
-      const totalScrollable = Math.max(1, docHeight - viewHeight);
-      
-      const breakpoints = NAV_ITEMS.map((item, idx) => {
+      const maxScroll = Math.max(1, docHeight - viewHeight);
+
+      const rawTops = NAV_ITEMS.map((item, idx) => {
         if (idx === 0) return 0;
+        if (idx === NAV_ITEMS.length - 1) return maxScroll;
         const el = document.getElementById(item.id);
         if (el) {
           const rect = el.getBoundingClientRect();
           const elementAbsTop = rect.top + window.scrollY;
-          const targetScroll = Math.max(0, elementAbsTop - viewHeight * 0.35);
-          return Math.min(1, targetScroll / totalScrollable);
+          return Math.max(0, Math.min(maxScroll, elementAbsTop - viewHeight * 0.35));
         }
-        return idx / (NAV_ITEMS.length - 1);
+        return (idx / (NAV_ITEMS.length - 1)) * maxScroll;
       });
-      // Force last breakpoint to be exactly 1
-      breakpoints[breakpoints.length - 1] = 1;
-      setScrollBreakpoints(breakpoints);
+
+      const f = rawTops.map(top => Math.max(0, Math.min(1, top / maxScroll)));
+
+      // Forward pass: strictly increasing with minimum 0.02 spacing
+      for (let i = 1; i < f.length - 1; i++) {
+        if (f[i] <= f[i - 1] + 0.02) {
+          f[i] = f[i - 1] + 0.02;
+        }
+      }
+
+      // Backward pass: keep breathing room before 1.0
+      for (let i = f.length - 2; i >= 1; i--) {
+        const maxAllowed = 1 - (f.length - 1 - i) * 0.025;
+        if (f[i] >= maxAllowed) {
+          f[i] = maxAllowed;
+        }
+      }
+
+      f[0] = 0;
+      f[f.length - 1] = 1;
+
+      breakpointsRef.current = f;
+      setScrollBreakpoints(f);
     };
 
-    const timer = setTimeout(computeBreakpoints, 400);
+    computeBreakpoints();
+    const t1 = setTimeout(computeBreakpoints, 250);
+    const t2 = setTimeout(computeBreakpoints, 800);
     window.addEventListener('resize', computeBreakpoints);
-    return () => { clearTimeout(timer); window.removeEventListener('resize', computeBreakpoints); };
+    window.addEventListener('load', computeBreakpoints);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener('resize', computeBreakpoints);
+      window.removeEventListener('load', computeBreakpoints);
+    };
   }, []);
 
   // Map scroll progress to continuous X pixel positions between buttons for mobile
-  const robotTargetX = useTransform(
-    scrollYProgress,
-    scrollBreakpoints,
-    btnPositions.length === sectionCount ? btnPositions : progressBreaks.map(p => p * 320)
-  );
-
-  // Smooth spring for continuous mobile robot movement
-  const smoothRobotX = useSpring(robotTargetX, {
-    stiffness: 95,
-    damping: 26,
-    mass: 0.5,
-    restDelta: 0.001
+  // Uses dynamic functional transform reading latest refs - never gets stale or stuck!
+  const smoothRobotX = useTransform(smoothScrollProgress, (latest) => {
+    const bps = breakpointsRef.current;
+    const pts = btnPositionsRef.current;
+    if (!pts || pts.length < sectionCount) {
+      const fallbackPositions = progressBreaks.map(p => 20 + p * 300);
+      return interpolateProgress(latest, bps, fallbackPositions);
+    }
+    return interpolateProgress(latest, bps, pts);
   });
 
-  // Mobile bottom dock: derive trail fill FROM the robot's actual X position
-  const lastBtnX = btnPositions.length > 0 ? btnPositions[btnPositions.length - 1] : 320;
-  const firstBtnX = btnPositions.length > 0 ? btnPositions[0] : 6;
-  const mobileTrailFill = useTransform(smoothRobotX, [firstBtnX, lastBtnX], [0, 1]);
-
-  // Desktop horizontal robot: uses its own independent smooth scroll progress
-  const desktopScrollSpring = useSpring(scrollYProgress, {
-    stiffness: 95,
-    damping: 26,
-    mass: 0.5,
-    restDelta: 0.001
-  });
-  const desktopRobotLeft = useTransform(desktopScrollSpring, [0, 1], ['0%', '100%']);
-  const desktopTrailFill = desktopScrollSpring;
+  // Desktop horizontal robot: uses its own independent smooth scroll progress from 0% to 100%
+  const desktopRobotLeft = useTransform(smoothScrollProgress, [0, 1], ['0%', '100%']);
+  const desktopTrailFill = smoothScrollProgress;
 
   const sectionTopsRef = useRef({});
   const docHeightRef = useRef(0);
@@ -306,6 +370,32 @@ function Navbar({ theme, toggleTheme }) {
               <FiFileText size={14} style={{ marginRight: '6px' }} />
               Resume
             </a>
+
+            {/* Bespoke Celestial 3D Orbit Precision Toggle */}
+            <button
+              onClick={toggleSpaceMode}
+              className={`celestial-toggle-btn ${spaceMode && theme === 'dark' ? 'active' : ''} ${theme === 'light' ? 'light-locked' : ''}`}
+              title={
+                theme === 'light'
+                  ? '3D Orbit is exclusive to Dark Mode (disabled in Light Theme)'
+                  : (spaceMode ? 'Switch to Clean Minimalist View' : 'Engage 3D Solar System Orrery')
+              }
+              aria-label="Toggle 3D Solar System Orrery"
+              aria-disabled={theme === 'light'}
+            >
+              <span className="celestial-icon-wrap">
+                <svg className="celestial-orbit-svg" viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="10" r="2.6" className="orbit-sun" />
+                  <ellipse cx="10" cy="10" rx="7.6" ry="3.6" transform="rotate(-28 10 10)" className="orbit-ellipse" strokeWidth="1.1" />
+                  <circle cx="16" cy="7.2" r="1.3" className="orbit-satellite" />
+                </svg>
+              </span>
+              <span className="celestial-label-group">
+                <span className="celestial-label-title">3D ORBIT</span>
+                <span className="celestial-status-pill">{spaceMode && theme === 'dark' ? 'ON' : 'OFF'}</span>
+              </span>
+            </button>
+
             <button onClick={toggleTheme} className="theme-toggle" aria-label="Toggle theme">
               {theme === 'dark' ? <FiSun size={18} /> : <FiMoon size={18} />}
             </button>
@@ -361,6 +451,25 @@ function Navbar({ theme, toggleTheme }) {
           >
             <FiFileText size={16} />
           </a>
+          {/* Bespoke Celestial 3D Orbit Mobile Toggle */}
+          <button 
+            onClick={toggleSpaceMode} 
+            className={`mobile-header-btn celestial-mobile-btn ${spaceMode && theme === 'dark' ? 'active' : ''} ${theme === 'light' ? 'light-locked' : ''}`} 
+            title={
+              theme === 'light'
+                ? '3D Orbit is exclusive to Dark Mode (disabled in Light Theme)'
+                : (spaceMode ? 'Switch to Clean Minimalist View' : 'Engage 3D Solar System Orrery')
+            }
+            aria-label="Toggle 3D Solar View"
+            aria-disabled={theme === 'light'}
+          >
+            <svg className="celestial-orbit-svg" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="2.6" className="orbit-sun" />
+              <ellipse cx="10" cy="10" rx="7.6" ry="3.6" transform="rotate(-28 10 10)" className="orbit-ellipse" strokeWidth="1.1" />
+              <circle cx="16" cy="7.2" r="1.3" className="orbit-satellite" />
+            </svg>
+            <span className="celestial-mobile-dot" />
+          </button>
           <button 
             onClick={toggleTheme} 
             className="mobile-header-btn" 
@@ -379,7 +488,7 @@ function Navbar({ theme, toggleTheme }) {
             {/* Traveled path in glow */}
             <motion.div 
               className="mobile-robot-track-active-horizontal"
-              style={{ scaleX: mobileTrailFill }}
+              style={{ width: smoothRobotX }}
             />
             {/* The traveling AI Robot (Smooth continuous horizontal scroll-linked position) */}
             <motion.div 

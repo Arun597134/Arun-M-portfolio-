@@ -27,28 +27,8 @@ function ProjectVideo({ src, poster }) {
 
     observer.observe(video);
 
-    // On mobile touch devices, pause playback during active scrolling to free 100% GPU bandwidth for 120 FPS momentum
-    let scrollTimeout = null;
-    const handleScroll = () => {
-      if (window.innerWidth < 768) {
-        if (!video.paused) {
-          video.pause();
-        }
-        if (scrollTimeout) clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-          if (isVisible) {
-            video.play().catch(() => {});
-          }
-        }, 150);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
     return () => {
       observer.disconnect();
-      window.removeEventListener('scroll', handleScroll);
-      if (scrollTimeout) clearTimeout(scrollTimeout);
     };
   }, []);
 
