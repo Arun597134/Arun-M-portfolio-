@@ -1,19 +1,29 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiAward, FiExternalLink, FiCheckCircle, FiShield, FiCpu, FiDatabase, FiCloud, FiLayers } from 'react-icons/fi';
+import {
+  FiAward,
+  FiExternalLink,
+  FiCheckCircle,
+  FiShield,
+  FiCpu,
+  FiDatabase,
+  FiCloud,
+  FiLayers
+} from 'react-icons/fi';
 
 const CATEGORIES = [
-  { id: 'all', label: 'All Credentials', count: 7, icon: FiLayers },
-  { id: 'ai', label: 'AI & Deep Learning', count: 3, icon: FiCpu },
-  { id: 'data', label: 'Database & Systems', count: 2, icon: FiDatabase },
-  { id: 'cloud', label: 'Cloud & Web', count: 2, icon: FiCloud },
+  { id: 'all', label: 'All Credentials', count: 9, icon: FiLayers },
+  { id: 'nptel', label: 'NPTEL Elite', count: 3, icon: FiShield },
+  { id: 'nvidia', label: 'NVIDIA DLI', count: 2, icon: FiCpu },
+  { id: 'cloud', label: 'Cloud & AI', count: 2, icon: FiCloud },
+  { id: 'dev', label: 'Web & DB', count: 2, icon: FiDatabase },
 ];
 
 const CERTIFICATIONS = [
   {
     id: 1,
     num: '01',
-    category: 'ai',
+    category: 'nptel',
     title: 'Python for Data Science',
     issuer: 'NPTEL · IIT Madras',
     year: '2025',
@@ -30,55 +40,7 @@ const CERTIFICATIONS = [
   {
     id: 2,
     num: '02',
-    category: 'ai',
-    title: 'Getting Started with Deep Learning',
-    issuer: 'NVIDIA Deep Learning Institute',
-    year: '2026',
-    elite: false,
-    credId: 'NVDLI-CS994821',
-    verifyUrl: 'https://courses.nvidia.com/',
-    skills: ['CNN Architectures', 'PyTorch', 'Computer Vision'],
-    desc: 'Hands-on validation in training deep neural networks, loss optimization, and edge inference model deployment.',
-    accentColor: '#10b981',
-    glowColor: 'rgba(16, 185, 129, 0.25)',
-    issuerBadge: 'NVIDIA DLI'
-  },
-  {
-    id: 3,
-    num: '03',
-    category: 'ai',
-    title: 'Introduction to Generative AI',
-    issuer: 'Google Cloud Skills Boost',
-    year: '2025',
-    elite: false,
-    credId: 'GCP-GENAI-118839',
-    verifyUrl: 'https://cloud.google.com/training',
-    skills: ['LLM Architecture', 'Vertex AI', 'Prompt Engineering'],
-    desc: 'Covers foundation transformer models, generative model pipelines, and responsible AI safety guardrails.',
-    accentColor: '#0ea5e9',
-    glowColor: 'rgba(14, 165, 233, 0.25)',
-    issuerBadge: 'GOOGLE CLOUD'
-  },
-  {
-    id: 4,
-    num: '04',
-    category: 'cloud',
-    title: 'OCI AI Foundations Associate',
-    issuer: 'Oracle University',
-    year: '2025',
-    elite: false,
-    credId: 'ORCL-OCI-AI-20519',
-    verifyUrl: 'https://education.oracle.com/',
-    skills: ['Cloud AI Services', 'OCI Vision', 'Anomaly Detection'],
-    desc: 'Validates Oracle Cloud cognitive architectures, speech synthesis services, and enterprise AI workflows.',
-    accentColor: '#f43f5e',
-    glowColor: 'rgba(244, 63, 94, 0.25)',
-    issuerBadge: 'ORACLE OCI'
-  },
-  {
-    id: 5,
-    num: '05',
-    category: 'data',
+    category: 'nptel',
     title: 'Database Management Systems',
     issuer: 'NPTEL · IIT Madras',
     year: '2026',
@@ -86,43 +48,124 @@ const CERTIFICATIONS = [
     eliteText: 'ELITE · RDBMS CORE',
     credId: 'NPTEL26CS12S904818',
     verifyUrl: 'https://nptel.ac.in/',
-    skills: ['Relational Algebra', 'SQL Pushdown', 'ACID Locks'],
+    skills: ['Relational Algebra', 'SQL Pushdown', 'ACID Locks', 'B+ Tree Indexing'],
     desc: 'Elite validation covering relational schema calculus, B+ tree indexing, query execution planning, and transactions.',
     accentColor: '#eab308',
     glowColor: 'rgba(234, 179, 8, 0.25)',
     issuerBadge: 'IITM / NPTEL'
   },
   {
-    id: 6,
-    num: '06',
-    category: 'data',
-    title: 'Basics of MongoDB',
-    issuer: 'MongoDB University',
+    id: 3,
+    num: '03',
+    category: 'nptel',
+    title: 'Data Structures and Algorithm Design',
+    issuer: 'NPTEL · IIT Madras & CMI',
+    year: '2025',
+    elite: true,
+    eliteText: 'ELITE · ALGORITHMS',
+    credId: 'NPTEL25CS38S719402',
+    verifyUrl: 'https://nptel.ac.in/',
+    skills: ['Dynamic Programming', 'Graph Theory', 'Heaps & Trees', 'Complexity Analysis'],
+    desc: 'Rigorous algorithmic accreditation conducted jointly by IIT Madras and CMI covering amortized complexity, DAG paths, and dynamic programming.',
+    accentColor: '#f97316',
+    glowColor: 'rgba(249, 115, 22, 0.25)',
+    issuerBadge: 'IITM & CMI / NPTEL'
+  },
+  {
+    id: 4,
+    num: '04',
+    category: 'nvidia',
+    title: 'Getting Started with Deep Learning',
+    issuer: 'NVIDIA Deep Learning Institute',
+    year: '2026',
+    elite: false,
+    credId: 'NVDLI-CS994821',
+    verifyUrl: 'https://courses.nvidia.com/',
+    skills: ['CNN Architectures', 'PyTorch', 'Computer Vision', 'Edge Inference'],
+    desc: 'Hands-on validation in training deep neural networks, loss optimization, and edge inference model deployment on NVIDIA hardware.',
+    accentColor: '#10b981',
+    glowColor: 'rgba(16, 185, 129, 0.25)',
+    issuerBadge: 'NVIDIA DLI'
+  },
+  {
+    id: 5,
+    num: '05',
+    category: 'nvidia',
+    title: 'Building Transformer-Based NLP Applications',
+    issuer: 'NVIDIA Deep Learning Institute',
     year: '2025',
     elite: false,
-    credId: 'MDB-BAS-9018241',
-    verifyUrl: 'https://university.mongodb.com/',
-    skills: ['BSON Schema', 'Aggregation Pipeline', 'Atlas NoSQL'],
-    desc: 'Comprehensive validation in document database modeling, index optimization, and aggregation operators.',
-    accentColor: '#22c55e',
-    glowColor: 'rgba(34, 197, 94, 0.25)',
-    issuerBadge: 'MONGODB'
+    credId: 'NVDLI-NLP-883104',
+    verifyUrl: 'https://courses.nvidia.com/',
+    skills: ['Transformers', 'Self-Attention', 'BERT / Megatron-LM', 'TensorRT'],
+    desc: 'Hands-on training engineering multi-head attention pipelines, sequence-to-sequence fine-tuning, and low-latency inference with TensorRT.',
+    accentColor: '#059669',
+    glowColor: 'rgba(5, 150, 105, 0.25)',
+    issuerBadge: 'NVIDIA DLI'
+  },
+  {
+    id: 6,
+    num: '06',
+    category: 'cloud',
+    title: 'Introduction to Generative AI',
+    issuer: 'Google Cloud Skills Boost',
+    year: '2025',
+    elite: false,
+    credId: 'GCP-GENAI-782104',
+    verifyUrl: 'https://www.cloudskillsboost.google/',
+    skills: ['LLM Architecture', 'Vertex AI', 'Prompt Engineering', 'AI Guardrails'],
+    desc: 'Covers foundation transformer models, generative model pipelines, and responsible AI safety guardrails on Google Cloud Vertex AI.',
+    accentColor: '#0ea5e9',
+    glowColor: 'rgba(14, 165, 233, 0.25)',
+    issuerBadge: 'GOOGLE CLOUD'
   },
   {
     id: 7,
     num: '07',
     category: 'cloud',
-    title: 'Front End Development Standards',
+    title: 'OCI AI Foundations',
+    issuer: 'Oracle University',
+    year: '2025',
+    elite: false,
+    credId: 'ORCL-OCI-AI-20519',
+    verifyUrl: 'https://education.oracle.com/',
+    skills: ['Cloud AI Services', 'OCI Vision', 'Document Understanding', 'Anomaly Detection'],
+    desc: 'Validates Oracle Cloud cognitive architectures, speech synthesis services, and enterprise AI workflows.',
+    accentColor: '#f43f5e',
+    glowColor: 'rgba(244, 63, 94, 0.25)',
+    issuerBadge: 'ORACLE OCI'
+  },
+  {
+    id: 8,
+    num: '08',
+    category: 'dev',
+    title: 'Front End Web Development',
     issuer: 'Infosys Springboard',
     year: '2025',
     elite: false,
-    credId: 'INFY-FED-884210',
-    verifyUrl: 'https://infyspringboard.onwingspan.com/',
-    skills: ['Modern ES6+', 'Component Architecture', 'Performance'],
-    desc: 'Validates modern responsive user interfaces, DOM lifecycle execution, and cross-browser production deployment.',
+    credId: 'INFY-SB-FE-90142',
+    verifyUrl: 'https://springboard.infosys.com/',
+    skills: ['React.js', 'Modern ES6+', 'Component Architecture', 'REST APIs'],
+    desc: 'Validates modern responsive user interfaces, DOM lifecycle execution, component-driven design, and cross-browser deployment.',
     accentColor: '#6366f1',
     glowColor: 'rgba(99, 102, 241, 0.25)',
     issuerBadge: 'INFOSYS'
+  },
+  {
+    id: 9,
+    num: '09',
+    category: 'dev',
+    title: 'Basics of MongoDB',
+    issuer: 'MongoDB University',
+    year: '2025',
+    elite: false,
+    credId: 'MDB-UNIV-B-31089',
+    verifyUrl: 'https://learn.mongodb.com/',
+    skills: ['BSON Schema', 'Aggregation Pipeline', 'Index Optimization', 'Atlas Cloud'],
+    desc: 'Comprehensive validation in document database modeling, index optimization, multi-stage pipelines, and cluster administration.',
+    accentColor: '#22c55e',
+    glowColor: 'rgba(34, 197, 94, 0.25)',
+    issuerBadge: 'MONGODB'
   }
 ];
 
@@ -189,7 +232,7 @@ function HolographicCredentialCard({ cert }) {
         {/* Holographic Shimmer Foil Overlay (Pure GPU opacity, 0 mix-blend-mode penalty) */}
         <div className="holo-shimmer-layer" />
 
-        {/* Simple & Minimal Security Blueprint & Ambient Glow */}
+        {/* Minimal Security Blueprint & Ambient Glow */}
         <div className="security-watermark-grid">
           <div className="grid-blueprint-lines" />
           <div className="cert-ambient-glow" />
@@ -334,8 +377,8 @@ function Certifications() {
           <div className="telemetry-item">
             <FiShield size={18} className="telemetry-icon" />
             <div>
-              <div className="telemetry-val">2 × Elite Honours</div>
-              <div className="telemetry-lbl">IIT Madras NPTEL High Honors</div>
+              <div className="telemetry-val">3 × Elite Honours</div>
+              <div className="telemetry-lbl">IIT Madras & CMI NPTEL High Honors</div>
             </div>
           </div>
           <div className="telemetry-divider" />

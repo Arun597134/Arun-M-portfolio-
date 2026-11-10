@@ -125,7 +125,21 @@ function CyberGridBackground({ theme, spaceMode = false, activeSection = 'hero' 
       window.addEventListener('mousemove', handleMouseMove, { passive: true });
     }
 
+    // Scroll throttle: pause DOM writes during active scrolling so the scroll thread runs at locked 120 FPS
+    let isScrolling = false;
+    let scrollDebounceTimer = null;
+    const handleScroll = () => {
+      isScrolling = true;
+      if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
+      scrollDebounceTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 90);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     let time = 0;
+    let lastAppliedX = null;
+    let lastAppliedY = null;
 
     // Silky Spring Render Loop (Locked 120 FPS momentum)
     const render = () => {
@@ -146,12 +160,17 @@ function CyberGridBackground({ theme, spaceMode = false, activeSection = 'hero' 
       tilt.currentX += (combinedTargetX - tilt.currentX) * 0.085;
       tilt.currentY += (combinedTargetY - tilt.currentY) * 0.085;
 
-      if (containerRef.current) {
-        const finalX = (tilt.currentX + autoTiltX).toFixed(4);
-        const finalY = (tilt.currentY + autoTiltY).toFixed(4);
+      // When actively scrolling, skip DOM custom property mutations to guarantee 100% scroll frame rate
+      if (!isScrolling && containerRef.current) {
+        const finalX = (tilt.currentX + autoTiltX).toFixed(3);
+        const finalY = (tilt.currentY + autoTiltY).toFixed(3);
 
-        containerRef.current.style.setProperty('--tilt-x', finalX);
-        containerRef.current.style.setProperty('--tilt-y', finalY);
+        if (finalX !== lastAppliedX || finalY !== lastAppliedY) {
+          lastAppliedX = finalX;
+          lastAppliedY = finalY;
+          containerRef.current.style.setProperty('--tilt-x', finalX);
+          containerRef.current.style.setProperty('--tilt-y', finalY);
+        }
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -161,6 +180,8 @@ function CyberGridBackground({ theme, spaceMode = false, activeSection = 'hero' 
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
       if (isMobile) {
         window.removeEventListener('deviceorientation', handleOrientation);
         window.removeEventListener('devicemotion', handleMotion);
@@ -172,13 +193,15 @@ function CyberGridBackground({ theme, spaceMode = false, activeSection = 'hero' 
     };
   }, [isMobile]);
 
-  // Bulletproof Precaution: On mobile devices, 3D Solar System is 100% disabled
-  // to reserve 100% of the mobile GPU thread for locked 120 FPS native scrolling.
-  // Space mode can ONLY run on desktop when spaceMode is explicitly true and theme is dark.
-  const isSolarActive = !isMobile && spaceMode && theme === 'dark';
+  // Space mode runs on both Desktop and Mobile when toggled
+  const isSolarActive = Boolean(spaceMode);
 
   return (
-    <div ref={containerRef} className="cyber-grid-container" aria-hidden="true">
+    <div
+      ref={containerRef}
+      className={`cyber-grid-container ${isSolarActive ? 'solar-active' : ''}`}
+      aria-hidden={!isSolarActive}
+    >
       {isSolarActive ? (
         <RealisticSolarSystem />
       ) : (

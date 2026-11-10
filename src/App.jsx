@@ -21,12 +21,9 @@ export default function App() {
   });
   // Option B: 3D Solar Lab interactive mode (clean default dark background; 3D Solar System launches on click)
   const [spaceMode, setSpaceMode] = useState(() => {
-    if (typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches)) {
-      return false; // Guarantee 100% false on mobile devices
-    }
     const savedTheme = localStorage.getItem('theme') || 'dark';
     if (savedTheme === 'light') return false;
-    return localStorage.getItem('spaceMode') === 'true'; // false by default for clean resume readability
+    return localStorage.getItem('spaceMode') === 'true';
   });
   const [activeTech, setActiveTech] = useState(null); // Lifted state for project highlights
   const [activeSection, setActiveSection] = useState('hero'); // Lifted state for live HUD & telemetry tracking
@@ -45,7 +42,7 @@ export default function App() {
   const toggleTheme = () => {
     setTheme((prev) => {
       const nextTheme = prev === 'dark' ? 'light' : 'dark';
-      // Precaution: If switching to light theme, immediately disable 3D solar background
+      // Precaution: If switching to light theme, disable 3D solar background
       if (nextTheme === 'light') {
         setSpaceMode(false);
         localStorage.setItem('spaceMode', 'false');
@@ -56,9 +53,13 @@ export default function App() {
 
   // Handle 3D Solar Lab Toggle
   const toggleSpaceMode = () => {
-    // Strict Precaution: In light theme, 3D Solar background is locked out.
-    // Accidental clicks in light theme will NOT change background animation.
+    // If clicked while in light theme, auto-switch to dark theme so 3D Solar System shines
     if (theme === 'light') {
+      setTheme('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      setSpaceMode(true);
+      localStorage.setItem('spaceMode', 'true');
       return;
     }
     setSpaceMode((prev) => {
@@ -68,18 +69,30 @@ export default function App() {
     });
   };
 
-  // Precautionary Guard: Ensure spaceMode is never active in Light Theme
+  // Precautionary Guard: Ensure spaceMode is disabled if theme becomes Light
   useEffect(() => {
     if (theme === 'light' && spaceMode) {
       setSpaceMode(false);
       localStorage.setItem('spaceMode', 'false');
     }
-  }, [theme, spaceMode]);
+  }, [theme]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // Sync body class for space mode background interactions
+  useEffect(() => {
+    if (spaceMode) {
+      document.body.classList.add('space-mode-active');
+    } else {
+      document.body.classList.remove('space-mode-active');
+    }
+    return () => {
+      document.body.classList.remove('space-mode-active');
+    };
+  }, [spaceMode]);
 
   // Reset scroll position to top on page reload/first mount
   useEffect(() => {
@@ -108,26 +121,21 @@ export default function App() {
   }, []);
 
   // Initialize Studio Freight Lenis for ultra-luxurious, butter-smooth 120 FPS momentum scrolling
+  // Enabled on both Desktop and Mobile with native touch sync & Apple-grade exponential inertia
   useEffect(() => {
     if (loading) return;
 
-    // Detect mobile touch devices (phones and tablets)
-    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
-
-    // On mobile touch screens, let the browser handle 100% native hardware compositor momentum
-    // (Bypassing JS touch virtual scroll eliminates 100% touch interception latency on iOS & Android)
-    if (isTouchDevice) {
-      return;
-    }
-
     const lenis = new Lenis({
-      duration: 1.05,
+      duration: 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Apple-grade exponential inertia
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
+      syncTouch: true, // Mimics native touch with silky RAF sync on mobile
+      syncTouchLerp: 0.08, // Buttery inertia on mobile touch
+      touchInertiaExponent: 1.7,
+      touchMultiplier: 1.2,
       infinite: false,
-      wheelMultiplier: 1.0,
     });
 
     window.lenis = lenis;
@@ -163,16 +171,18 @@ export default function App() {
       const dx = followerPos.current.targetX - followerPos.current.x;
       const dy = followerPos.current.targetY - followerPos.current.y;
       
-      // Only mutate styles when cursor is actively interpolating
+      // Update primary cursor immediately for crisp, zero-latency response
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(calc(${followerPos.current.targetX}px - 50%), calc(${followerPos.current.targetY}px - 50%), 0)`;
+      }
+
+      // Smooth trailing follower interpolation
       if (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05) {
         followerPos.current.x += dx * 0.16;
         followerPos.current.y += dy * 0.16;
    
         if (followerRef.current) {
           followerRef.current.style.transform = `translate3d(calc(${followerPos.current.x.toFixed(1)}px - 50%), calc(${followerPos.current.y.toFixed(1)}px - 50%), 0)`;
-        }
-        if (cursorRef.current) {
-          cursorRef.current.style.transform = `translate3d(calc(${followerPos.current.targetX}px - 50%), calc(${followerPos.current.targetY}px - 50%), 0)`;
         }
       }
 

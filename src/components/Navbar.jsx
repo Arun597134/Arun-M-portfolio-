@@ -373,15 +373,11 @@ function Navbar({
 
             {/* Bespoke Celestial 3D Orbit Precision Toggle */}
             <button
+              type="button"
               onClick={toggleSpaceMode}
-              className={`celestial-toggle-btn ${spaceMode && theme === 'dark' ? 'active' : ''} ${theme === 'light' ? 'light-locked' : ''}`}
-              title={
-                theme === 'light'
-                  ? '3D Orbit is exclusive to Dark Mode (disabled in Light Theme)'
-                  : (spaceMode ? 'Switch to Clean Minimalist View' : 'Engage 3D Solar System Orrery')
-              }
+              className={`celestial-toggle-btn ${spaceMode ? 'active' : ''}`}
+              title={spaceMode ? 'Switch to Clean Motherboard View' : 'Engage 3D Solar System Orrery'}
               aria-label="Toggle 3D Solar System Orrery"
-              aria-disabled={theme === 'light'}
             >
               <span className="celestial-icon-wrap">
                 <svg className="celestial-orbit-svg" viewBox="0 0 20 20" fill="none">
@@ -392,7 +388,7 @@ function Navbar({
               </span>
               <span className="celestial-label-group">
                 <span className="celestial-label-title">3D ORBIT</span>
-                <span className="celestial-status-pill">{spaceMode && theme === 'dark' ? 'ON' : 'OFF'}</span>
+                <span className="celestial-status-pill">{spaceMode ? 'ON' : 'OFF'}</span>
               </span>
             </button>
 
@@ -453,15 +449,11 @@ function Navbar({
           </a>
           {/* Bespoke Celestial 3D Orbit Mobile Toggle */}
           <button 
+            type="button"
             onClick={toggleSpaceMode} 
-            className={`mobile-header-btn celestial-mobile-btn ${spaceMode && theme === 'dark' ? 'active' : ''} ${theme === 'light' ? 'light-locked' : ''}`} 
-            title={
-              theme === 'light'
-                ? '3D Orbit is exclusive to Dark Mode (disabled in Light Theme)'
-                : (spaceMode ? 'Switch to Clean Minimalist View' : 'Engage 3D Solar System Orrery')
-            }
+            className={`mobile-header-btn celestial-mobile-btn ${spaceMode ? 'active' : ''}`} 
+            title={spaceMode ? 'Switch to Clean Motherboard View' : 'Engage 3D Solar System Orrery'}
             aria-label="Toggle 3D Solar View"
-            aria-disabled={theme === 'light'}
           >
             <svg className="celestial-orbit-svg" viewBox="0 0 20 20" fill="none">
               <circle cx="10" cy="10" r="2.6" className="orbit-sun" />

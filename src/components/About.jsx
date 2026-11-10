@@ -266,7 +266,7 @@ function About() {
 
             {/* Central Portrait Visual Anchor */}
             <motion.div 
-              className="central-portrait-wrapper"
+              className={`central-portrait-wrapper ${activeCardId ? 'portrait-linked' : ''}`}
               animate={getPortraitAnimation()}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}

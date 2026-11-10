@@ -166,6 +166,7 @@ function ArchitecturalGlassPanels({ theme = 'light', activeSection = 'hero' }) {
         viewBox="0 0 1000 1000" 
         preserveAspectRatio="none"
         aria-hidden="true"
+        shapeRendering="geometricPrecision"
       >
         {MOTHERBOARD_BUS_CONDUITS.map((bus) => (
           <g key={bus.id} className="bus-conduit-group">
@@ -174,6 +175,7 @@ function ArchitecturalGlassPanels({ theme = 'light', activeSection = 'hero' }) {
               d={bus.path} 
               className="conduit-hairline-trace" 
               fill="none" 
+              vectorEffect="non-scaling-stroke"
             />
 
             {/* Solder Pad / Terminal Connection Dots */}
@@ -182,8 +184,9 @@ function ArchitecturalGlassPanels({ theme = 'light', activeSection = 'hero' }) {
                 key={idx} 
                 cx={pt.cx} 
                 cy={pt.cy} 
-                r={idx === 0 || idx === bus.terminals.length - 1 ? 3.5 : 2.2} 
+                r={idx === 0 || idx === bus.terminals.length - 1 ? 4 : 2.5} 
                 className={`conduit-terminal-dot ${idx === 0 ? 'root-terminal' : ''}`}
+                vectorEffect="non-scaling-stroke"
               />
             ))}
           </g>
