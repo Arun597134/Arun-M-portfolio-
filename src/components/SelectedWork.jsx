@@ -62,6 +62,17 @@ function ProjectVideo({ src, poster }) {
 const PROJECTS = [
   {
     id: 1,
+    title: 'ReproLens',
+    subtitle: 'Autonomous Bug Reproduction & Runtime Auto-Shield Engine',
+    desc: 'Architected an autonomous bug reproduction and self-healing resilience engine that fundamentally reverses passive crash monitoring. Intercepts production TypeError exceptions in under 0.8ms via client-side AST traps and a lightweight Service Worker proxy (reprolens-shield.sw.js) to mount defensive fallbacks without unmounting the UI. Replays failure clickstreams deterministically inside an isolated headless Playwright Chromium sandbox with simulated network throttling (Slow 3G), while enforcing on-device mathematical Luhn PII scrubbing and providing a 1-click deep-link protocol (vscode://, cursor://) directly to the offending line.',
+    image: '/reprolens_mockup.png',
+    video: '/reprolens_video.mp4',
+    tech: ['FastAPI (Python 3.11+)', 'Playwright Chromium', 'React 18', 'TypeScript', 'Chrome Extension MV3', 'Service Worker AST Traps', 'Tailwind CSS'],
+    impact: 'Intercepts unhandled crashes in <0.8ms & 100% deterministic headless browser replay',
+    github: 'https://github.com/Arun597134/ReproLens'
+  },
+  {
+    id: 2,
     title: 'CivicFlow',
     subtitle: 'AI Civic Complaint Platform',
     desc: 'Engineered a full-stack civic complaint platform for all 38 Tamil Nadu districts with a CNN-based image classifier that auto-categorizes and routes complaints, cutting manual triage effort by 90%. Deployed a Random Forest model to predict resolution timelines and flag repair quotes above Rs.500 as potential overcharges.',
@@ -72,7 +83,7 @@ const PROJECTS = [
     github: 'https://github.com/Arun597134/CivicflowAI'
   },
   {
-    id: 2,
+    id: 3,
     title: 'HireWise',
     subtitle: 'AI Voice Mock Interviewer',
     desc: 'Built an AI-driven mock interview simulator that parses resumes via PyMuPDF and generates role-specific interview questions. Features built-in speech-to-text and text-to-speech pipelines to provide an intuitive, hands-free voice conversational experience for candidates.',
@@ -83,7 +94,7 @@ const PROJECTS = [
     github: 'https://github.com/AjayJ19/HireWise-AI'
   },
   {
-    id: 3,
+    id: 4,
     title: 'AI Online Assessment Platform',
     subtitle: 'Proctored Examination Console',
     desc: 'Developed a MERN-based exam platform with AI-generated MCQs, timed auto-submission, and role-based access controls. Integrated a client-side TensorFlow.js proctoring module detecting face absence and tab-switching, successfully deployed to certify students in a college AI internship program.',
@@ -94,7 +105,7 @@ const PROJECTS = [
     github: 'https://github.com/Arun597134/AI-Exam-portal'
   },
   {
-    id: 4,
+    id: 5,
     title: 'IngestaX Framework',
     subtitle: 'Enterprise SQL-Pushdown Ingestion Engine',
     desc: 'Architected an enterprise data quality gateway and resilient ingestion pipeline built on PostgreSQL 16. Compiles YAML validation rules dynamically into native relational set operations, flattening memory consumption to a flat 12.4 MB (36.4× reduction vs legacy 452 MB Python loops). Features an active timeout watchdog circuit breaker (TTL = 3.0s) that isolates lagging batches into overflow staging without pipeline starvation, alongside zero-duplicate idempotent upserts.',
