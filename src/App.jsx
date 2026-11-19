@@ -121,20 +121,19 @@ export default function App() {
   }, []);
 
   // Initialize Studio Freight Lenis for ultra-luxurious, butter-smooth 120 FPS momentum scrolling
-  // Enabled on both Desktop and Mobile with native touch sync & Apple-grade exponential inertia
+  // Desktop gets buttery exponential inertia while mobile gets 100% native 120Hz ProMotion compositor scrolling
   useEffect(() => {
     if (loading) return;
 
     const lenis = new Lenis({
-      duration: 1.15,
+      duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Apple-grade exponential inertia
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      syncTouch: true, // Mimics native touch with silky RAF sync on mobile
-      syncTouchLerp: 0.08, // Buttery inertia on mobile touch
-      touchInertiaExponent: 1.7,
-      touchMultiplier: 1.2,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.0,
+      syncTouch: false, // 100% native 120Hz ProMotion compositor thread on mobile touch
       infinite: false,
     });
 
@@ -166,23 +165,30 @@ export default function App() {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     let animationFrameId;
+    let lastTargetX = -1;
+    let lastTargetY = -1;
+
     const render = () => {
-      // Lerp logic for smooth follower lag (tuned to 0.16 for responsive, silky glide)
-      const dx = followerPos.current.targetX - followerPos.current.x;
-      const dy = followerPos.current.targetY - followerPos.current.y;
-      
-      // Update primary cursor immediately for crisp, zero-latency response
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate3d(calc(${followerPos.current.targetX}px - 50%), calc(${followerPos.current.targetY}px - 50%), 0)`;
+      const targetX = followerPos.current.targetX;
+      const targetY = followerPos.current.targetY;
+
+      // Update primary cursor immediately on change (0 calc() strings, direct sub-pixel coords)
+      if (cursorRef.current && (targetX !== lastTargetX || targetY !== lastTargetY)) {
+        lastTargetX = targetX;
+        lastTargetY = targetY;
+        cursorRef.current.style.transform = `translate3d(${targetX - 4}px, ${targetY - 4}px, 0)`;
       }
 
       // Smooth trailing follower interpolation
-      if (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05) {
-        followerPos.current.x += dx * 0.16;
-        followerPos.current.y += dy * 0.16;
+      const dx = targetX - followerPos.current.x;
+      const dy = targetY - followerPos.current.y;
+      
+      if (Math.abs(dx) > 0.08 || Math.abs(dy) > 0.08) {
+        followerPos.current.x += dx * 0.18;
+        followerPos.current.y += dy * 0.18;
    
         if (followerRef.current) {
-          followerRef.current.style.transform = `translate3d(calc(${followerPos.current.x.toFixed(1)}px - 50%), calc(${followerPos.current.y.toFixed(1)}px - 50%), 0)`;
+          followerRef.current.style.transform = `translate3d(${(followerPos.current.x - 20).toFixed(1)}px, ${(followerPos.current.y - 20).toFixed(1)}px, 0)`;
         }
       }
 

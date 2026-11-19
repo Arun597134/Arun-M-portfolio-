@@ -79,18 +79,29 @@ html.lenis, html.lenis body {
   overflow: hidden;
 }
 
-.lenis.lenis-scrolling iframe {
+.lenis.lenis-scrolling {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.lenis.lenis-scrolling iframe,
+.lenis.lenis-scrolling .project-video {
   pointer-events: none;
 }
 
-/* GPU Acceleration & Layout Containment Optimization across Desktop & Mobile */
+/* High-Performance GPU Compositor Promotion & Layout Containment across Desktop & Mobile */
+.work-section,
+.about-section,
 .experience-section,
 .tech-section,
 .achievements-section,
 .certs-section,
 .contact-section {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 700px;
+  contain: layout style;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Hardware Compositor Promotion for smooth 120 FPS frame rates */

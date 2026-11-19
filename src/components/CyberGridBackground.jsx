@@ -133,9 +133,12 @@ function CyberGridBackground({ theme, spaceMode = false, activeSection = 'hero' 
       if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
       scrollDebounceTimer = setTimeout(() => {
         isScrolling = false;
-      }, 90);
+      }, 100);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
+    if (window.lenis) {
+      window.lenis.on('scroll', handleScroll);
+    }
 
     let time = 0;
     let lastAppliedX = null;
@@ -181,6 +184,9 @@ function CyberGridBackground({ theme, spaceMode = false, activeSection = 'hero' 
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('scroll', handleScroll);
+      if (window.lenis) {
+        window.lenis.off('scroll', handleScroll);
+      }
       if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
       if (isMobile) {
         window.removeEventListener('deviceorientation', handleOrientation);

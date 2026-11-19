@@ -12,7 +12,7 @@ function ProjectVideo({ src, poster }) {
 
     let isVisible = false;
 
-    // Play video strictly when visible in viewport, pause when off-screen to preserve GPU/decoder bandwidth
+    // Play video strictly when prominently visible in viewport, pause when off-screen to preserve 100% GPU/decoder bandwidth
     const observer = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
@@ -22,7 +22,7 @@ function ProjectVideo({ src, poster }) {
           video.pause();
         }
       },
-      { rootMargin: '100px 0px 100px 0px', threshold: 0.1 }
+      { rootMargin: '0px', threshold: 0.25 }
     );
 
     observer.observe(video);
