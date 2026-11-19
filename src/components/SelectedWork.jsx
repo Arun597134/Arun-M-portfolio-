@@ -69,7 +69,7 @@ const PROJECTS = [
     video: '/reprolens_video.mp4',
     tech: ['FastAPI (Python 3.11+)', 'Playwright Chromium', 'React 18', 'TypeScript', 'Chrome Extension MV3', 'Service Worker AST Traps', 'Tailwind CSS'],
     impact: 'Intercepts unhandled crashes in <0.8ms & 100% deterministic headless browser replay',
-    github: 'https://github.com/Arun597134/ReproLens'
+    github: 'https://github.com/Arun597134/Reprolens-'
   },
   {
     id: 2,
